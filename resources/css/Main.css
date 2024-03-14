@@ -11,3 +11,28 @@
     /* Center the background image */
     -fx-background-position: center;
 }
+
+#navBar{
+    -fx-background-color: #464646;
+    -fx-text-fill: white;
+}
+#buttonColor{
+    -fx-background-color: #464646;
+    -fx-text-fill: white;
+
+}
+
+#boxColor{
+    -fx-background-color: #464646;
+    -fx-text-fill: white;
+}
+
+:root {
+    --min-farve: #336699; /* Definerer en variabel og gemmer en farve */
+}
+
+/* Anvender variablen */
+.element {
+    color: var(--min-farve); /* Anvender variablen til farveegenskaben */
+    background-color: var(--min-farve); /* Anvender variablen til baggrundsfarveegenskaben */
+}

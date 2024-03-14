@@ -14,7 +14,8 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/EMS.fxml")));
         primaryStage.getIcons().add(new Image("/icons/mainIcon.png"));
         primaryStage.setTitle("Event Manager System");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
