@@ -1,0 +1,13 @@
+.ancherpane {
+    /* Set the background image */
+    -fx-background-image: url('icons/LoginBackground.png');
+
+    /* Preserve the aspect ratio of the image */
+    -fx-background-size: cover;
+
+    /* Set background image to fill the entire scene */
+    -fx-background-repeat: no-repeat;
+
+    /* Center the background image */
+    -fx-background-position: center;
+}
