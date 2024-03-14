@@ -27,6 +27,11 @@
     -fx-text-fill: white;
 }
 
+#backgroundColor{
+    -fx-background-color: #F5F5F5;
+    -fx-text-fill: black;
+}
+
 :root {
     --min-farve: #336699; /* Definerer en variabel og gemmer en farve */
 }
