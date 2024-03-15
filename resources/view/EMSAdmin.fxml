@@ -9,41 +9,42 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdmin">
+<AnchorPane prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdmin">
    <children>
-      <VBox fx:id="navBar" layoutY="-3.0" prefHeight="98.0" prefWidth="1080.0" stylesheets="@../css/Main.css">
+      <HBox fx:id="navBar" alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="1080.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label prefHeight="98.0" prefWidth="531.0" text="Event Manager System" textFill="WHITE">
-               <font>
-                  <Font size="50.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="10.0" />
-               </VBox.margin>
-            </Label>
-         </children>
-      </VBox>
-      <HBox alignment="TOP_RIGHT" layoutX="548.0" layoutY="-2.0" prefHeight="94.0" prefWidth="531.0" AnchorPane.rightAnchor="25.0">
-         <children>
-            <ImageView fitHeight="94.0" fitWidth="106.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../icons/User_Icon.png" />
-               </image>
-               <HBox.margin>
-                  <Insets top="5.0" />
-               </HBox.margin>
-            </ImageView>
-            <Label text="Admin" textFill="WHITE">
-               <font>
-                  <Font size="48.0" />
-               </font>
-               <HBox.margin>
-                  <Insets top="15.0" />
-               </HBox.margin>
-            </Label>
+            <VBox prefHeight="99.0" prefWidth="855.0" stylesheets="@../css/Main.css">
+               <children>
+                  <Label prefHeight="98.0" prefWidth="972.0" text="Event Manager System" textFill="WHITE">
+                     <font>
+                        <Font size="50.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
+                  </Label>
+               </children>
+            </VBox>
+            <HBox alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="332.0">
+               <children>
+                  <ImageView fitHeight="94.0" fitWidth="106.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/User_Icon.png" />
+                     </image>
+                  </ImageView>
+                  <Label prefHeight="70.0" prefWidth="177.0" text="Admin" textFill="WHITE">
+                     <font>
+                        <Font size="48.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets top="15.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
          </children>
       </HBox>
-      <VBox fx:id="backgroundColor" layoutY="94.0" prefHeight="626.0" prefWidth="1080.0" stylesheets="@../css/Main.css">
+      <VBox fx:id="backgroundColor" layoutY="94.0" prefHeight="626.0" prefWidth="1080.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
          <children>
             <HBox prefHeight="76.0" prefWidth="1080.0">
                <children>

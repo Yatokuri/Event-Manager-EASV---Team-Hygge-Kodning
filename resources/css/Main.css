@@ -1,7 +1,7 @@
 .root {
     -MainColor: #108cf1; /* Definerer en variabel og gemmer en farve */
+    -BackgroundColor: #E4E4E4
 }
-
 
 #signInBox {
     -fx-background-color: derive(-MainColor, 0%);
@@ -20,25 +20,74 @@
     -fx-effect: null;
 }
 
-.loginButton .button {
+.signInBox .button {
     -fx-background-color: derive(-MainColor, 0%); /* Example: using -fx-control-inner-background as a system color */
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
-.loginButton .button:hover {
+.signInBox .button:hover {
     -fx-background-color: #12546e; /* Example: using -fx-control-inner-background as a system color */
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
-.loginButton .button .mfx-ripple-generator {
+.signInBox .button .mfx-ripple-generator {
     -mfx-ripple-color: #11b8be; /* Ripple color (same as main color) */
     -fx-opacity: 0.2;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
+/* Button style */
+.signInBox .text-field {
+    -fx-text-fill: #4f4d4d;
+    -fx-font-size: 26px;
+    -fx-border-color: none;
+    -fx-fill: derive(-MainColor, 0%);
+    -fx-background-color: transparent;
+}
+
+
+/* CSS for removing default selection color */
+.signInBox .text-field:selected {
+    -fx-focus-color: transparent; /* Remove default focus color */
+    -fx-background-color: transparent; /* Remove background color */
+    -fx-background-insets: 0; /* Remove background insets */
+}
+
+
+.signInBox .text-field .highlight {
+    -fx-fill: derive(-MainColor, 0%);
+    -fx-background-color: transparent;
+}
+
+/* Override default focus color */
+.signInBox .text-field:focused .text-field {
+    -fx-focus-color: transparent; /* Change default focus color to transparent */
+    -fx-background-color: transparent;
+}
+
+.signInBox .label {
+    -fx-text-fill: white;
+}
+
+
+.createUpdateEvent .button{
+    -fx-background-color: #464646;
+    -fx-text-fill: white;
+}
+
+.createUpdateEvent .label{
+    -fx-text-fill: white;
+}
+#eventAnchorPane{
+    -fx-background-color: derive(-BackgroundColor, 0%);
+}
+
+#eventCreateUpdateBackgroundVbox {
+    -fx-background-color: #464646;
+}
 
 #navBar {
     -fx-background-color: derive(-MainColor, 0%);
@@ -48,7 +97,6 @@
 #buttonColor {
     -fx-background-color: #464646;
     -fx-text-fill: white;
-
 }
 
 #boxColor {
@@ -57,8 +105,11 @@
 }
 
 #backgroundColor{
-    -fx-background-color: #F5F5F5;
+    -fx-background-color: #E4E4E4;
     -fx-text-fill: black;
 }
 
+#btnCreateEvent {
+    -fx-background-color: transparent;
+}
 

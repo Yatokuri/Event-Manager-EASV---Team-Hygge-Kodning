@@ -1,3 +1,4 @@
+import gui.controller.EMSAdmin;
 import gui.controller.EMSController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,8 +16,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
-        EMSController controller = new EMSController(primaryStage); // Pass the stage instance to the controller
-        loader.setController(controller);
         Parent root = loader.load();
 
         // Get the primary screen
@@ -29,20 +28,20 @@ public class Main extends Application {
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
 
-
-
-
         primaryStage.getIcons().add(new Image("/icons/mainIcon.png"));
         primaryStage.setTitle("Event Manager System");
-    //    primaryStage.setScene(new Scene(root));
+
+
+        EMSController controller = loader.getController();
+        controller.setPrimaryStage(primaryStage);
+        controller.startupProgram();
+
 
         primaryStage.setScene(new Scene(root, 1080, 720));
-
+        //    primaryStage.setScene(new Scene(root));
       //  primaryStage.setMaximized(true);
         primaryStage.show();
     }
-
-
 
     public static void main(String[] args) {launch(args);}
 }
