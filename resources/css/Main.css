@@ -27,46 +27,32 @@
 }
 
 .signInBox .button:hover {
-    -fx-background-color: #12546e; /* Example: using -fx-control-inner-background as a system color */
+    -fx-background-color: #1a90ef; /* Example: using -fx-control-inner-background as a system color */
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
 .signInBox .button .mfx-ripple-generator {
-    -mfx-ripple-color: #11b8be; /* Ripple color (same as main color) */
+    -mfx-ripple-color: #033054; /* Ripple color (same as main color) */
     -fx-opacity: 0.2;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
-/* Button style */
+
+/* Override MaterialFX default styles for text field */
+.signInBox .mfx-text-field {
+    -mfx-text-fill: white; /* Text color */
+    -mfx-prompt-text-fill: white; /* Prompt text color */
+    -fx-border-color: none; /* Blue border color */
+    -fx-border-radius: 0px; /* Border radius */
+    -fx-background-radius: 0px; /* Background radius */
+}
+
 .signInBox .text-field {
-    -fx-text-fill: #4f4d4d;
-    -fx-font-size: 26px;
-    -fx-border-color: none;
-    -fx-fill: derive(-MainColor, 0%);
-    -fx-background-color: transparent;
+    -fx-highlight-fill: rgba(0, 138, 255, 0.14);
 }
 
-
-/* CSS for removing default selection color */
-.signInBox .text-field:selected {
-    -fx-focus-color: transparent; /* Remove default focus color */
-    -fx-background-color: transparent; /* Remove background color */
-    -fx-background-insets: 0; /* Remove background insets */
-}
-
-
-.signInBox .text-field .highlight {
-    -fx-fill: derive(-MainColor, 0%);
-    -fx-background-color: transparent;
-}
-
-/* Override default focus color */
-.signInBox .text-field:focused .text-field {
-    -fx-focus-color: transparent; /* Change default focus color to transparent */
-    -fx-background-color: transparent;
-}
 
 .signInBox .label {
     -fx-text-fill: white;
@@ -110,6 +96,10 @@
 }
 
 #btnCreateEvent {
+    -fx-background-color: transparent;
+}
+
+#btnCRUDCoordinators {
     -fx-background-color: transparent;
 }
 

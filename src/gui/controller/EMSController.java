@@ -77,94 +77,94 @@ public class EMSController implements Initializable {
     }
 
     public void startupProgram() {
-        primaryStage.setWidth(primaryStage.getWidth());
-
         // Set AnchorPane's size to match the size of primaryStage
         ancherPane.prefWidthProperty().bind(primaryStage.widthProperty());
         ancherPane.prefHeightProperty().bind(primaryStage.heightProperty());
 
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            double value = ((primaryStage.getWidth()-loginBoxWidth)/2);
+            double value = ((primaryStage.getWidth() - loginBoxWidth) / 2);
             signInBox.setLayoutX(value);
             signInBoxStuff.setLayoutX(value);
         });
 
         primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> {
-            double value = ((primaryStage.getHeight()-loginBoxHeight)/2);
+            double value = ((primaryStage.getHeight() - loginBoxHeight) / 2);
             signInBox.setLayoutY(value);
             signInBoxStuff.setLayoutY(value);
         });
+
+        //Manipulate it to fix the login box position
+        primaryStage.setWidth(primaryStage.getWidth() + 1);
+        primaryStage.setHeight(primaryStage.getHeight() + 1);
+        primaryStage.setWidth(primaryStage.getWidth() - 1);
+        primaryStage.setHeight(primaryStage.getHeight() - 1);
     }
 
     private User currentUser;
 
+
     public void btnLogin(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
-            Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            currentStage.setTitle("Event Manager System Admin");
-
-            EMSAdmin controller = loader.getController();
-          //  controller.setUserModel(userModel);
-            //controller.startupProgram();
-
-            Parent root = loader.load();
-            // Set the scene in the existing stage
-            currentStage.setScene(new Scene(root));
-            currentStage.setMaximized(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
-            alert.showAndWait();
-        }
-    }
-
-
-  /* public void btnLogin(ActionEvent actionEvent)  {
         String username = txtInputUsername.getText();
         String password = txtInputPassword.getText();
 
+        if (username.isEmpty() || password.isEmpty()) {
+            displayErrorModel.displayErrorC("Wrong username or password");
+            return;
+        }
 
-       if (username.isEmpty() || password.isEmpty()){
-           displayErrorModel.displayErrorC("Wrong username or password");
-           return;
-       }
+        try {
+            currentUser = userModel.signIn(username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayErrorModel.displayErrorC("Wrong username or password");
+            return;
+        }
 
-       try {
-       currentUser = userModel.signIn(username, password);
-       } catch (Exception e) {
-           e.printStackTrace();
-           Alert alert = new Alert(Alert.AlertType.ERROR, "Problems");
-           alert.showAndWait();
-       }
+        if (currentUser == null) {
+            displayErrorModel.displayErrorC("Wrong username or password");
+            return;
+        }
 
-       System.out.println("eaeae");
+        userModel.setLoggedInUser(currentUser);
 
-        if (currentUser.getUserAccessLevel() == 2){
+        if (currentUser.getUserAccessLevel() == 1) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
+                Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                currentStage.setTitle("Event Manager System Coordinator");
+                Parent root = loader.load();
+                EMSCoordinator controller = loader.getController();
+                controller.setUserModel(userModel);
+                controller.startupProgram();
+                currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
+            } catch (IOException e) {
+                e.printStackTrace();
+                displayErrorModel.displayErrorC("Try to restart the program");
+            }
+        }
 
-            userModel.setLoggedInUser(currentUser);
 
+        else if (currentUser.getUserAccessLevel() == 2) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSAdmin.fxml"));
                 Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
                 currentStage.setTitle("Event Manager System Admin");
-Parent root = loader.load();
+                Parent root = loader.load();
                 EMSAdmin controller = loader.getController();
                 controller.setUserModel(userModel);
                 controller.startupProgram();
-
-                Parent root = loader.load();
-                // Set the scene in the existing stage
-                currentStage.setScene(new Scene(root));
+                currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
             } catch (IOException e) {
                 e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
-                alert.showAndWait();
+                displayErrorModel.displayErrorC("Try to restart the program");
             }
         }
+
         else {
-           displayErrorModel.displayErrorC("Wrong username or password");
-       }
-    } */
+            displayErrorModel.displayErrorC("Wrong username or password");
+        }
+    }
+
 }
+

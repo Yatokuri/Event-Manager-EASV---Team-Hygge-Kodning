@@ -37,9 +37,11 @@ public class Main extends Application {
         controller.startupProgram();
 
 
-        primaryStage.setScene(new Scene(root, 1080, 720));
-        //    primaryStage.setScene(new Scene(root));
-      //  primaryStage.setMaximized(true);
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setHeight(360);
+        primaryStage.setWidth(640);
+        primaryStage.setMaximized(true);
+        primaryStage.requestFocus();
         primaryStage.show();
     }
 

@@ -38,7 +38,7 @@ public class UserManager {
 
     public void updateUser(be.User selectedUser) throws Exception { user_DB.updateUser(selectedUser); }
 
-    public void deleteUser(be.User selectedUser) throws Exception { user_DB.removeUser(selectedUser.getUserName());}
+    public void deleteUser(be.User selectedUser) throws Exception { user_DB.removeUser(selectedUser);}
 
     public Collection<User> getAllUsers() throws Exception   {
         return user_DB.getAllUsers();

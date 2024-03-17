@@ -99,7 +99,7 @@ public class Event_DB {
             allEvents.remove(eventToDelete);
         }
         catch (SQLException ex){
-            throw new Exception("Could not Delte Event", ex);
+            throw new Exception("Could not Delete Event", ex);
         }
     }
 

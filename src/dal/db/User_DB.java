@@ -21,7 +21,7 @@ public class User_DB {
 
     //Login Part
     public User checkUserBCrypt(String username, String password) throws Exception {
-        String query = "SELECT * FROM dbo.[User] WHERE Username = ?";
+        String query = "SELECT * FROM dbo.Users WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
@@ -34,19 +34,13 @@ public class User_DB {
                 if (BCrypt.checkpw(password, hashedPassword)) {
 
 
-                    System.out.println( password + "----" + hashedPassword);
                     // Passwords match, return the user object
                     //   return generateUser(rs);
 
                     return generateUser(rs);
-                } else {
-                    // Passwords don't match
-                    throw new Exception("Incorrect password");
                 }
-            } else {
-                // User not found
-                throw new Exception("User not found");
             }
+            return null;
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -58,16 +52,16 @@ public class User_DB {
 
     //User Part
     public List<User> getAllUsers() throws Exception {
-        List<User> allUsers = new ArrayList<>();
+
         try (Connection conn = myDBConnector.getConnection();
-             Statement stmt = conn.createStatement()) {
-            String sql = "SELECT * FROM dbo.[User]";
+            Statement stmt = conn.createStatement()) {
+            String sql = "SELECT * FROM dbo.Users;";
             ResultSet rs = stmt.executeQuery(sql);
             // Loop through rows from the database result set
             while (rs.next()) {
-                allUsers.add(generateUser(rs));
+                allUser.add(generateUser(rs));
             }
-            return allUsers;
+            return allUser;
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not get users from database", ex);
@@ -77,7 +71,7 @@ public class User_DB {
 
 
     public User createUser(User newUser) throws Exception {
-        String sql = "INSERT INTO dbo.[User] (Username, Password, userAccessLevel) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO dbo.Users (Username, Password, userAccessLevel) VALUES (?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newUser.getUserName());
@@ -95,19 +89,26 @@ public class User_DB {
         }
     }
 
-    public void updateUser(User selectedUser) {
-        //TODO
+    public void updateUser(User user) throws Exception {
+        String sql = "UPDATE dbo.Users SET Password = ?, userAccessLevel = ? WHERE Username = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getPassword());
+            stmt.setInt(2, user.getUserAccessLevel());
+            stmt.setString(3, user.getUserName());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Could not update User", ex);
+        }
     }
 
-    public void removeUser(String username) throws Exception {
-        String sql = "DELETE FROM dbo.[User] WHERE Username = ?";
+    public void removeUser(User user) throws Exception {
+        String sql = "DELETE FROM dbo.Users; WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected == 0) {
-                throw new Exception("User with username '" + username + "' not found.");
-            }
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getUserName());
+            allUser.remove(user);
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not remove user from database", ex);

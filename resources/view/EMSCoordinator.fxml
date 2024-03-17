@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -13,41 +12,40 @@
 
 <AnchorPane prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinator">
     <children>
-        <HBox fx:id="navBar" alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="1080.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-              <VBox fx:id="navBar" prefHeight="99.0" prefWidth="858.0">
-                  <children>
-                      <Label prefHeight="98.0" prefWidth="531.0" text="Event Manager System" textFill="WHITE">
+            <HBox prefHeight="100.0" prefWidth="573.0">
+               <children>
+                      <Label text="Event Manager System" textFill="WHITE">
                           <font>
                               <Font size="50.0" />
                           </font>
-                          <VBox.margin>
-                              <Insets left="10.0" />
-                          </VBox.margin>
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
                       </Label>
-                  </children>
-               <stylesheets>
-                  <URL value="@../css/Main.css" />
-                  <URL value="@../css/Main.css" />
-               </stylesheets>
-              </VBox>
-            <HBox alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="332.0">
+               </children>
+            </HBox>
+            <HBox alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="332.0" HBox.hgrow="ALWAYS">
                <children>
                       <ImageView fitHeight="94.0" fitWidth="106.0" pickOnBounds="true" preserveRatio="true">
                           <image>
                               <Image url="@../icons/User_Icon.png" />
                           </image>
                           <HBox.margin>
-                              <Insets top="5.0" />
+                              <Insets />
                           </HBox.margin>
                       </ImageView>
-                      <Label prefHeight="70.0" prefWidth="177.0" text="User" textFill="WHITE">
+                      <Label fx:id="lblLoggedInUser" text="User" textFill="WHITE">
                           <font>
                               <Font size="48.0" />
                           </font>
                           <HBox.margin>
-                              <Insets top="15.0" />
+                              <Insets top="10.0" />
                           </HBox.margin>
+                     <padding>
+                        <Insets right="7.0" />
+                     </padding>
                       </Label>
                </children>
             </HBox>
@@ -57,7 +55,7 @@
             <children>
                 <HBox prefHeight="76.0" prefWidth="1080.0">
                     <children>
-                        <Label prefHeight="75.0" prefWidth="196.0" text="Events">
+                        <Label prefWidth="196.0" text="Events">
                             <font>
                                 <Font size="50.0" />
                             </font>
@@ -74,7 +72,8 @@
                      </font></Button>
                     </children>
                 </HBox>
-                <HBox fx:id="eventHBox" prefHeight="467.0" prefWidth="1080.0" />
+                <HBox fx:id="eventHBoxSection" prefHeight="467.0" prefWidth="1080.0" VBox.vgrow="ALWAYS" />
+            <HBox fx:id="navBar1" prefHeight="69.0" prefWidth="671.0" />
             </children>
         </VBox>
     </children>

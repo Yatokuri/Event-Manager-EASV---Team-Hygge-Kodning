@@ -8,35 +8,29 @@ import javafx.collections.ObservableList;
 public class UserModel {
     private User currentLoggedInUser;
     private UserManager userManager;
-    private final ObservableList<User> obsUsers = FXCollections.observableArrayList();
+    private ObservableList<User> usersToBeViewed;
 
     public UserModel() throws Exception {
         userManager = new UserManager() ;
-        obsUsers.clear();
-        obsUsers.addAll(userManager.getAllUsers());
+        usersToBeViewed = FXCollections.observableArrayList();
+        usersToBeViewed.addAll(userManager.getAllUsers());
     }
 
 
     public User signIn(String username, String password) throws Exception   {
-
-        System.out.println("tog");
-
         return userManager.checkLogin(username, password);
-
     }
 
     public User createNewUser(User user) throws Exception{ return userManager.createNewUser(user);}
     public void deleteUser(User user) throws Exception{ userManager.deleteUser(user);}
 
-    public void setLoggedInUser(User user) {
-        currentLoggedInUser = user;
-        System.out.println("use sæt " + user.getUserName());
+    public void updateUser(User user) throws Exception{ userManager.updateUser(user);}
 
-    }
+    public void setLoggedInUser(User user) {currentLoggedInUser = user;}
 
     public User getLoggedInUser() {
        return currentLoggedInUser;
     }
 
-    public ObservableList<User> getObsUsers() { return obsUsers; }
+    public ObservableList<User> getObsUsers() { return usersToBeViewed; }
 }

@@ -34,7 +34,7 @@
                         <Insets />
                     </VBox.margin></MFXTextField>
                 <Label text="Password" />
-                <MFXPasswordField fx:id="txtInputPassword" minHeight="35.0" prefWidth="600.0" />
+                <MFXPasswordField fx:id="txtInputPassword" borderGap="0.0" hideCharacter="•" minHeight="35.0" prefWidth="600.0" />
                 <HBox prefHeight="100.0" prefWidth="200.0">
                     <children>
                         <Label text="Forgot your Password? " />
