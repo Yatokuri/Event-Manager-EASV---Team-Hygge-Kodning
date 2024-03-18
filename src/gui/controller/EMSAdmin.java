@@ -55,7 +55,8 @@ public class EMSAdmin {
             EMSAdminCoordinatorManager controller = loader.getController();
             controller.setUserModel(userModel);
             controller.startupProgram();
-
+            EMSCoordinatorEventCUStage.setMinHeight(280);
+            EMSCoordinatorEventCUStage.setMinWidth(360);
             EMSCoordinatorEventCUStage.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSCoordinatorEventCUStage.show();
         } catch (IOException e) {

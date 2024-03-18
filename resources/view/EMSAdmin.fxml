@@ -39,7 +39,7 @@
                         <Insets />
                      </HBox.margin>
                   </ImageView>
-                  <Label fx:id="lblLoggetInUser" text="Admin" textFill="WHITE">
+                  <Label fx:id="lblLoggedInUser" text="Admin" textFill="WHITE">
                      <font>
                         <Font size="48.0" />
                      </font>

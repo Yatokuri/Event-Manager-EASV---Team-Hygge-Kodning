@@ -29,12 +29,12 @@
                     </font>
                 </Label>
                 <Label text="Username" />
-                <MFXTextField fx:id="txtInputUsername" minHeight="35.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+                <MFXTextField fx:id="txtInputUsername" minHeight="35.0" prefWidth="600.0" VBox.vgrow="ALWAYS" >
                     <VBox.margin>
                         <Insets />
                     </VBox.margin></MFXTextField>
                 <Label text="Password" />
-                <MFXPasswordField fx:id="txtInputPassword" borderGap="0.0" hideCharacter="•" minHeight="35.0" prefWidth="600.0" />
+                <MFXPasswordField fx:id="txtInputPassword" borderGap="0.0" hideCharacter="•" minHeight="35.0" prefWidth="600.0"/>
                 <HBox prefHeight="100.0" prefWidth="200.0">
                     <children>
                         <Label text="Forgot your Password? " />

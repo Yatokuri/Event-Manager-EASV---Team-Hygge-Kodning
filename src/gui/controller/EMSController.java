@@ -3,6 +3,7 @@ package gui.controller;
 import be.User;
 import gui.model.DisplayErrorModel;
 import gui.model.UserModel;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.fxml.FXML;
@@ -15,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,8 +32,10 @@ import java.util.ResourceBundle;
 
 public class EMSController implements Initializable {
 
-    public MFXTextField txtInputUsername;
-    public MFXPasswordField txtInputPassword;
+    @FXML
+    private MFXTextField txtInputUsername;
+    @FXML
+    private MFXPasswordField txtInputPassword;
     @FXML
     private ImageView backgroundIMGLogin;
     @FXML
@@ -39,13 +44,18 @@ public class EMSController implements Initializable {
     private HBox signInBox;
     @FXML
     private VBox signInBoxStuff;
+    @FXML
+    private MFXButton btnLogin;
 
+    private Node[] focusNodes; // To make tab work correct
+    private int currentFocusIndex;
     private final Image backgroundIMG = new Image("/icons/LoginBackground2.png");
 
     private Stage primaryStage; // Store a reference to the stage
 
     private final DisplayErrorModel displayErrorModel;
     private UserModel userModel;
+
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -74,6 +84,23 @@ public class EMSController implements Initializable {
 
         BoxBlur boxblur = new BoxBlur(signInBox.getWidth(), signInBox.getHeight(), 3);
         signInBox.setEffect(boxblur);
+
+        // Initialize the array of focusable nodes
+        focusNodes = new Node[]{txtInputUsername, txtInputPassword, btnLogin};
+        currentFocusIndex = 0;
+
+        // Add event filter to handle Tab key press
+        for (Node node : focusNodes) {
+            node.addEventFilter(KeyEvent.KEY_PRESSED, this::handleTabKeyPress);
+        }
+    }
+
+    private void handleTabKeyPress(KeyEvent event) {
+        if (event.getCode() == KeyCode.TAB) {
+            event.consume();
+            currentFocusIndex = (currentFocusIndex + 1) % focusNodes.length;
+            focusNodes[currentFocusIndex].requestFocus();
+        }
     }
 
     public void startupProgram() {

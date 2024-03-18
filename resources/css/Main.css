@@ -1,6 +1,7 @@
 .root {
     -MainColor: #108cf1; /* Definerer en variabel og gemmer en farve */
-    -BackgroundColor: #E4E4E4
+    -BackgroundColor: #E4E4E4;
+    -BoxButtonColor: #464646;
 }
 
 #signInBox {
@@ -103,3 +104,83 @@
     -fx-background-color: transparent;
 }
 
+/* Remove all borders and styling from the TableView */
+.userListAdmin .table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Remove padding and spacing between cells */
+.userListAdmin .table-row-cell {
+    -fx-padding: 0;
+    -fx-spacing: 0;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+}
+
+/* Set text color to white */
+.userListAdmin .table-cell {
+    -fx-text-fill: white;
+}
+
+/* Set text color to white */
+.userListAdmin .label {
+    -fx-text-fill: white;
+}
+
+
+/* Set the background color of selected row */
+.userListAdmin .table-row-cell:selected {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+}
+
+/* Set text color to white for selected cells */
+.userListAdmin .table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+
+/* Remove focus ring */
+.userListAdmin .table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Remove hover effect */
+.userListAdmin .table-row-cell:hover {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+}
+
+
+/* Set border color to transparent for table cells */
+.userListAdmin .table-cell {
+    -fx-border-color: transparent;
+}
+
+/* Set border color to transparent for the entire table */
+.userListAdmin .table-view {
+    -fx-border-color: transparent;
+}
+
+
+/* Make the button inside cells invisible and set text properties */
+.userListAdmin .table-cell .button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-opacity: 1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; /* Make text bold */
+    -fx-font-size: 30px; /* Set text size to 14px */
+    -fx-padding: -25; /* Adjust padding to -20 on all sides */
+
+}
+/* Set header text color to grey and align left */
+.userListAdmin .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px; /* Set text size to 16px */
+    -fx-font-weight: bold; /* Make text bold */
+    -fx-alignment: center-left;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+}
+
+.userListAdmin .table-view, .userListAdmin .column-header, .userListAdmin .column-header .table-header-background, .userListAdmin .column-header .filler, .userListAdmin .column-header .border {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+}
