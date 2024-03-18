@@ -54,6 +54,7 @@ public class EMSAdmin {
             EMSCoordinatorEventCUStage.initModality(Modality.APPLICATION_MODAL);
             EMSAdminCoordinatorManager controller = loader.getController();
             controller.setUserModel(userModel);
+            controller.setPrimaryStage(EMSCoordinatorEventCUStage);
             controller.startupProgram();
             EMSCoordinatorEventCUStage.setMinHeight(280);
             EMSCoordinatorEventCUStage.setMinWidth(360);

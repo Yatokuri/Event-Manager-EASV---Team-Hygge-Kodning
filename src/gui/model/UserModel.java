@@ -21,8 +21,15 @@ public class UserModel {
         return userManager.checkLogin(username, password);
     }
 
-    public User createNewUser(User user) throws Exception{ return userManager.createNewUser(user);}
-    public void deleteUser(User user) throws Exception{ userManager.deleteUser(user);}
+    public User createNewUser(User user) throws Exception {
+        User newUser = userManager.createNewUser(user);
+        usersToBeViewed.add(newUser);
+        return newUser;
+    }
+    public void deleteUser(User user) throws Exception {
+        userManager.deleteUser(user);
+        usersToBeViewed.remove(user);
+    }
 
     public void updateUser(User user) throws Exception{ userManager.updateUser(user);}
 

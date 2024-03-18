@@ -2,7 +2,28 @@
     -MainColor: #108cf1; /* Definerer en variabel og gemmer en farve */
     -BackgroundColor: #E4E4E4;
     -BoxButtonColor: #464646;
+    -ButtonHoverColor: #4d4848;
 }
+
+.button {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.button:hover {
+    -fx-background-color: derive(-ButtonHoverColor, 0%);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.button .mfx-ripple-generator {
+    -mfx-ripple-color: derive(-ButtonHoverColor, 10%);
+    -fx-opacity: 0.2;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
 
 #signInBox {
     -fx-background-color: derive(-MainColor, 0%);
@@ -103,7 +124,7 @@
 #btnCRUDCoordinators {
     -fx-background-color: transparent;
 }
-
+/*Here we set all the CSS for the Admin user management window*/
 /* Remove all borders and styling from the TableView */
 .userListAdmin .table-view {
     -fx-background-color: transparent;
@@ -162,7 +183,7 @@
 
 
 /* Make the button inside cells invisible and set text properties */
-.userListAdmin .table-cell .button {
+.userListAdmin  .table-cell .button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-opacity: 1;
@@ -184,3 +205,80 @@
 .userListAdmin .table-view, .userListAdmin .column-header, .userListAdmin .column-header .table-header-background, .userListAdmin .column-header .filler, .userListAdmin .column-header .border {
     -fx-background-color: derive(-BoxButtonColor, 0%);
 }
+
+.userListAdmin .button {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: white;
+}
+
+.userListAdmin .button:hover {
+    -fx-background-color: derive(-ButtonHoverColor, 0%);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: white;
+}
+
+.userListAdmin .button .mfx-ripple-generator {
+    -mfx-ripple-color: derive(-ButtonHoverColor, 10%);
+    -fx-opacity: 0.2;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: white;
+}
+
+/* Override MaterialFX default styles for text field */
+.userListAdmin .mfx-text-field {
+    -mfx-text-fill: white; /* Text color */
+    -mfx-prompt-text-fill: white; /* Prompt text color */
+    -fx-border-color: none; /* Blue border color */
+    -fx-border-radius: 0px; /* Border radius */
+    -fx-background-radius: 0px; /* Background radius */
+}
+
+
+
+.userListAdmin .text-field {
+    -fx-highlight-fill: rgba(0, 138, 255, 0.14);
+}
+
+.userListAdmin .scroll-bar:vertical,
+.userListAdmin .scroll-bar:vertical .track,
+.userListAdmin .scroll-bar:vertical .track-background,
+.userListAdmin .scroll-bar:horizontal,
+.userListAdmin .scroll-bar:horizontal .track,
+.userListAdmin .scroll-bar:horizontal .track-background {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-padding: 1;
+}
+
+/*This is for the right corner over scroll pane in head line */
+.userListAdmin.table-view .column-header-background .filler {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-padding: 1em;
+}
+
+
+.userListAdmin .scroll-bar .increment-button,
+.userListAdmin .scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 2;
+}
+
+.userListAdmin .scroll-bar:vertical .thumb {
+    -fx-background-color: white;
+}
+
+
+#userListAdminVBOx .label {
+    -fx-text-fill: derive(-BoxButtonColor, 0%);
+    -fx-font-size: 14px; /* Set text size to 16px */
+}
+
+
+#userListAdminVBOx  {
+    -fx-background-color: derive(-BackgroundColor, 0%);
+    -fx-background-radius: 10;
+}
+

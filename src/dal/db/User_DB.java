@@ -93,7 +93,7 @@ public class User_DB {
         String sql = "UPDATE dbo.Users SET Password = ?, userAccessLevel = ? WHERE Username = ?";
 
         try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getPassword());
             stmt.setInt(2, user.getUserAccessLevel());
             stmt.setString(3, user.getUserName());
@@ -104,10 +104,11 @@ public class User_DB {
     }
 
     public void removeUser(User user) throws Exception {
-        String sql = "DELETE FROM dbo.Users; WHERE Username = ?";
+        String sql = "DELETE FROM dbo.Users WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUserName());
+            stmt.executeUpdate();
             allUser.remove(user);
         } catch (SQLException ex) {
             ex.printStackTrace();
