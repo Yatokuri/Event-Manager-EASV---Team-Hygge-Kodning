@@ -1,11 +1,7 @@
 package bll;
 
-import be.User;
-import bll.util.crytographic.BCrypt;
 import dal.db.Event_DB;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class EventManager {

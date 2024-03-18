@@ -79,7 +79,29 @@
 .signInBox .label {
     -fx-text-fill: white;
 }
+/*Here we set the CSS for the event Information window
 
+ */
+.eventInformationWindow .button{
+    -fx-text-fill: white;
+}
+.eventInformationWindow .text-area{
+    -fx-background-color: #464646;
+    -fx-text-fill: white;
+
+}
+
+.eventInformationWindow .text-area .content {
+    -fx-background-color: #464646;
+}
+
+.eventInformationWindow .label {
+    -fx-text-fill: white;
+}
+
+#eventInformationBackground{
+    -fx-background-color: #464646;
+}
 
 .createUpdateEvent .button{
     -fx-background-color: #464646;

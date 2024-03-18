@@ -1,6 +1,5 @@
 package dal.db;
 
-import be.Event;
 import be.User;
 import bll.util.crytographic.BCrypt;
 

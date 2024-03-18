@@ -6,25 +6,25 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class EMSCoordinatorEventCreator implements Initializable {
 
-    private EMSCoordinator emsCoordinator;
+    private final EMSCoordinator emsCoordinator;
 
-    private EventModel eventModel;
+    private final EventModel eventModel;
 
-    private DisplayErrorModel displayErrorModel;
+    private final DisplayErrorModel displayErrorModel;
 
     private static be.Event eventBeingUpdated;
 
@@ -33,7 +33,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
     @FXML
     public Label createUpdateEventLabel;
     @FXML
-    public TextField eventNameTextField, eventStartTextField, eventEndTextField, locationTextField, locationGuidanceTextField;
+    public TextField eventNameTextField, locationTextField, locationGuidanceTextField;
+    @FXML
+    public DatePicker eventStartDatePicker, eventEndDatePicker;
     @FXML
     public TextArea eventNotesTextArea;
     @FXML
@@ -54,6 +56,34 @@ public class EMSCoordinatorEventCreator implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         eventNotesTextArea.setWrapText(true);
         eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
+
+        eventStartDatePicker.setConverter(new StringConverter<>(){
+            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            @Override
+            public String toString(LocalDate date){
+                return (date != null) ? startDateFormatter.format(date) : "";
+            }
+            @Override
+            public LocalDate fromString(String string){
+                return (string != null && !string.isEmpty())
+                        ? LocalDate.parse(string, startDateFormatter) : null;
+            }
+        });
+        eventEndDatePicker.setConverter(new StringConverter<>(){
+            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            @Override
+            public String toString(LocalDate date){
+                return (date != null) ? endDateFormatter.format(date) : "";
+            }
+            @Override
+            public LocalDate fromString(String string){
+                return (string != null && !string.isEmpty())
+                        ? LocalDate.parse(string, endDateFormatter) : null;
+            }
+        });
+
     }
 
     public void setType(String type) {
@@ -75,8 +105,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     public void updateEventSetup(){
         eventNameTextField.setText(eventBeingUpdated.getEventName());
-        eventStartTextField.setText(eventBeingUpdated.getEventStartDateTime());
-        eventEndTextField.setText(eventBeingUpdated.getEventEndDateTime());
+        eventStartDatePicker.getEditor().setText(eventBeingUpdated.getEventStartDateTime());
+        eventEndDatePicker.getEditor().setText(eventBeingUpdated.getEventEndDateTime());
         locationTextField.setText(eventBeingUpdated.getLocation());
         locationGuidanceTextField.setText(eventBeingUpdated.getLocationGuidance());
         eventNotesTextArea.setText(eventBeingUpdated.getEventNotes());
@@ -84,10 +114,10 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     private void createNewEvent(){
         String eventName = eventNameTextField.getText();
-        String eventStartDate = eventStartTextField.getText();
+        String eventStartDate = eventStartDatePicker.getEditor().getText();
         String eventEndDate = null;
-        if (!eventEndTextField.getText().isEmpty())
-            eventEndDate = eventEndTextField.getText();
+        if (!eventEndDatePicker.getEditor().getText().isEmpty())
+            eventEndDate = eventEndDatePicker.getEditor().getText();
         String location = locationTextField.getText();
         String locationGuidance = null;
         if (!locationGuidanceTextField.getText().isEmpty())
@@ -106,8 +136,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
     private void updateEvent(){
         if (eventBeingUpdated != null){
             eventBeingUpdated.setEventName(eventNameTextField.getText());
-            eventBeingUpdated.setEventStartDateTime(eventStartTextField.getText());
-            eventBeingUpdated.setEventEndDateTime(eventEndTextField.getText());
+            eventBeingUpdated.setEventStartDateTime(eventStartDatePicker.getEditor().getText());
+            eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
             eventBeingUpdated.setLocation(locationTextField.getText());
             eventBeingUpdated.setLocationGuidance(locationGuidanceTextField.getText());
             eventBeingUpdated.setEventNotes(eventNotesTextArea.getText());

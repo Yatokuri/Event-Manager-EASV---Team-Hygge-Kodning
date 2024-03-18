@@ -1,12 +1,10 @@
 package bll;
 
-import be.Event;
 import be.User;
 import bll.util.crytographic.BCrypt;
 import dal.db.User_DB;
 
 import java.util.Collection;
-import java.util.List;
 
 public class UserManager {
 
