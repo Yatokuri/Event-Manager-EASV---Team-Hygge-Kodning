@@ -1,6 +1,7 @@
 package gui.controller;
 
 import gui.model.UserModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -17,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class EMSAdmin {
 
@@ -24,6 +26,8 @@ public class EMSAdmin {
     private UserModel userModel;
     @FXML
     private Button btnCRUDCoordinators;
+    @FXML
+    private Button eventButton1,eventButton2,eventButton3,eventButton4,eventButton5,eventButton6,eventButton7,eventButton8,eventButton9,eventButton10,eventButton11,eventButton12;
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -31,8 +35,8 @@ public class EMSAdmin {
 
     public void startupProgram() { // This setup op the program
         eventList(); // Setup dynamic event
+        hideButton(); // hides button if text == null
     }
-
 
     public void eventList() // Here we create the event dynamic
     {
@@ -42,6 +46,31 @@ public class EMSAdmin {
         HBox.setHgrow(eventHBox, Priority.ALWAYS);
 
         eventHBoxSection.getChildren().add(eventHBox);
+    }
+
+    public void hideButton() // TODO: Mindset hideButton() til Coordinators
+    {
+        ArrayList<Button> Buttons = new ArrayList<>();
+        Buttons.add(eventButton1);
+        Buttons.add(eventButton2);
+        Buttons.add(eventButton3);
+        Buttons.add(eventButton4);
+        Buttons.add(eventButton5);
+        Buttons.add(eventButton6);
+        Buttons.add(eventButton7);
+        Buttons.add(eventButton8);
+        Buttons.add(eventButton9);
+        Buttons.add(eventButton10);
+        Buttons.add(eventButton11);
+        Buttons.add(eventButton12);
+
+        for(Button b : Buttons)
+        {
+            if (b.getText().isEmpty())
+            {
+                b.setOpacity(0);
+            }
+        }
     }
 
     public void btnCRUDCoordinators(javafx.event.ActionEvent actionEvent)   { // Handle when admin make new coordinators
@@ -67,4 +96,10 @@ public class EMSAdmin {
         }
     }
 
+
+    @FXML
+    private void eventButton(ActionEvent actionEvent)
+    {
+
+    }
 }

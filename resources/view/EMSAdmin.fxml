@@ -81,27 +81,27 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER">
+                        <Button id="buttonText" fx:id="eventButton1" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" GridPane.halignment="CENTER">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                        <Button id="buttonText" fx:id="eventButton2" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                        <Button id="buttonText" fx:id="eventButton3" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                        <Button id="buttonText" fx:id="eventButton4" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                        <Button id="buttonText" fx:id="eventButton5" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" opacity="0.0" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                        <Button id="buttonText" fx:id="eventButton6" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
@@ -121,27 +121,27 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER">
+                        <Button id="buttonText" fx:id="eventButton7" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.halignment="CENTER">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                        <Button id="buttonText" fx:id="eventButton8" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                        <Button id="buttonText" fx:id="eventButton9" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                        <Button id="buttonText" fx:id="eventButton10" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" opacity="0.0" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                        <Button id="buttonText" fx:id="eventButton11" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" opacity="0.0" prefHeight="130.0" prefWidth="190.0" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                        <Button id="buttonText" fx:id="eventButton12" mnemonicParsing="false" prefHeight="130.0" prefWidth="190.0" stylesheets="@../CSS/Main.css" text="Event" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Button>

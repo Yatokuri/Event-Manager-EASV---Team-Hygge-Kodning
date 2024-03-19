@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class EMSCoordinator {
 
@@ -36,6 +37,9 @@ public class EMSCoordinator {
     private UserModel userModel;
     private ArchivedEventModel archivedEventModel;
     private Event eventBeingUpdated;
+    @FXML
+    private Button eventButton1,eventButton2,eventButton3,eventButton4,eventButton5,eventButton6,eventButton7,eventButton8,eventButton9,eventButton10,eventButton11,eventButton12;
+
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -61,6 +65,33 @@ public class EMSCoordinator {
     public void startupProgram() { // This setup op the program
         lblLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
         eventList(); // Setup dynamic event
+        hideButton();
+    }
+
+    public void hideButton()
+    {
+
+        ArrayList<Button> Buttons = new ArrayList<>();
+        Buttons.add(eventButton1);
+        Buttons.add(eventButton2);
+        Buttons.add(eventButton3);
+        Buttons.add(eventButton4);
+        Buttons.add(eventButton5);
+        Buttons.add(eventButton6);
+        Buttons.add(eventButton7);
+        Buttons.add(eventButton8);
+        Buttons.add(eventButton9);
+        Buttons.add(eventButton10);
+        Buttons.add(eventButton11);
+        Buttons.add(eventButton12);
+
+        for(Button b : Buttons)
+        {
+            if (b.getText().isEmpty())
+            {
+                b.setOpacity(0);
+            }
+        }
     }
 
     public void eventList() // Here we create the event dynamic
@@ -92,5 +123,10 @@ public class EMSCoordinator {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
             alert.showAndWait();
         }
+    }
+
+
+    @FXML
+    private void eventButton(javafx.event.ActionEvent actionEvent) {
     }
 }

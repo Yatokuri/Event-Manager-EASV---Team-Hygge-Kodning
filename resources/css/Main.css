@@ -124,6 +124,14 @@
     -fx-text-fill: white;
 }
 
+.button {
+    -fx-background-color: #464646;
+}
+
+#buttonText {
+    -fx-text-fill: white;
+}
+
 #buttonColor {
     -fx-background-color: #464646;
     -fx-text-fill: white;
