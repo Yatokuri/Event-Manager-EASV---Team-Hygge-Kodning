@@ -89,6 +89,13 @@ public class EMSController implements Initializable {
         focusNodes = new Node[]{txtInputUsername, txtInputPassword, btnLogin};
         currentFocusIndex = 0;
 
+        // Do so user can press enter when password is entered
+        txtInputPassword.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                btnLogin.fire();
+            }
+        });
+
         // Add event filter to handle Tab key press
         for (Node node : focusNodes) {
             node.addEventFilter(KeyEvent.KEY_PRESSED, this::handleTabKeyPress);

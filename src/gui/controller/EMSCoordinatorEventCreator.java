@@ -6,8 +6,12 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
@@ -20,13 +24,13 @@ import java.util.ResourceBundle;
 
 public class EMSCoordinatorEventCreator implements Initializable {
 
-    private final EMSCoordinator emsCoordinator;
+    private EMSCoordinator emsCoordinator;
 
-    private final EventModel eventModel;
+    private EventModel eventModel;
 
     private final DisplayErrorModel displayErrorModel;
 
-    private static be.Event eventBeingUpdated;
+    private be.Event eventBeingUpdated;
 
     @FXML
     public AnchorPane eventAnchorPane;
@@ -38,24 +42,44 @@ public class EMSCoordinatorEventCreator implements Initializable {
     public DatePicker eventStartDatePicker, eventEndDatePicker;
     @FXML
     public TextArea eventNotesTextArea;
-    @FXML
-    private Button cancelButton, confirmButton;
     private String type;
+
+
+    public void setEventModel(EventModel eventModel) {
+        this.eventModel = eventModel;
+    }
+    public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
+        this.emsCoordinator = emsCoordinator;
+    }
 
     public EMSCoordinatorEventCreator(){
         displayErrorModel = new DisplayErrorModel();
-        try {
-            eventModel = new EventModel();
-            emsCoordinator = new EMSCoordinator();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void startupProgram() { //This setup program
+
         eventNotesTextArea.setWrapText(true);
         eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
+
+        if (type.equals("Create"))  {
+            createUpdateEventLabel.setText("Create");
+        }
+        else
+            createUpdateEventLabel.setText("Update");
+
+        if (createUpdateEventLabel.getText().equals("Update")){
+            updateEventSetup();
+        }
+
+
 
         eventStartDatePicker.setConverter(new StringConverter<>(){
             final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -83,24 +107,6 @@ public class EMSCoordinatorEventCreator implements Initializable {
                         ? LocalDate.parse(string, endDateFormatter) : null;
             }
         });
-
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void startupProgram() {
-
-        if (type.equals("Create"))  {
-            createUpdateEventLabel.setText("Create");
-        }
-        else
-            createUpdateEventLabel.setText("Update");
-
-        if (createUpdateEventLabel.getText().equals("Update")){
-            updateEventSetup();
-        }
     }
 
     public void updateEventSetup(){
@@ -145,7 +151,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
             try {
                 eventModel.updateEvent(eventBeingUpdated);
-                //New method for refreshing event list in previous window needed here
+                emsCoordinator.startupProgram(); // Refresh UI
                 cancelButton();
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Event could not be updated");

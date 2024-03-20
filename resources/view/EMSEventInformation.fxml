@@ -59,7 +59,7 @@
             <TextArea fx:id="eventNotesTextArea" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
-      <HBox layoutX="248.0" layoutY="404.0" prefHeight="35.0" prefWidth="370.0" styleClass="createUpdateEvent">
+      <HBox alignment="TOP_RIGHT" layoutX="248.0" layoutY="404.0" prefHeight="35.0" prefWidth="370.0" styleClass="createUpdateEvent">
          <children>
             <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Delete">
                <font>

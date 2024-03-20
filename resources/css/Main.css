@@ -312,3 +312,56 @@
     -fx-background-radius: 10;
 }
 
+/*Here we set all the CSS for the Dynamic user management window*/
+
+.dynamicEvent .eventBox  {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-border-radius: 5px;
+    -fx-border-color: transparent;
+}
+
+
+.dynamicEvent .label {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+}
+
+.dynamicEvent .underTitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+}
+
+.dynamicEvent .title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold; /* Make text bold */
+}
+
+.dynamicEvent .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.dynamicEvent .buttonDynamicEvent {
+    -fx-font-size: 10px;
+    -fx-padding: -20;
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+}
+
+.dynamicEvent .buttonNewEvent {
+    -fx-font-size: 200px;
+    -fx-background-color: transparent;
+    -fx-padding: 0, 0 0 0;
+}
+
+
+ .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
