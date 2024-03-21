@@ -23,6 +23,16 @@
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
+.menu-button{
+    -fx-background-color: derive(-MainColor, 0%);
+}
+.menu-button .label {
+    -fx-text-fill: white;
+}
+.menu-button .menu-item .label {
+    -fx-background-color: derive(-ButtonBoxColor, 0%);
+    -fx-text-fill: white;
+}
 
 
 #signInBox {

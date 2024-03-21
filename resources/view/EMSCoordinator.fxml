@@ -12,6 +12,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinator">
     <children>
         <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -38,17 +40,16 @@
                                 <Insets />
                             </HBox.margin>
                         </ImageView>
-                        <Label fx:id="lblLoggedInUser" text="User" textFill="WHITE">
+                        <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="Admin">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Archived Events" onAction="#openArchivedEvents"/>
+                                <MenuItem mnemonicParsing="false" text="Options" onAction="#openOptions" />
+                                <MenuItem mnemonicParsing="false" text="Logout" onAction="#logoutUser" />
+                            </items>
                             <font>
-                                <Font size="48.0" />
+                                <Font size="44.0" />
                             </font>
-                            <HBox.margin>
-                                <Insets top="10.0" />
-                            </HBox.margin>
-                            <padding>
-                                <Insets right="7.0" />
-                            </padding>
-                        </Label>
+                        </MenuButton>
                     </children>
                 </HBox>
             </children>

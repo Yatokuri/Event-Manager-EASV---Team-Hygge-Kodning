@@ -8,12 +8,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -34,8 +32,6 @@ public class EMSAdmin {
     @FXML
     private Button btnCreateEvent;
     @FXML
-    private Label lblLoggedInUser;
-    @FXML
     private AnchorPane anchorPane;
     private static EMSAdmin instance;
     private final DisplayErrorModel displayErrorModel;
@@ -52,6 +48,8 @@ public class EMSAdmin {
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
     private static final Image plusIcon = new Image ("/Icons/plus.png");
     private final Image mainIcon = new Image("Icons/mainIcon.png");
+    @FXML
+    private MenuButton menuButtonLoggedInUser;
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -74,7 +72,7 @@ public class EMSAdmin {
         return eventBeingUpdated;
     }
     public void startupProgram() { // This setup op the program
-        lblLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
+        menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
         setupEvents();  // Setup dynamic event
         anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             double width = newValue.doubleValue(); // Get the new width of the AnchorPane - the margin
@@ -256,5 +254,22 @@ public class EMSAdmin {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
             alert.showAndWait();
         }
+    }
+
+    @FXML
+    private void openArchivedEvents(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void openOptions(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void logoutUser(ActionEvent actionEvent) throws IOException {
+        userModel.logOutUser();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
+        Stage currentStage = (Stage) menuButtonLoggedInUser.getScene().getWindow();        currentStage.setTitle("Event Manager System");
+        Parent root = loader.load();
+        currentStage.setScene(new Scene(root));
     }
 }

@@ -35,6 +35,8 @@ public class UserModel {
 
     public void setLoggedInUser(User user) {currentLoggedInUser = user;}
 
+    public void logOutUser(){ currentLoggedInUser = null; }
+
     public User getLoggedInUser() {
        return currentLoggedInUser;
     }

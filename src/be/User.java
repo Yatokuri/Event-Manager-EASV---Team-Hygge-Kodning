@@ -8,9 +8,6 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.userAccessLevel = userAccessLevel;
-
-        System.out.println("Skabte: " + userName + " - " + password + " - " + userAccessLevel);
-
     }
 
     public int getUserAccessLevel() {
