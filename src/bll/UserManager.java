@@ -34,9 +34,16 @@ public class UserManager {
         return user_DB.createUser(newUser); }
 
 
-    public void updateUser(be.User selectedUser) throws Exception { user_DB.updateUser(selectedUser); }
+    public void updateUser(be.User selectedUser) throws Exception {
+        selectedUser.setPassword(BCrypt.hashpw(selectedUser.getPassword(), BCrypt.gensalt()));
+        user_DB.updateUser(selectedUser);
+    }
 
     public void deleteUser(be.User selectedUser) throws Exception { user_DB.removeUser(selectedUser);}
+    public void createUserProfileIMG(be.User selectedUser) throws Exception { user_DB.createUserProfileIMG(selectedUser);}
+    public void readUserProfileIMG(be.User selectedUser) throws Exception { user_DB.readUserProfileIMG(selectedUser);}
+    public void updateUserProfileIMG(be.User selectedUser) throws Exception { user_DB.uploadUserProfileIMG(selectedUser);}
+    public void deleteUserProfileIMG(be.User selectedUser) throws Exception { user_DB.deleteUserProfileIMG(selectedUser);}
 
     public Collection<User> getAllUsers() throws Exception   {
         return user_DB.getAllUsers();

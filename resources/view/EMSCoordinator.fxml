@@ -3,17 +3,18 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinator">
     <children>
         <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -30,21 +31,26 @@
                         </Label>
                     </children>
                 </HBox>
-                <HBox alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="332.0" HBox.hgrow="ALWAYS">
+                <HBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
                     <children>
-                        <ImageView fitHeight="94.0" fitWidth="106.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../icons/User_Icon.png" />
-                            </image>
-                            <HBox.margin>
-                                <Insets />
-                            </HBox.margin>
-                        </ImageView>
-                        <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="Admin">
+                  <VBox alignment="TOP_RIGHT">
+                     <children>
+                        <StackPane fx:id="profilePicturePane" VBox.vgrow="ALWAYS">
+                           <children>
+                              <ImageView fx:id="profilePicture" fitHeight="100.0" fitWidth="100.0" onMouseClicked="#profilePicture" onTouchPressed="#profilePicture" pickOnBounds="true">
+                                 <image>
+                                    <Image url="@../icons/User_Icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+                        <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="User">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Archived Events" onAction="#openArchivedEvents"/>
-                                <MenuItem mnemonicParsing="false" text="Options" onAction="#openOptions" />
-                                <MenuItem mnemonicParsing="false" text="Logout" onAction="#logoutUser" />
+                                <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
+                                <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />
+                                <MenuItem mnemonicParsing="false" onAction="#logoutUser" text="Logout" />
                             </items>
                             <font>
                                 <Font size="44.0" />
@@ -68,7 +74,7 @@
                                       <Insets left="25.0" />
                                   </HBox.margin>
                               </Label>
-                        <Button fx:id="btnCreateEvent" mnemonicParsing="false" onAction="#btnCreateEvent" text="+" HBox.hgrow="ALWAYS">
+                        <Button fx:id="btnCreateEvent" mnemonicParsing="false" onAction="#btnCreateEvent" styleClass="buttonInvisibility" text="+" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="79.0" />
                            </font>

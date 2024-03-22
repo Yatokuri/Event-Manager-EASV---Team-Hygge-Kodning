@@ -6,15 +6,29 @@
 }
 
 .button {
+    -fx-text-fill: white;
     -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
 
+
 .button:hover {
     -fx-background-color: derive(-ButtonHoverColor, 0%);
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
+}
+
+.buttonInvisibility {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+}
+
+.buttonInvisibility:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
 }
 
 .button .mfx-ripple-generator {
@@ -23,17 +37,42 @@
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
-.menu-button{
-    -fx-background-color: derive(-MainColor, 0%);
-}
-.menu-button .label {
-    -fx-text-fill: white;
-}
-.menu-button .menu-item .label {
-    -fx-background-color: derive(-ButtonBoxColor, 0%);
-    -fx-text-fill: white;
+/* Styling for menu button */
+.menu-button {
+    -fx-background-color: -MainColor;
+    -fx-background-radius: 0; /* Remove background radius */
+    -fx-padding: 0px -40px 0px -20px; /* Add padding for better spacing */
 }
 
+/* Remove arrow indicator */
+.menu-button > .arrow-button .arrow-button > .arrow {
+    -fx-padding: 0;
+}
+.menu-button > .arrow-button > .arrow {
+    -fx-padding: 0;
+}
+
+/* Styling for menu item */
+.menu-item {
+    -fx-padding: 8px 10px; /* Add padding for better spacing */
+    -fx-background-color: -BoxButtonColor;
+    -fx-background-radius: 0;
+}
+
+.menu-button .context-menu {
+    -fx-background-color: -BoxButtonColor; /* Set background color */
+    -fx-background-radius: 6 6 6 6; /* Adjust background radius */
+}
+
+/* Styling for menu item label */
+.menu-item .label {
+    -fx-text-fill: -BackgroundColor; /* Set text color */
+}
+
+/* Styling for hovered menu item */
+.menu-item:hover {
+    -fx-background-color: -ButtonHoverColor; /* Change background color on hover */
+}
 
 #signInBox {
     -fx-background-color: derive(-MainColor, 0%);
@@ -134,9 +173,7 @@
     -fx-text-fill: white;
 }
 
-.button {
-    -fx-background-color: #464646;
-}
+
 
 #buttonText {
     -fx-text-fill: white;
@@ -166,8 +203,8 @@
 }
 /*Here we set all the CSS for the Admin user management window*/
 /* Remove all borders and styling from the TableView */
-.userListAdmin .table-view {
-    -fx-background-color: transparent;
+.userListAdmin.table-view {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-border-color: transparent;
 }
 
@@ -213,11 +250,6 @@
 
 /* Set border color to transparent for table cells */
 .userListAdmin .table-cell {
-    -fx-border-color: transparent;
-}
-
-/* Set border color to transparent for the entire table */
-.userListAdmin .table-view {
     -fx-border-color: transparent;
 }
 
@@ -374,4 +406,18 @@
 
 .scroll-pane {
     -fx-background-color: transparent;
+}
+
+/*Used to profile IMG*/
+.borderCircleIMG    {
+    -fx-stroke: black;
+    -fx-stroke-width: 2;
+    -fx-fill: transparent;
+
+}
+
+.pictureCaptureIMG    {
+    -fx-stroke: #de930b;
+    -fx-stroke-width: 5;
+    -fx-fill: transparent;
 }

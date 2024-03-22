@@ -10,6 +10,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -32,19 +33,24 @@
             </HBox>
             <HBox alignment="TOP_RIGHT" prefHeight="99.0" prefWidth="332.0" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fitHeight="94.0" fitWidth="106.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/User_Icon.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </ImageView>
-                  <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="Admin">
+                  <VBox alignment="TOP_RIGHT">
+                     <children>
+                        <StackPane fx:id="profilePicturePane" VBox.vgrow="ALWAYS">
+                           <children>
+                              <ImageView fx:id="profilePicture" fitHeight="100.0" fitWidth="100.0" onMouseReleased="#profilePicture" onTouchPressed="#profilePicture" pickOnBounds="true">
+                                 <image>
+                                    <Image url="@../icons/User_Icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+                  <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="Admin">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Archived Events" onAction="#openArchivedEvents"/>
-                        <MenuItem mnemonicParsing="false" text="Options" onAction="#openOptions" />
-                        <MenuItem mnemonicParsing="false" text="Logout" onAction="#logoutUser" />
+                        <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
+                        <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />
+                        <MenuItem mnemonicParsing="false" onAction="#logoutUser" text="Logout" />
                      </items>
                      <font>
                         <Font size="44.0" />
@@ -76,7 +82,7 @@
                      </content>
                   </ScrollPane>
                </children></HBox>
-            <Button fx:id="btnCRUDCoordinators" mnemonicParsing="false" onAction="#btnCRUDCoordinators" text="Change coordinators +/-">
+            <Button fx:id="btnCRUDCoordinators" mnemonicParsing="false" onAction="#btnCRUDCoordinators" styleClass="buttonInvisibility" text="Change coordinators +/-">
                <font>
                   <Font size="50.0" />
                </font>

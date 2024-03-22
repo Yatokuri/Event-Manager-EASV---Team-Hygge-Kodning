@@ -8,13 +8,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -25,36 +25,36 @@ import java.util.*;
 
 public class EMSAdmin {
 
-
-
     @FXML
-    private Button btnCRUDCoordinators;
+    private ImageView profilePicture;
     @FXML
-    private Button btnCreateEvent;
+    private Button btnCRUDCoordinators, btnCreateEvent;
+    @FXML
+    private TilePane tilePane;
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private StackPane profilePicturePane;
     private static EMSAdmin instance;
     private final DisplayErrorModel displayErrorModel;
     private EventModel eventModel;
     private TicketModel ticketModel;
     private UserModel userModel;
-    private ArchivedEventModel archivedEventModel;
     private static Event eventBeingUpdated;
-    @FXML
-    private TilePane tilePane;
     private HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
-
+    private boolean menuButtonVisible = false;
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
     private static final Image plusIcon = new Image ("/Icons/plus.png");
     private final Image mainIcon = new Image("Icons/mainIcon.png");
+    private final Image defaultProfile = new Image("Icons/User_Icon.png");
+    private boolean menuButtonVisible = false;
     @FXML
     private MenuButton menuButtonLoggedInUser;
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
     }
-
     public EMSAdmin(){
         instance = this;
         displayErrorModel = new DisplayErrorModel();
@@ -79,6 +79,60 @@ public class EMSAdmin {
             int columnWidth = 300+40; // Width of each EventBox and margin
             tilePane.setPrefColumns((int) (width / columnWidth)); // Set the new preferred number
         });
+        try { //We read user have image if something go wrong we show default
+            userModel.readUserProfileIMG(userModel.getLoggedInUser());
+            Image profileImage = userModel.getLoggedInUser().getProfileIMG();
+            if (profileImage != null) {
+                setProfilePicture(profileImage);
+            }
+        } catch (Exception ignored) {
+        }
+        try { //We read user have image if something go wrong we show default
+            userModel.readUserProfileIMG(userModel.getLoggedInUser());
+        } catch (Exception ignored) {
+        }
+        setupProfilePicture(); // We set up the Profile
+
+    }
+
+
+
+    public void profilePicture() { // Profile IMG also control dropdown
+        if (menuButtonVisible) {
+            menuButtonLoggedInUser.hide();
+            menuButtonVisible = false;
+        } else {
+            menuButtonLoggedInUser.show();
+            menuButtonVisible = true;
+        }
+    }
+
+
+    public void setupProfilePicture()   {
+        Image profileImage = userModel.getLoggedInUser().getProfileIMG();
+        if (profileImage != null) {
+            setProfilePicture(profileImage);
+            return;
+        }
+        profilePicturePane.getChildren().clear();
+        profilePicturePane.getChildren().addAll(profilePicture);
+        profilePicture.setImage(defaultProfile);
+        profilePicture.setScaleX(1);
+        profilePicture.setScaleY(1);
+    }
+
+    public void setProfilePicture(Image img)    {
+        Circle clip = new Circle(profilePicture.getFitWidth() / 2, profilePicture.getFitHeight() / 2, profilePicture.getFitWidth() / 2);
+        profilePicture.setClip(clip);
+
+        // Create a circle for the border
+        Circle borderCircle = new Circle(clip.getCenterX(), clip.getCenterY(), clip.getRadius() - 19); // Adjust the radius for the border
+        borderCircle.getStyleClass().add("borderCircleIMG");
+        profilePicturePane.getChildren().clear();
+        profilePicturePane.getChildren().addAll(borderCircle, profilePicture);
+        profilePicture.setImage(img);
+        profilePicture.setScaleX(0.61);
+        profilePicture.setScaleY(0.61);
     }
 
     private void setupEvents()  {
@@ -95,7 +149,6 @@ public class EMSAdmin {
             tilePane.getChildren().add(eventBox);
         }
     }
-
     // Method to create an event box
     private StackPane createEventBox(Event event) {
         StackPane eventBox = new StackPane();
@@ -208,29 +261,10 @@ public class EMSAdmin {
 
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void btnCRUDCoordinators(javafx.event.ActionEvent actionEvent)   { // Handle when admin make new coordinators
@@ -251,25 +285,48 @@ public class EMSAdmin {
             EMSCoordinatorEventCUStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
+            alert.showAndWait();
+        }
+    }
+    @FXML
+    private void openArchivedEvents(ActionEvent actionEvent) {
+    }
+
+
+    public void openOptions() {
+        try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSProfileSetting.fxml"));
+        Parent root = loader.load();
+        Stage EMSProfileSettings = new Stage();
+        EMSProfileSettings.setTitle("Event Manager System Setting");
+        EMSProfileSettings.getIcons().add(new Image("/icons/mainIcon.png"));
+        EMSProfileSettings.initModality(Modality.APPLICATION_MODAL);
+        EMSProfileSettings controller = loader.getController();
+        controller.setUserModel(userModel);
+        controller.setEMSAdmin(this);
+        controller.startupProgram();
+        EMSProfileSettings.setResizable(false);
+        EMSProfileSettings.setScene(new Scene(root)); // Set the scene in the existing stage
+        EMSProfileSettings.showAndWait();
+        Platform.runLater(this::startupProgram);
+
+        } catch (IOException e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
             alert.showAndWait();
         }
     }
 
     @FXML
-    private void openArchivedEvents(ActionEvent actionEvent) {
-    }
-
-    @FXML
-    private void openOptions(ActionEvent actionEvent) {
-    }
-
-    @FXML
-    private void logoutUser(ActionEvent actionEvent) throws IOException {
+    private void logoutUser() throws IOException {
         userModel.logOutUser();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
         Stage currentStage = (Stage) menuButtonLoggedInUser.getScene().getWindow();        currentStage.setTitle("Event Manager System");
         Parent root = loader.load();
+        EMSController controller = loader.getController();
+        controller.setPrimaryStage(currentStage);
+        controller.startupProgram();
         currentStage.setScene(new Scene(root));
     }
 }

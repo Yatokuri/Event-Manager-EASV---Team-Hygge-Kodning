@@ -31,6 +31,10 @@ public class UserModel {
         usersToBeViewed.remove(user);
     }
 
+    public void createUserProfileIMG(User user) throws Exception{ userManager.createUserProfileIMG(user);}
+    public void readUserProfileIMG(User user) throws Exception{ userManager.readUserProfileIMG(user);}
+    public void updateUserProfileIMG(User user) throws Exception{ userManager.updateUserProfileIMG(user);}
+    public void deleteUserProfileIMG(User user) throws Exception{ userManager.deleteUserProfileIMG(user);}
     public void updateUser(User user) throws Exception{ userManager.updateUser(user);}
 
     public void setLoggedInUser(User user) {currentLoggedInUser = user;}

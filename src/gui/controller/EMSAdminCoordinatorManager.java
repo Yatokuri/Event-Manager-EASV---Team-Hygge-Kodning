@@ -102,6 +102,7 @@ public class EMSAdminCoordinatorManager implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Initialize the table with the specified columns
         colUsername.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        tblUser.setPlaceholder(new Label("No user found"));
     }
 
 
