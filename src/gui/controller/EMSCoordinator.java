@@ -61,8 +61,8 @@ public class EMSCoordinator {
         instance = this;
         displayErrorModel = new DisplayErrorModel();
         try {
-            eventModel = new EventModel();
-            ticketModel = new TicketModel();
+            eventModel = EventModel.getInstance();
+            ticketModel = TicketModel.getInstance();
             archivedEventModel = new ArchivedEventModel();
         } catch (Exception e) {
             displayErrorModel.displayError(e);
@@ -304,6 +304,7 @@ public class EMSCoordinator {
             EMSEventInformation controller = loader.getController();
             controller.setEventModel(eventModel);
             controller.setEMSCoordinator(this);
+            controller.setEMSCoordinatorScene(profilePicture.getScene());
             controller.startupProgram();
             EMSEventInformation.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSEventInformation.showAndWait();

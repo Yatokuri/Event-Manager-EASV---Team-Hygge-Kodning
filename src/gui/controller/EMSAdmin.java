@@ -48,7 +48,7 @@ public class EMSAdmin {
     private static final Image plusIcon = new Image ("/Icons/plus.png");
     private final Image mainIcon = new Image("Icons/mainIcon.png");
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
-    private boolean menuButtonVisible = false;
+    private ArchivedEventModel archivedEventModel;
     @FXML
     private MenuButton menuButtonLoggedInUser;
 
@@ -59,8 +59,8 @@ public class EMSAdmin {
         instance = this;
         displayErrorModel = new DisplayErrorModel();
         try {
-            eventModel = new EventModel();
-            ticketModel = new TicketModel();
+            eventModel = EventModel.getInstance();
+            ticketModel = TicketModel.getInstance();
             archivedEventModel = new ArchivedEventModel();
         } catch (Exception e) {
             displayErrorModel.displayError(e);

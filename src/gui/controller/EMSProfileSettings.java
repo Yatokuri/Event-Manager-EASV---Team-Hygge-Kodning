@@ -52,6 +52,8 @@ public class EMSProfileSettings implements Initializable {
 
     public EMSCoordinator emsCoordinator;
     public EMSAdmin emsAdmin;
+    public EMSTicketMain emsTicketMain;
+    public EMSTicketDesigner emsTicketDesigner;
     public DisplayErrorModel displayErrorModel;
     public UserModel userModel;
 
@@ -77,7 +79,12 @@ public class EMSProfileSettings implements Initializable {
     public void setEMSAdmin(EMSAdmin emsAdmin) {
         this.emsAdmin = emsAdmin;
     }
-
+    public void setEMSTicketMain(EMSTicketMain emsTicketMain) {
+        this.emsTicketMain = emsTicketMain;
+    }
+    public void setEMSTicketDesigner(EMSTicketDesigner emsTicketDesigne) {
+        this.emsTicketDesigner = emsTicketDesigne;
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -126,6 +133,7 @@ public class EMSProfileSettings implements Initializable {
         if ("Reset picture".equals(onChangePicture.getText())) {
             setProfilePicture(originalProfilePicture != null ? originalProfilePicture : currentProfilePicture);
         } else {
+            disableResetPassword();
             settingSectionLeft.setVisible(false);
             settingSectionLeft.setManaged(false);
             onDeletePicture.setVisible(true);
@@ -414,6 +422,12 @@ public class EMSProfileSettings implements Initializable {
 
         if (emsAdmin != null)   {
             emsAdmin.setupProfilePicture();
+        }
+        else if (emsTicketMain != null)   {
+            emsTicketMain.setupProfilePicture();
+        }
+        else if (emsTicketDesigner != null)   {
+            emsTicketDesigner.setupProfilePicture();
         }
         else if (emsCoordinator != null) {
             emsCoordinator.setupProfilePicture();

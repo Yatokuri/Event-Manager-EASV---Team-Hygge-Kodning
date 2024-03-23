@@ -64,7 +64,7 @@ public class EMSController implements Initializable {
     public EMSController() throws Exception {
         displayErrorModel = new DisplayErrorModel();
         try {
-            userModel = new UserModel();
+            userModel = UserModel.getInstance();
         } catch (Exception e) {
             displayErrorModel.displayError(e);
         }

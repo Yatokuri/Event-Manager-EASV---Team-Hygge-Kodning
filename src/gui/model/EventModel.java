@@ -2,6 +2,7 @@ package gui.model;
 
 import be.Event;
 import bll.EventManager;
+import bll.TicketManager;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -12,12 +13,26 @@ public class EventModel {
     private final EventManager eventManager;
 
     private static ObservableList<be.Event> eventsToBeViewed;
+    private static EventModel instance;
 
-    public EventModel() throws Exception{
+    private EventModel() throws Exception {
         eventManager = new EventManager();
         eventsToBeViewed = FXCollections.observableArrayList();
         eventsToBeViewed.addAll(eventManager.getAllEvents());
     }
+
+    // Public method to get the singleton instance, so we have control over data
+    public static EventModel getInstance() throws Exception {
+        if (instance == null) {
+            synchronized (EventModel.class) {
+                if (instance == null) {
+                    instance = new EventModel();
+                }
+            }
+        }
+        return instance;
+    }
+
     public ObservableList<Event> getObsEvents() { return eventsToBeViewed; }
 
     public Event createNewEvent(be.Event newEvent) throws Exception {

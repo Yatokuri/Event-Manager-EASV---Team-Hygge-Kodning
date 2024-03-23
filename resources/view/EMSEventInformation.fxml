@@ -61,10 +61,18 @@
       </VBox>
       <HBox alignment="TOP_RIGHT" layoutX="248.0" layoutY="404.0" prefHeight="35.0" prefWidth="370.0" styleClass="createUpdateEvent">
          <children>
+            <Button fx:id="ticketButton" layoutX="9.0" layoutY="10.0" mnemonicParsing="false" onAction="#ticketButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Ticket">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
             <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Delete">
                <font>
                   <Font size="16.0" />
                </font>
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
             </Button>
             <Button fx:id="updateButton" mnemonicParsing="false" onAction="#updateButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Update">
                <HBox.margin>

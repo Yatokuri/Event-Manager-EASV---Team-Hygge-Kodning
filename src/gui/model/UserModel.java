@@ -9,13 +9,26 @@ public class UserModel {
     private User currentLoggedInUser;
     private UserManager userManager;
     private ObservableList<User> usersToBeViewed;
+    private static UserModel instance;
 
-    public UserModel() throws Exception {
-        userManager = new UserManager() ;
+    // Private constructor to prevent more than one UserModel
+    private UserModel() throws Exception {
+        userManager = new UserManager();
         usersToBeViewed = FXCollections.observableArrayList();
         usersToBeViewed.addAll(userManager.getAllUsers());
     }
 
+    // Public method to get the singleton instance, so we have control over data
+    public static UserModel getInstance() throws Exception {
+        if (instance == null) {
+            synchronized (UserModel.class) {
+                if (instance == null) {
+                    instance = new UserModel();
+                }
+            }
+        }
+        return instance;
+    }
 
     public User signIn(String username, String password) throws Exception   {
         return userManager.checkLogin(username, password);
