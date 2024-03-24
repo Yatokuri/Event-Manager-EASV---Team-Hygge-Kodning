@@ -86,7 +86,7 @@ public class EMSTicketMain implements Initializable {
             Stage EMSTicketDesigner = new Stage();
             EMSTicketDesigner.setTitle("Ticket Designer");
             EMSTicketDesigner.getIcons().add(new Image("/icons/mainIcon.png"));
-            EMSTicketDesigner.setMaximized(true);
+            EMSTicketDesigner.setMaximized(false);
             EMSTicketDesigner controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();

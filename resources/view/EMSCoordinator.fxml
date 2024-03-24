@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinator">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinator">
     <children>
         <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -46,7 +46,7 @@
                         </StackPane>
                      </children>
                   </VBox>
-                        <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="User">
+                        <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="User" textFill="WHITE">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
                                 <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />

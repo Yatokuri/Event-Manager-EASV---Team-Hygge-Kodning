@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
    <children>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -44,7 +44,7 @@
                         </StackPane>
                      </children>
                   </VBox>
-                  <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="Admin">
+                  <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="User" textFill="WHITE">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
                         <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />
@@ -62,7 +62,7 @@
          <children>
             <HBox prefHeight="76.0" prefWidth="1080.0">
                <children>
-                  <Label fx:id="lblEventTitle" text="Events">
+                  <Label fx:id="lblEventTitle" prefHeight="73.0" prefWidth="409.0" text="\%EventName%">
                      <font>
                         <Font size="50.0" />
                      </font>

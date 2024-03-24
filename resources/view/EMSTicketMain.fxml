@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketMain">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketMain">
    <children>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -44,7 +44,7 @@
                         </StackPane>
                      </children>
                   </VBox>
-                  <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="Admin">
+                  <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="User" textFill="WHITE">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
                         <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />
@@ -62,7 +62,7 @@
          <children>
             <HBox prefHeight="76.0" prefWidth="1080.0">
                <children>
-                  <Label fx:id="lblEventTitle" text="Events">
+                  <Label fx:id="lblEventTitle" prefHeight="73.0" prefWidth="446.0" text="\%EventName%">
                      <font>
                         <Font size="50.0" />
                      </font>
@@ -72,7 +72,36 @@
                   </Label>
                </children>
             </HBox>
-            <HBox fx:id="eventHBoxSection" VBox.vgrow="ALWAYS" />
+            <VBox prefHeight="505.0" prefWidth="1080.0">
+               <children>
+                  <HBox prefHeight="68.0" prefWidth="1080.0">
+                     <children>
+                        <Label fx:id="lblEventTitle1" prefHeight="73.0" prefWidth="381.0" text="Liste over billeter i event">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="50.0" right="125.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label fx:id="lblEventTitle11" prefHeight="73.0" prefWidth="335.0" text="Valgt billet solgt/givet">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="300.0" prefWidth="1080.0">
+                     <children>
+                        <HBox prefHeight="300.0" prefWidth="409.0" styleClass="ticketbox" stylesheets="@../css/Main.css">
+                           <HBox.margin>
+                              <Insets left="50.0" right="100.0" />
+                           </HBox.margin>
+                        </HBox>
+                        <HBox prefHeight="300.0" prefWidth="430.0" styleClass="ticketbox" stylesheets="@../css/Main.css" />
+                     </children></HBox>
+               </children>
+            </VBox>
             <HBox alignment="TOP_RIGHT" spacing="15.0">
                <children>
                   <Button fx:id="createTicketButton" mnemonicParsing="false" onAction="#createTicketButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Create ticket">

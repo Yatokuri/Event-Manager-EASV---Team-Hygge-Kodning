@@ -87,7 +87,7 @@ public class EMSEventInformation implements Initializable {
             Stage EMSTicketMain = new Stage();
             EMSTicketMain.setTitle("Ticket Manager System");
             EMSTicketMain.getIcons().add(new Image("/icons/mainIcon.png"));
-            EMSTicketMain.setMaximized(true);
+            EMSTicketMain.setMaximized(false);
             EMSTicketMain controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();
