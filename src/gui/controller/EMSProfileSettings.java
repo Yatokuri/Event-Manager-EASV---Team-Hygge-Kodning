@@ -5,7 +5,6 @@ import gui.model.DisplayErrorModel;
 import gui.model.UserModel;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Objects;

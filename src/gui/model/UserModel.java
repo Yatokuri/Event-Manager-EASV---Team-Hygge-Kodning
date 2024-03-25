@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 
 public class UserModel {
     private User currentLoggedInUser;
-    private UserManager userManager;
+    private final UserManager userManager;
     private ObservableList<User> usersToBeViewed;
     private static UserModel instance;
 
@@ -21,18 +21,12 @@ public class UserModel {
     // Public method to get the singleton instance, so we have control over data
     public static UserModel getInstance() throws Exception {
         if (instance == null) {
-            synchronized (UserModel.class) {
-                if (instance == null) {
-                    instance = new UserModel();
-                }
-            }
+            synchronized (UserModel.class) { if (instance == null) { instance = new UserModel(); } }
         }
         return instance;
     }
 
-    public User signIn(String username, String password) throws Exception   {
-        return userManager.checkLogin(username, password);
-    }
+    public User signIn(String username, String password) throws Exception { return userManager.checkLogin(username, password); }
 
     public User createNewUser(User user) throws Exception {
         User newUser = userManager.createNewUser(user);
@@ -45,18 +39,20 @@ public class UserModel {
     }
 
     public void createUserProfileIMG(User user) throws Exception{ userManager.createUserProfileIMG(user);}
+
     public void readUserProfileIMG(User user) throws Exception{ userManager.readUserProfileIMG(user);}
+
     public void updateUserProfileIMG(User user) throws Exception{ userManager.updateUserProfileIMG(user);}
+
     public void deleteUserProfileIMG(User user) throws Exception{ userManager.deleteUserProfileIMG(user);}
+
     public void updateUser(User user) throws Exception{ userManager.updateUser(user);}
 
     public void setLoggedInUser(User user) {currentLoggedInUser = user;}
 
     public void logOutUser(){ currentLoggedInUser = null; }
 
-    public User getLoggedInUser() {
-       return currentLoggedInUser;
-    }
+    public User getLoggedInUser() { return currentLoggedInUser; }
 
     public ObservableList<User> getObsUsers() { return usersToBeViewed; }
 }

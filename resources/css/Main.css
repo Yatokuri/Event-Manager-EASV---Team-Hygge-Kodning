@@ -57,11 +57,13 @@
     -fx-padding: 8px 10px; /* Add padding for better spacing */
     -fx-background-color: -BoxButtonColor;
     -fx-background-radius: 0;
+    -fx-pref-width: 155;
 }
 
 .menu-button .context-menu {
     -fx-background-color: -BoxButtonColor; /* Set background color */
     -fx-background-radius: 6 6 6 6; /* Adjust background radius */
+    -fx-pref-width: 155;
 }
 
 /* Styling for menu item label */

@@ -3,7 +3,6 @@ package gui.model;
 import be.Ticket;
 import be.User;
 import bll.TicketManager;
-import bll.UserManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

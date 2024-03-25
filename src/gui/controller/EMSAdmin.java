@@ -260,14 +260,13 @@ public class EMSAdmin {
             Platform.runLater(this::startupProgram);
 
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
     }
 
 
-    public void btnCRUDCoordinators(javafx.event.ActionEvent actionEvent)   { // Handle when admin make new coordinators
+    public void btnCRUDCoordinators()   { // Handle when admin make new coordinators
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSAdminCoordinatorManager.fxml"));
             Parent root = loader.load();
@@ -284,7 +283,6 @@ public class EMSAdmin {
             EMSCoordinatorEventCUStage.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSCoordinatorEventCUStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
@@ -312,7 +310,6 @@ public class EMSAdmin {
         Platform.runLater(this::startupProgram);
 
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
             alert.showAndWait();
         }

@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -25,34 +27,26 @@
             </Label>
          </children>
       </HBox>
-      <HBox layoutX="89.0" layoutY="601.0" prefWidth="312.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="89.0" AnchorPane.rightAnchor="199.0">
-         <children>
-            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Confirm">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Cancel">
-               <HBox.margin>
-                  <Insets left="25.0" />
-               </HBox.margin>
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-         </children>
-      </HBox>
       <VBox fx:id="eventCreateUpdateBackgroundVbox" layoutX="20.0" layoutY="95.0" prefHeight="482.0" prefWidth="560.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="73.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="95.0">
          <children>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
                   <VBox prefHeight="96.0" prefWidth="633.0">
                      <children>
-                        <Label text="Event Name">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Label>
+                        <HBox prefHeight="7.0" prefWidth="530.0">
+                           <children>
+                              <Label text="Event Name">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/requiredInfoIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
                         <TextField fx:id="eventNameTextField" prefHeight="25.0" prefWidth="544.0">
                            <VBox.margin>
                               <Insets />
@@ -72,12 +66,21 @@
                <children>
                   <VBox prefHeight="96.0" prefWidth="271.0">
                      <children>
-                        <Label text="Event Start">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Label>
-                        <DatePicker fx:id="eventStartDatePicker" prefHeight="30.0" prefWidth="260.0">
+                        <HBox prefHeight="26.0" prefWidth="223.0">
+                           <children>
+                              <Label text="Event Start">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/requiredInfoIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                        <DatePicker fx:id="eventStartDatePicker" prefHeight="30.0" prefWidth="255.0">
                            <VBox.margin>
                               <Insets right="15.0" />
                            </VBox.margin>
@@ -106,11 +109,20 @@
                <children>
                   <VBox prefHeight="0.0" prefWidth="530.0">
                      <children>
-                        <Label text="Location">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Label>
+                        <HBox prefHeight="16.0" prefWidth="530.0">
+                           <children>
+                              <Label text="Location">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/requiredInfoIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
                         <TextField fx:id="locationTextField" prefHeight="25.0" prefWidth="437.0">
                            <font>
                               <Font size="14.0" />
@@ -151,11 +163,20 @@
                <children>
                   <VBox prefHeight="210.0" prefWidth="560.0">
                      <children>
-                        <Label text="Event Notes">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Label>
+                        <HBox prefHeight="18.0" prefWidth="530.0">
+                           <children>
+                              <Label text="Event Notes">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/requiredInfoIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
                         <TextArea fx:id="eventNotesTextArea" prefHeight="200.0" prefWidth="200.0" />
                      </children>
                      <HBox.margin>
@@ -166,5 +187,22 @@
             </HBox>
          </children>
       </VBox>
+      <HBox layoutX="89.0" layoutY="601.0" prefWidth="312.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="89.0" AnchorPane.rightAnchor="199.0">
+         <children>
+            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Confirm">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Cancel">
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

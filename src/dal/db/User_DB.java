@@ -48,7 +48,6 @@ public class User_DB {
             }
             return null;
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not get user from database", ex);
         }
     }
@@ -67,7 +66,6 @@ public class User_DB {
             }
             return allUser;
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not get users from database", ex);
         }
     }
@@ -87,7 +85,6 @@ public class User_DB {
             allUser.add(user);
             return user;
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not create user in database", ex);
         }
     }
@@ -114,7 +111,6 @@ public class User_DB {
             stmt.executeUpdate();
             allUser.remove(user);
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not remove user from database", ex);
         }
     }
@@ -134,7 +130,6 @@ public class User_DB {
             insertStmt.setBytes(2, imageData);
             insertStmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Error creating user profile image", ex);
         }
     }
@@ -155,7 +150,7 @@ public class User_DB {
                     selectedUser.setProfileIMG(profileImage);
                 }
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                throw new Exception("Error loading user profile Image", ex);
             }
         }
     }
@@ -172,7 +167,6 @@ public class User_DB {
                 throw new SQLException("User not found or does not have a profile image.");
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Error updating user profile image", ex);
         }
     }
@@ -186,7 +180,6 @@ public class User_DB {
             stmt.executeUpdate();
             allUser.remove(selectedUser);
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not delete user profile picture", ex);
         }
     }
@@ -198,7 +191,6 @@ public class User_DB {
         ImageIO.write(bufferedImage, "png", outputStream);
         return outputStream.toByteArray();
     }
-
 }
 
 

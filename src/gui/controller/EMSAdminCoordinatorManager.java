@@ -6,11 +6,9 @@ import gui.model.UserModel;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -106,7 +104,7 @@ public class EMSAdminCoordinatorManager implements Initializable {
     }
 
 
-    public void btnAddUser(ActionEvent actionEvent) {
+    public void btnAddUser() {
         if (!isBoxVisible) {
             enableAddUser();
         } else {
@@ -180,7 +178,7 @@ public class EMSAdminCoordinatorManager implements Initializable {
     }
 
     @FXML
-    private void btnCancelNewUser(ActionEvent actionEvent) {
+    private void btnCancelNewUser() {
         disableAddUser();
     }
 
