@@ -2,8 +2,6 @@ package gui.controller;
 
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
-import gui.model.UserModel;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,7 +14,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;

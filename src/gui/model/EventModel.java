@@ -2,10 +2,7 @@ package gui.model;
 
 import be.Event;
 import bll.EventManager;
-import bll.TicketManager;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class EventModel {

@@ -6,26 +6,23 @@ import gui.model.UserModel;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -150,7 +147,6 @@ public class EMSController implements Initializable {
         try {
             currentUser = userModel.signIn(username, password);
         } catch (Exception e) {
-            e.printStackTrace();
             displayErrorModel.displayErrorC("Wrong username or password");
             return;
         }
@@ -173,7 +169,6 @@ public class EMSController implements Initializable {
                 controller.startupProgram();
                 currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
             } catch (IOException e) {
-                e.printStackTrace();
                 displayErrorModel.displayErrorC("Try to restart the program");
             }
         }
@@ -190,7 +185,6 @@ public class EMSController implements Initializable {
                 controller.startupProgram();
                 currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
             } catch (IOException e) {
-                e.printStackTrace();
                 displayErrorModel.displayErrorC("Try to restart the program");
             }
         }

@@ -2,16 +2,14 @@ package gui.controller;
 
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
@@ -21,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class EMSCoordinatorEventCreator implements Initializable {
 
@@ -48,6 +47,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
     public void setEventModel(EventModel eventModel) {
         this.eventModel = eventModel;
     }
+
+
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
         this.emsCoordinator = emsCoordinator;
     }
@@ -58,6 +59,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        eventNameTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventName());
+        locationTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventLocation());
+        eventNotesTextArea.textProperty().addListener((observable, oldValue, newValue) -> validateEventNotes());
     }
 
     public void setType(String type) {
@@ -120,15 +124,31 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     private void createNewEvent(){
         String eventName = eventNameTextField.getText();
+        if (eventName == null || eventNameTextField.getText().isEmpty()){
+            displayErrorModel.displayErrorC("Missing Event Name");
+            return;
+        }
         String eventStartDate = eventStartDatePicker.getEditor().getText();
+        if (eventStartDate == null || eventStartDate.isEmpty()){
+            displayErrorModel.displayErrorC("Missing Event start Date");
+            return;
+        }
         String eventEndDate = null;
         if (!eventEndDatePicker.getEditor().getText().isEmpty())
             eventEndDate = eventEndDatePicker.getEditor().getText();
         String location = locationTextField.getText();
+        if (location == null || locationTextField.getText().isEmpty()){
+            displayErrorModel.displayErrorC("Location for Event Missing");
+            return;
+        }
         String locationGuidance = null;
         if (!locationGuidanceTextField.getText().isEmpty())
             locationGuidance = locationGuidanceTextField.getText();
         String eventNotes = eventNotesTextArea.getText();
+        if (eventNotes == null || eventNotesTextArea.getText().isEmpty()){
+            displayErrorModel.displayErrorC("Missing notes for Event");
+            return;
+        }
 
         be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1);
         try {
@@ -141,12 +161,32 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     private void updateEvent(){
         if (eventBeingUpdated != null){
-            eventBeingUpdated.setEventName(eventNameTextField.getText());
-            eventBeingUpdated.setEventStartDateTime(eventStartDatePicker.getEditor().getText());
+            if (!eventNameTextField.getText().isEmpty())
+                eventBeingUpdated.setEventName(eventNameTextField.getText());
+            else {
+                displayErrorModel.displayErrorC("Missing Event Name");
+                return;
+            }
+            if (!eventStartDatePicker.getEditor().getText().isEmpty())
+                eventBeingUpdated.setEventStartDateTime(eventStartDatePicker.getEditor().getText());
+            else {
+                displayErrorModel.displayErrorC("Missing Event Start Date");
+                return;
+            }
             eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
-            eventBeingUpdated.setLocation(locationTextField.getText());
+            if (!locationTextField.getText().isEmpty())
+                eventBeingUpdated.setLocation(locationTextField.getText());
+            else {
+                displayErrorModel.displayErrorC("Missing Event Location");
+                return;
+            }
             eventBeingUpdated.setLocationGuidance(locationGuidanceTextField.getText());
-            eventBeingUpdated.setEventNotes(eventNotesTextArea.getText());
+            if (!eventNotesTextArea.getText().isEmpty())
+                eventBeingUpdated.setEventNotes(eventNotesTextArea.getText());
+            else {
+                displayErrorModel.displayErrorC("Missing Event Notes");
+                return;
+            }
             eventBeingUpdated.setEventID(eventBeingUpdated.getEventID());
 
             try {
@@ -159,8 +199,40 @@ public class EMSCoordinatorEventCreator implements Initializable {
         }
     }
 
+    public void validateEventName(){
+        if (!eventNameTextField.getText().isEmpty()){
+            if (Pattern.matches("[a-zA-Z0-9\s*]{3,50}",eventNameTextField.getText())){
+                eventNameTextField.setStyle("-fx-border-color: green;");
+            }
+            else {
+                eventNameTextField.setStyle("-fx-border-color: red;");
+            }
+        }
+    }
+
+    public void validateEventLocation(){
+        if (!locationTextField.getText().isEmpty()){
+            if (Pattern.matches("[a-zA-Z0-9\s*]{3,80}",locationTextField.getText())){
+                locationTextField.setStyle("-fx-border-color: green;");
+            }
+            else {
+                locationTextField.setStyle("-fx-border-color: red;");
+            }
+        }
+    }
+
+    public void validateEventNotes(){
+        if (!eventNotesTextArea.getText().isEmpty()){
+            if (Pattern.matches("[a-zA-Z0-9\s*\n*]{3,300}",eventNotesTextArea.getText())){
+                eventNotesTextArea.setStyle("-fx-border-color: green;");
+            }
+            else {
+                eventNotesTextArea.setStyle("-fx-border-color: red;");
+            }
+        }
+    }
     @FXML
-    private void confirmButton(ActionEvent actionEvent) {
+    private void confirmButton() {
         if (Objects.equals(createUpdateEventLabel.getText(), "Update")){
             updateEvent();
         }

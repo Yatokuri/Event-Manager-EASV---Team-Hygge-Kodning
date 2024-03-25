@@ -32,7 +32,6 @@ public class Event_DB {
         }
         catch (SQLException ex)
         {
-            ex.printStackTrace();
             throw new Exception("Could not get Events from database", ex);
         }
     }

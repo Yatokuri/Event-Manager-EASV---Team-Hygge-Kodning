@@ -175,7 +175,6 @@ public class EMSTicketMain implements Initializable {
             Platform.runLater(this::startupProgram);
 
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Could not load App.fxml");
             alert.showAndWait();
         }

@@ -286,7 +286,6 @@ public class EMSCoordinator {
             EMSCoordinatorEventCUStage.showAndWait();
             startupProgram();
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
@@ -311,7 +310,6 @@ public class EMSCoordinator {
             Platform.runLater(this::startupProgram);
 
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
@@ -339,14 +337,13 @@ public class EMSCoordinator {
             Platform.runLater(this::startupProgram);
 
         } catch (IOException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }
     }
 
     @FXML
-    private void logoutUser(ActionEvent actionEvent) throws IOException {
+    private void logoutUser() throws IOException {
         userModel.logOutUser();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
         Stage currentStage = (Stage) menuButtonLoggedInUser.getScene().getWindow();
