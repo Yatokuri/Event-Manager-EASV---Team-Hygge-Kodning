@@ -1,5 +1,6 @@
 package gui.controller;
 
+import be.Tickets;
 import be.User;
 import gui.model.*;
 import gui.util.TicketSerializerRecreate;
@@ -32,10 +33,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class EMSTicketDesigner implements Initializable {
     @FXML
@@ -58,6 +61,8 @@ public class EMSTicketDesigner implements Initializable {
     public Label lblEventTitle;
     @FXML
     private StackPane profilePicturePane;
+    @FXML
+    private Button saveButton;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -65,6 +70,7 @@ public class EMSTicketDesigner implements Initializable {
     private EventModel eventModel;
     private UserModel userModel;
     private TicketModel ticketModel;
+    private ImageModel systemIMGModel;
     private final DisplayErrorModel displayErrorModel;
 
     private be.Event selectedEvent;
@@ -90,6 +96,7 @@ public class EMSTicketDesigner implements Initializable {
         userModel = UserModel.getInstance();
         ticketModel = TicketModel.getInstance();
         eventModel = EventModel.getInstance();
+        systemIMGModel = ImageModel.getInstance();
     }
 
     public void startupProgram() { //This setup program
@@ -118,6 +125,12 @@ public class EMSTicketDesigner implements Initializable {
             String formattedRotateValue = String.format(Locale.US, "%.2f", newValue.doubleValue());
             applyImageRotateChanges(Double.parseDouble(formattedRotateValue));
         });
+
+        Tickets currentTicket = ticketModel.getCurrentTicket();
+        if (!(currentTicket == null))   { // Mean we want look at a Ticket
+            saveButton.setDisable(true);
+            setupTicketView(currentTicket.getTicketJSON(), ticketArea);
+        }
     }
 
     private void applyImageSizeChanges(double newSize) {
@@ -137,6 +150,18 @@ public class EMSTicketDesigner implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupDragAndDrop();
         enableTextSelection();
+        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTicketName());
+    }
+
+    public void validateTicketName(){
+        if (!txtInputTicketName.getText().isEmpty()){
+            if (Pattern.matches("[a-zA-Z0-9\s*]{3,30}",txtInputTicketName.getText())){
+                txtInputTicketName.setStyle("-fx-border-color: green;");
+            }
+            else {
+                txtInputTicketName.setStyle("-fx-border-color: red;");
+            }
+        }
     }
 
     @FXML
@@ -186,8 +211,8 @@ public class EMSTicketDesigner implements Initializable {
     private void btnAddText() { // Open dialog box and  add text to Ticket
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Waiting for Input");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Enter text to add to the Ticket:");
+        dialog.setHeaderText("Enter text to add to the Ticket:");
+        dialog.setContentText(null);
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(mainIcon);
         Optional<String> result = dialog.showAndWait();
@@ -198,7 +223,25 @@ public class EMSTicketDesigner implements Initializable {
             label.setMaxWidth(ticketArea.getWidth()); // Set maximum width to ticket area width
             label.setWrapText(true); // Enable text wrapping
             ticketArea.getChildren().add(label);
+            label.setTextFill(Color.BLACK); //Only if you do default
+            label.setOnMouseClicked(event -> { // Handler if user want change image
+                if (event.getClickCount() == 2) {
+                    editLabelText(label);
+                }
+            });
+
         });
+    }
+
+    // Method to edit the label text
+    private void editLabelText(Label label) {
+        TextInputDialog dialog = new TextInputDialog(label.getText());
+        dialog.setTitle("Edit Text");
+        dialog.setHeaderText("Change the current text:");
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(mainIcon);
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(label::setText);
     }
 
     @FXML
@@ -325,12 +368,13 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void colorPicker() { // Get the selected color and set it
-        if (selectedNode instanceof Label) {
+        if (selectedNode instanceof Label label) {
             Color selectedColor = colorPicker.getValue();
-            ((Label) selectedNode).setTextFill(selectedColor);
+            if (!label.getTextFill().equals(selectedColor)) {
+                label.setTextFill(selectedColor); // Prevent from using wrong color
+            }
         }
     }
-
     @FXML //Get the selected rotate and set it
     private void applyRotateChanges(double rotateValue) {
         if (selectedNode != null) {
@@ -399,8 +443,12 @@ public class EMSTicketDesigner implements Initializable {
 
     // This method get us the Image from the database and inset it to the Ticket
     private Image getImageByID(String imageViewId) {
-        //TODO make the methods through layer there take image with the ID from db
         System.out.println("Get IMG from DB " + imageViewId);
+        try {
+           return systemIMGModel.readSystemIMG(Integer.parseInt(imageViewId)).getImage();
+        } catch (Exception e) {
+            displayErrorModel.displayErrorC("Could not read image");
+        }
         return picturePlaceholder;
     }
 
@@ -408,14 +456,56 @@ public class EMSTicketDesigner implements Initializable {
     private void saveButton(ActionEvent actionEvent) {
         for (Node node : ticketArea.getChildren()) {  // We go through all image
             if (node instanceof ImageView imageView) {
-                /* String newId = ticketModel.getNextIdFromDBAndSave(); //TODO Method to set next Image ID and save Image in db before we do JSON
-                 imageView.setId(newId)); */
+                String newId = null;
+                try {
+                    newId = String.valueOf(systemIMGModel.createSystemIMG(imageView.getImage()));
+                    imageView.setId(newId); //TODO Compress picture so it dont take up to much space
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
         String ticketName = txtInputTicketName.getText();
-        //TODO Save it in Database
+
+        if (ticketName.isEmpty())   {
+            displayErrorModel.displayErrorC("Missing Intern Name");
+            return;
+        }
+        else if (json.length() <= 3)   {
+            displayErrorModel.displayErrorC("Missing Design in Ticket");
+            return;
+        } //TODO Save it in Database Json can max be 4000 sign so make ticket max or make Json 2
+        else if (json.length() >= 4000)   {
+            displayErrorModel.displayErrorC("In the moment to many thing in your Ticket" + json.length() + "/4000");
+            return;
+        }
+        Tickets newTicket = new Tickets(0 ,0 ,ticketName, json);
+        try {
+            ticketModel.createNewTicket(newTicket);
+            backButton();
+        } catch (Exception e) {
+            displayErrorModel.displayErrorC("Could not add ticket");
+        }
     }
+
+    //This method set up a JSon in a given pane
+    public void setupTicketView(String json, Pane paneName) {
+        paneName.getChildren().clear(); // We clear the area, then we recreate it from the JSON
+        Pane recreatedPane = TicketSerializerRecreate.cloneTicketAreaFromJson(json);
+        // When its recreate we inset right Image from database
+        for (Node node : recreatedPane.getChildren()) {
+            if (node instanceof ImageView imageView) {
+                String id = imageView.getId();
+                Image image = getImageByID(id);
+                if (image != null) {
+                    imageView.setImage(image);
+                }
+            }
+        }
+        paneName.getChildren().addAll(recreatedPane.getChildren());
+    }
+
     @FXML // Only to test stuff - Don't Delete
     private void btnCreateCheckJson() {
         btnCreateJson();

@@ -1,10 +1,10 @@
 package be;
 
-public class Ticket {
+public class TicketSold {
     private String firstName, lastName, email;
     private int ticketID, ticketEventID, buyerID;
 
-    public Ticket(String firstName, String lastName, String email, int ticketID, int ticketEventID, int buyerID){
+    public TicketSold(String firstName, String lastName, String email, int ticketID, int ticketEventID, int buyerID){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
@@ -159,7 +160,10 @@
                                     </HBox>
                                     <HBox VBox.vgrow="ALWAYS">
                                        <children>
-                                          <ColorPicker fx:id="colorPicker" minHeight="25.0" onAction="#colorPicker" HBox.hgrow="ALWAYS" />
+                                          <ColorPicker fx:id="colorPicker" minHeight="25.0" onAction="#colorPicker" HBox.hgrow="ALWAYS">
+                                             <value>
+                                                <Color />
+                                             </value></ColorPicker>
                                        </children>
                                        <VBox.margin>
                                           <Insets />
@@ -202,7 +206,16 @@
                            <children>
                               <VBox>
                                  <children>
-                                    <Label text="Give the Ticket a intern name" />
+                                    <HBox>
+                                       <children>
+                                          <Label text="Give the Ticket a intern name" />
+                                          <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../icons/requiredInfoIcon.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
                                     <TextField fx:id="txtInputTicketName" prefWidth="287.0" promptText="Intern name" />
                                  </children>
                               </VBox>

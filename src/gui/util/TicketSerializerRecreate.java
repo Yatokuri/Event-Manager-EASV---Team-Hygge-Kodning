@@ -4,6 +4,7 @@ package gui.util;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -91,6 +92,8 @@ public class TicketSerializerRecreate {
                     }
                     text.setTextFill(color);
                     text.setRotate(jsonObject.optDouble("r", 0));
+                    text.setWrapText(true);
+                    text.setMaxWidth(250); //TODO More Dynamic
                     node = text;
                     break;
                 case "Img":

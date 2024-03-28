@@ -1,5 +1,6 @@
 package gui.controller;
 
+import be.Tickets;
 import be.User;
 import gui.model.*;
 import javafx.application.Platform;
@@ -11,9 +12,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -22,6 +25,7 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EMSTicketMain implements Initializable {
@@ -36,6 +40,14 @@ public class EMSTicketMain implements Initializable {
     public Label lblEventTitle;
     @FXML
     private StackPane profilePicturePane;
+    @FXML
+    private TableView<Tickets> tblEventTickets;
+    @FXML
+    private TableColumn<Tickets, String> colTicketName;
+    @FXML
+    private TableColumn<Tickets, Integer> colTicketQuantity;
+    @FXML
+    private TableColumn<User, Void> colRemove;
     private EMSCoordinator emsCoordinator;
     public Scene ticketMainStage;
     private EventModel eventModel;
@@ -77,9 +89,50 @@ public class EMSTicketMain implements Initializable {
         if (currentUser.getProfileIMG() != null)   { //If user have a picture set it
             setProfilePicture(currentUser.getProfileIMG());
         }
+        setupTableview();
     }
 
-    public void createTicketButton() {
+    public void setupTableview() {
+        tblEventTickets.setItems(ticketModel.getObsTickets());
+        colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
+        colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
+        tblEventTickets.setPlaceholder(new Label("No ticket found"));
+        colTicketName.setOnEditCommit(event -> {
+            String ticketName = event.getNewValue(); // Get the new ticket name
+            System.out.println("Clicked ticket name: " + ticketName); // Print the clicked ticket name
+        });
+        colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
+        // Custom cell factory for the colUsername column so we can do "● Name"
+        colTicketName.setCellFactory(column -> {
+            return new TableCell<Tickets, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item == null || empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Label bullet = new Label("● ");
+                        Label usernameLabel = new Label(item);
+                        setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
+                        setOnMouseClicked(event -> { // So we can click on ticket to see them
+                            if (!isEmpty()) {
+                                Tickets ticket = getTableView().getItems().get(getIndex());
+                                ticketModel.setCurrentTicket(ticket);
+                                createTicket();
+                            }
+                        });
+                    }
+                }
+            };
+        });
+    }
+    public void createTicketButton() { //When use of the button no one is selected
+        ticketModel.setCurrentTicket(null);
+        createTicket();
+    }
+    public void createTicket() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSTicketDesigner.fxml"));
             Parent root = loader.load();
@@ -192,5 +245,60 @@ public class EMSTicketMain implements Initializable {
         currentStage.setScene(new Scene(root));
     }
 
+    // Custom cell class for the button in the table column to remove user etc
+    private static class ButtonCell<S> extends TableCell<S, Void> {
+        private final javafx.scene.control.Button deleteButton;
+        private final DisplayErrorModel displayErrorModel;
+        private final Image mainIcon = new Image("Icons/mainIcon.png");
+        public ButtonCell(TicketModel ticketModel) {
+            this.displayErrorModel = new DisplayErrorModel();
 
+            deleteButton = new javafx.scene.control.Button("- ");
+            deleteButton.setPrefWidth(20); // Set preferred width
+            deleteButton.setPrefHeight(20); // Set preferred height
+            deleteButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets) {
+
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmation Dialog");
+                    alert.setHeaderText("You will delete ticket " + tickets.getTicketName());
+                    alert.setContentText("Are you ok with this?");
+                    // Set the icon for the dialog window
+                    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(mainIcon);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        try {
+                            //ticketModel.deleteTicket(tickets);
+                            System.out.println("You want to delete " +  tickets.getTicketName() + "but it deactivated");
+                        } catch (Exception e) {
+                            displayErrorModel.displayErrorC("User not deleted try again");
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            });
+        }
+
+
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets) {
+                        setGraphic(deleteButton);
+                }
+            }
+        }
+        public static <S> javafx.util.Callback<TableColumn<S, Void>, TableCell<S, Void>> forTableColumn(TicketModel ticketModel) {
+            return param -> new ButtonCell<>(ticketModel);
+        }
+    }
 }
