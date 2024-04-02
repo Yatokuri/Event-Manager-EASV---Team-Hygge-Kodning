@@ -1,6 +1,7 @@
 package gui.model;
 
 import be.Event;
+import bll.ArchivedEventManager;
 import bll.EventManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,11 +10,14 @@ public class EventModel {
 
     private final EventManager eventManager;
 
+    private final ArchivedEventModel archivedEventModel;
+
     private static ObservableList<be.Event> eventsToBeViewed;
     private static EventModel instance;
 
     private EventModel() throws Exception {
         eventManager = new EventManager();
+        archivedEventModel = ArchivedEventModel.getInstance();
         eventsToBeViewed = FXCollections.observableArrayList();
         eventsToBeViewed.addAll(eventManager.getAllEvents());
     }
@@ -48,6 +52,7 @@ public class EventModel {
     }
 
     public void deleteEvent(be.Event selectedEvent) throws Exception {
+        archivedEventModel.archiveEvent(selectedEvent);
         eventManager.deleteEvent(selectedEvent);
         eventsToBeViewed.remove(selectedEvent);
     }

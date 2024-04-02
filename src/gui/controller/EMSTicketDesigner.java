@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -20,8 +19,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -33,11 +37,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class EMSTicketDesigner implements Initializable {
@@ -68,8 +73,8 @@ public class EMSTicketDesigner implements Initializable {
 
     private EMSCoordinator emsCoordinator;
     private EventModel eventModel;
-    private UserModel userModel;
-    private TicketModel ticketModel;
+    private final UserModel userModel;
+    private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
     private final DisplayErrorModel displayErrorModel;
 
@@ -155,7 +160,7 @@ public class EMSTicketDesigner implements Initializable {
 
     public void validateTicketName(){
         if (!txtInputTicketName.getText().isEmpty()){
-            if (Pattern.matches("[a-zA-Z0-9\s*]{3,30}",txtInputTicketName.getText())){
+            if (Pattern.matches("[a-zæøåA-ZÆØÅ0-9\s*]{3,30}",txtInputTicketName.getText())){
                 txtInputTicketName.setStyle("-fx-border-color: green;");
             }
             else {
@@ -183,7 +188,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML // Button to clear everything in the ticket
-    private void btnDeleteEverything(ActionEvent actionEvent) {
+    private void btnDeleteEverything() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
         alert.setHeaderText("You will everything on the ticket");
@@ -453,7 +458,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML // Here create the Ticket object and send it through layer to database
-    private void saveButton(ActionEvent actionEvent) {
+    private void saveButton() {
         for (Node node : ticketArea.getChildren()) {  // We go through all image
             if (node instanceof ImageView imageView) {
                 String newId = null;
@@ -594,7 +599,7 @@ public class EMSTicketDesigner implements Initializable {
 
 
     @FXML
-    private void openArchivedEvents(ActionEvent actionEvent) {
+    private void openArchivedEvents() {
     }
 
     public void openOptions() {

@@ -61,7 +61,7 @@ public class EMSAdmin {
         try {
             eventModel = EventModel.getInstance();
             ticketModel = TicketModel.getInstance();
-            archivedEventModel = new ArchivedEventModel();
+            archivedEventModel = ArchivedEventModel.getInstance();
         } catch (Exception e) {
             displayErrorModel.displayError(e);
         }

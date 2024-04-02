@@ -17,5 +17,4 @@ public class EventManager {
     public void updateEvent(be.Event selectedEvent) throws Exception { event_DB.updateEvent(selectedEvent); }
 
     public void deleteEvent(be.Event selectedEvent) throws Exception { event_DB.deleteEvent(selectedEvent); }
-
 }

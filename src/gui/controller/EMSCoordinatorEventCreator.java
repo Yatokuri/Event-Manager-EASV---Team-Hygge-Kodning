@@ -42,6 +42,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
     @FXML
     public TextArea eventNotesTextArea;
     private String type;
+    private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,50}");
+    private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,80}");
+    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*\n*]{3,300}");
 
 
     public void setEventModel(EventModel eventModel) {
@@ -161,7 +164,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     private void updateEvent(){
         if (eventBeingUpdated != null){
-            if (!eventNameTextField.getText().isEmpty())
+            if (!eventNameTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventNamePattern), eventNameTextField.getText()))
                 eventBeingUpdated.setEventName(eventNameTextField.getText());
             else {
                 displayErrorModel.displayErrorC("Missing Event Name");
@@ -174,14 +177,14 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 return;
             }
             eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
-            if (!locationTextField.getText().isEmpty())
+            if (!locationTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventLocationPattern), locationTextField.getText()))
                 eventBeingUpdated.setLocation(locationTextField.getText());
             else {
                 displayErrorModel.displayErrorC("Missing Event Location");
                 return;
             }
             eventBeingUpdated.setLocationGuidance(locationGuidanceTextField.getText());
-            if (!eventNotesTextArea.getText().isEmpty())
+            if (!eventNotesTextArea.getText().isEmpty() && Pattern.matches(String.valueOf(eventNotesPattern), eventNotesTextArea.getText()))
                 eventBeingUpdated.setEventNotes(eventNotesTextArea.getText());
             else {
                 displayErrorModel.displayErrorC("Missing Event Notes");
@@ -201,7 +204,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     public void validateEventName(){
         if (!eventNameTextField.getText().isEmpty()){
-            if (Pattern.matches("[a-zA-Z0-9\s*]{3,50}",eventNameTextField.getText())){
+            if (Pattern.matches(String.valueOf(eventNamePattern),eventNameTextField.getText())){
                 eventNameTextField.setStyle("-fx-border-color: green;");
             }
             else {
@@ -212,7 +215,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     public void validateEventLocation(){
         if (!locationTextField.getText().isEmpty()){
-            if (Pattern.matches("[a-zA-Z0-9\s*]{3,80}",locationTextField.getText())){
+            if (Pattern.matches(String.valueOf(eventLocationPattern),locationTextField.getText())){
                 locationTextField.setStyle("-fx-border-color: green;");
             }
             else {
@@ -223,7 +226,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     public void validateEventNotes(){
         if (!eventNotesTextArea.getText().isEmpty()){
-            if (Pattern.matches("[a-zA-Z0-9\s*\n*]{3,300}",eventNotesTextArea.getText())){
+            if (Pattern.matches(String.valueOf(eventNotesPattern),eventNotesTextArea.getText())){
                 eventNotesTextArea.setStyle("-fx-border-color: green;");
             }
             else {

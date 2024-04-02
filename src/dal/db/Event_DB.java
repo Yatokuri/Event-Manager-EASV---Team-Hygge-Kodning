@@ -13,7 +13,7 @@ public class Event_DB {
 
     public Event_DB() throws Exception {
         myDBConnector = new myDBConnector();
-        allEvents= new ArrayList<>();
+        allEvents = new ArrayList<>();
         getAllEvents();
     }
 

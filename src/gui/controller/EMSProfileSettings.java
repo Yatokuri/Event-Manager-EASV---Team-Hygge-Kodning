@@ -37,7 +37,7 @@ public class EMSProfileSettings implements Initializable {
     @FXML
     private ImageView settingSectionProfileIMG;
     @FXML
-    private Button onChangePicture, onDeletePicture, backButton, btnConfirmNewProfileIMG, btnUploadNewProfileIMG, btnConfirmNewUser, btnCancelNewUser;
+    private Button onChangePicture, onDeletePicture, btnConfirmNewProfileIMG, btnUploadNewProfileIMG;
     @FXML
     private VBox settingSectionLeft, settingSectionNewIMGLeft, animatedNewPasswordBox;
     @FXML
