@@ -3,17 +3,17 @@ package gui.controller;
 import be.Tickets;
 import be.User;
 import gui.model.*;
+import gui.util.ImageCompressor;
 import gui.util.TicketSerializerRecreate;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -32,16 +32,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -50,6 +44,8 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class EMSTicketDesigner implements Initializable {
+    @FXML
+    private AnchorPane anchorPane;
     @FXML
     private MenuButton menuButtonLoggedInUser;
     @FXML
@@ -61,7 +57,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private Slider textfontSizeSlider, textRotateSlider, imageSizeSider, imageRotateSlider;
     @FXML
-    private HBox deleteDropRelease;
+    private HBox deleteDropRelease, eventHBoxSection;
     @FXML
     private TextField txtInputSelectedText, txtInputSelectedImage, txtJsonInput, txtInputTicketName;
     @FXML
@@ -71,7 +67,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private StackPane profilePicturePane;
     @FXML
-    private Button saveButton;
+    private Button saveButton, backButton;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -86,6 +82,7 @@ public class EMSTicketDesigner implements Initializable {
     private User currentUser;
     private Stage emsTicketMainStage;
     private boolean menuButtonVisible = false;
+    private ProgressIndicator progressIndicator;
 
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
@@ -137,6 +134,7 @@ public class EMSTicketDesigner implements Initializable {
         if (!(currentTicket == null))   { // Mean we want look at a Ticket
             saveButton.setDisable(true);
             setupTicketView(currentTicket.getTicketJSON(), ticketArea);
+            txtInputTicketName.setText(currentTicket.getTicketName());
         }
     }
 
@@ -486,19 +484,67 @@ public class EMSTicketDesigner implements Initializable {
         //TODO Save it in Database Json can max be 4000 sign so make ticket max or make Json 2
         //We check that the JSON dont fill  more then 4000 signs and with space of the ID the image will givet when this i true
         if (json.length()+totalCharacters >= 4000){
-            saveImageAndSetID();
             displayErrorModel.displayErrorC("In the moment to many things in your Ticket" + json.length() + "/4000");
             return;
         }
-        try {
-            saveImageAndSetID();
-            String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
-            Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
-            ticketModel.createNewTicket(newTicket);
-            backButton();
-        } catch (Exception e) {
-            displayErrorModel.displayErrorC("Could not add ticket");
-        }
+        // Show loading animation
+        progressIndicator = showLoadingAnimation();
+
+        // Create a background task
+        new Thread(() -> {
+            try {
+                saveButton.setDisable(true);
+                backButton.setText("Cancel");
+                saveImageAndSetID(); // Perform long-running operations here
+                Platform.runLater(() -> updateUIAfterImageProcessing(progressIndicator, ticketName)); // Update UI after processing
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    saveButton.setDisable(false);
+                    backButton.setText("Back");
+                    eventHBoxSection.setVisible(true);
+                    displayErrorModel.displayErrorC("Could not save image and set ID");
+                    anchorPane.getChildren().remove(progressIndicator); // Remove loading animation on failure
+                });
+            }
+        }).start();
+
+    }
+
+    private ProgressIndicator showLoadingAnimation() { // This show an indicator while image got compressed etc.
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        anchorPane.getChildren().add(progressIndicator);
+        progressIndicator.setMinSize(250, 250);
+        progressIndicator.setMaxSize(250, 250);
+        progressIndicator.setPrefSize(250, 250);
+        setProgressIndicatorPosition(progressIndicator);
+
+        // Update position when anchorPane size changes
+        anchorPane.widthProperty().addListener((obs, oldWidth, newWidth) -> setProgressIndicatorPosition(progressIndicator));
+        anchorPane.heightProperty().addListener((obs, oldHeight, newHeight) -> setProgressIndicatorPosition(progressIndicator));
+        eventHBoxSection.setVisible(false);
+        return progressIndicator;
+    }
+
+    private void setProgressIndicatorPosition(ProgressIndicator progressIndicator) {
+        double centerX = (eventHBoxSection.getWidth()/2 - (double) 250 / 2);
+        double centerY = eventHBoxSection.getHeight() - 250;
+        progressIndicator.setLayoutX(centerX);
+        progressIndicator.setLayoutY(centerY);
+    }
+
+    private void updateUIAfterImageProcessing(ProgressIndicator progressIndicator, String ticketName) {
+        Platform.runLater(() -> {
+            try {
+                String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
+                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
+                ticketModel.createNewTicket(newTicket);
+                backButton();
+            } catch (Exception e) {
+                displayErrorModel.displayErrorC("Could not save image and set ID");
+            } finally {
+                anchorPane.getChildren().remove(progressIndicator); // Remove loading animation
+            }
+        });
     }
 
     // Here we calculate how many character image are going to use in the database
@@ -527,26 +573,9 @@ public class EMSTicketDesigner implements Initializable {
                 try {
                     String imageUrl = imageView.getImage().getUrl();
                     if (imageUrl != null) {
-                        byte[] compressedImageData = null; // Declare the variable outside the if blocks
-                        if (imageUrl.toLowerCase().endsWith(".png")) {
-                            compressedImageData = compressImageTo500KB(imageView.getImage(), "png");
-                        } else if (imageUrl.toLowerCase().endsWith(".jpg") || imageUrl.toLowerCase().endsWith(".jpeg")) {
-                            compressedImageData = compressImageTo500KB(imageView.getImage(), "jpg");
-                        }
-                        // Check if compression was successful before proceeding
-                        if (compressedImageData != null) {
-                            // Set the compressed image to the ImageView
-                            Image compressedImage = new Image(new ByteArrayInputStream(compressedImageData));
-                            imageView.setImage(compressedImage);
-                            // Set the ID for the image view
-                            newId = String.valueOf(systemIMGModel.createSystemIMG(compressedImage));
-                            imageView.setId(newId);
-                        } else {
-                            displayErrorModel.displayErrorC("Failed to compress one of the images. Using original.");
-                            // Set the ID for the image view with original image
-                            newId = String.valueOf(systemIMGModel.createSystemIMG(imageView.getImage()));
-                            imageView.setId(newId);
-                        }
+                        // Set the ID for the image view with original image
+                        newId = String.valueOf(systemIMGModel.createSystemIMG(ImageCompressor.compressImageTo500KB(imageView.getImage())));
+                        imageView.setId(newId);
                     } else {
                         displayErrorModel.displayErrorC("One of the pictures is corrupt");
                     }
@@ -556,62 +585,6 @@ public class EMSTicketDesigner implements Initializable {
             }
         }
     }
-
-
-
-
-    public byte[] compressImageTo500KB(Image image, String format) throws IOException {
-        System.out.println("Compressing image type " + format);
-        //TODO Make it work
-        // Convert JavaFX Image to BufferedImage
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-
-        // Get the original image size
-        ByteArrayOutputStream originalOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, format, originalOutputStream);
-        long originalSize = originalOutputStream.size();
-        System.out.println("Original image size: " + originalSize + " bytes");
-
-        // Initialize variables
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        float quality = 0.9f; // Initial quality
-        byte[] imageData = null;
-
-        // Perform compression until image size is below 500KB or quality reaches minimum
-        while (originalSize > 500 * 1024 && quality > 0) {
-            // Clear the output stream
-            outputStream.reset();
-
-            // Write the image to the output stream with the given quality
-            ImageIO.write(bufferedImage, format, outputStream);
-
-            // Get the compressed image data
-            imageData = outputStream.toByteArray();
-
-            // Update the original size with the compressed size
-            originalSize = imageData.length;
-
-            // Update the quality for the next compression
-            quality -= 0.1f;
-        }
-
-        // Output the new compressed size
-        System.out.println("Compressed image size: " + originalSize + " bytes");
-
-        return imageData;
-    }
-
-
-
-
-
-    private byte[] getImageData(Image image) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-        ImageIO.write(bufferedImage, "png", outputStream);
-        return outputStream.toByteArray();
-    }
-
     //This method set up a JSON in a given pane
     public void setupTicketView(String json, Pane paneName) {
         paneName.getChildren().clear(); // We clear the area, then we recreate it from the JSON
@@ -670,7 +643,15 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private void backButton() {
         // Bring the emsCoordinatorStage to front
-        emsTicketMainStage.show(); //1
+        if (Objects.equals(backButton.getText(), "Cancel")) {
+            // Reset UI elements as needed
+            //TODO Stop the compressor thread and delete already created image in DB
+            saveButton.setDisable(false);
+            backButton.setText("Back");
+            eventHBoxSection.setVisible(true);
+            anchorPane.getChildren().remove(progressIndicator);
+        }
+        emsTicketMainStage.show();
         emsCoordinator.startupProgram();
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
         Event.fireEvent(parent, new WindowEvent(parent, WindowEvent.WINDOW_CLOSE_REQUEST));

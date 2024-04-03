@@ -52,11 +52,17 @@ public class TicketSerializerRecreate {
                 jsonObject.put("c", colorHex);
             }
             else if (node instanceof ImageView imageView) {
-                // Round the fontSize value to two decimal places save space
-                double fitWidth = Double.parseDouble(String.format(Locale.US, "%.2f", imageView.getFitWidth()));
-                double fitHeight = Double.parseDouble(String.format(Locale.US, "%.2f", imageView.getFitHeight()));
-                jsonObject.put("fW", fitWidth);
-                jsonObject.put("fH", fitHeight);
+                double originalWidth = Math.round(imageView.getImage().getWidth() * 100.0) / 100.0;
+                double originalHeight = Math.round(imageView.getImage().getHeight() * 100.0) / 100.0;
+                double scaleX = imageView.getFitWidth() / originalWidth;
+                double scaleY = imageView.getFitHeight() / originalHeight;
+                double scale = Math.min(scaleX, scaleY);
+                scale = Math.round(scale * 100.0) / 100.0; // Round scale to two decimal places
+                double formattedWidth = Math.round(originalWidth * 100.0) / 100.0;
+                double formattedHeight = Math.round(originalHeight * 100.0) / 100.0;
+                jsonObject.put("sc", scale);
+                jsonObject.put("oW", formattedWidth);
+                jsonObject.put("oH", formattedHeight);
                 jsonObject.put("rI", imageView.getRotate());
                 jsonObject.put("id", imageView.getId()); // The ID the image in database
             }
@@ -98,10 +104,17 @@ public class TicketSerializerRecreate {
                     break;
                 case "Img":
                     ImageView imageView = new ImageView();
-                    imageView.setFitWidth(jsonObject.optDouble("fW", 100)); // Default width if not specified
-                    imageView.setFitHeight(jsonObject.optDouble("fH", 100)); // Default height if not specified
+                    double fitWidth = jsonObject.optDouble("fW", 100); // Default width if not specified
+                    double fitHeight = jsonObject.optDouble("fH", 100); // Default height if not specified
+                    double originalWidth = jsonObject.optDouble("oW", 100);
+                    double originalHeight = jsonObject.optDouble("oH",100);
+                    double scale = jsonObject.getDouble("sc");
+                    imageView.setFitWidth(fitWidth);
+                    imageView.setFitHeight(fitHeight);
+                    imageView.setFitWidth(originalWidth * scale);
+                    imageView.setFitHeight(originalHeight * scale);
                     imageView.setRotate(jsonObject.optDouble("rI", 0)); // Default rotation if not specified
-                    imageView.setId(jsonObject.optString("id", "")); // The ID the image in database
+                    imageView.setId(jsonObject.optString("id", "")); // The ID of the image in the database
                     node = imageView;
                     break;
                 default:

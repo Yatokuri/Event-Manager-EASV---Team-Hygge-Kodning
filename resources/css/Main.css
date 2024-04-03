@@ -436,3 +436,9 @@
     -fx-border-width: 1;
     -fx-highlight-fill: derive(-MainColor, 0%);
 }
+
+.progress-indicator {
+    -fx-progress-color: derive(-MainColor, 0%);
+    -fx-indeterminate-repeat-count: 2;
+    -fx-background-color: transparent;
+}
