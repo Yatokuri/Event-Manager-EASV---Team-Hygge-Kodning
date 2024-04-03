@@ -177,7 +177,7 @@
                   <MFXPasswordField fx:id="txtInputOldPassword" hideCharacter="•" minHeight="30.0" prefWidth="200.0" />
                   <Label text="New password:" />
                   <MFXPasswordField fx:id="txtInputNewPassword" hideCharacter="•" minHeight="30.0" prefWidth="300.0" />
-                  <Label text="Confirm password::" />
+                  <Label text="Confirm password:" />
                   <MFXPasswordField fx:id="txtInputNewPasswordConfirm" hideCharacter="•" minHeight="30.0" prefWidth="300.0" />
                   <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                      <children>

@@ -90,6 +90,21 @@ public class Image_DB {
         }
     }
 
+    public int getNextIDSystemIMG() {
+        String sql = "SELECT IDENT_CURRENT('SystemIMG') + 1";
+        int nextId = 0;
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                nextId = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return nextId;
+    }
+
     //Helper method to get image data
     private byte[] getImageData(Image image) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

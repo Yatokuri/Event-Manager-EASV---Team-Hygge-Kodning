@@ -5,44 +5,48 @@ import be.User;
 import gui.model.*;
 import gui.util.TicketSerializerRecreate;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.beans.property.DoubleProperty;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class EMSTicketDesigner implements Initializable {
@@ -121,21 +125,34 @@ public class EMSTicketDesigner implements Initializable {
             }
             applyFontStyleChanges(newValue.doubleValue());
         });
-        textRotateSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+        imageSizeSider.valueProperty().addListener((observable, oldValue, newValue) -> {
             String formattedRotateValue = String.format(Locale.US, "%.2f", newValue.doubleValue());
-            applyRotateChanges(Double.parseDouble(formattedRotateValue));
+            applyImageSizeChanges(Double.parseDouble(formattedRotateValue));
         });
-        imageSizeSider.valueProperty().addListener((observable, oldValue, newValue) -> applyImageSizeChanges(newValue.doubleValue()));
-        imageRotateSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            String formattedRotateValue = String.format(Locale.US, "%.2f", newValue.doubleValue());
-            applyImageRotateChanges(Double.parseDouble(formattedRotateValue));
-        });
+        addSliderListener(textRotateSlider.valueProperty(), this::applyRotateChanges);
+        addSliderListener(imageRotateSlider.valueProperty(), this::applyImageRotateChanges);
 
         Tickets currentTicket = ticketModel.getCurrentTicket();
         if (!(currentTicket == null))   { // Mean we want look at a Ticket
             saveButton.setDisable(true);
             setupTicketView(currentTicket.getTicketJSON(), ticketArea);
         }
+    }
+
+    private void addSliderListener(DoubleProperty sliderProperty, Consumer<Double> changeHandler) {
+        sliderProperty.addListener((observable, oldValue, newValue) -> {
+            double snappedValue = newValue.doubleValue(); // Make it easy hit core position
+            if (newValue.doubleValue() >= 87 && newValue.doubleValue() <= 93) {
+                snappedValue = 90; // Snap to 90 if between 87 and 93
+            } else if (newValue.doubleValue() >= 177 && newValue.doubleValue() <= 183) {
+                snappedValue = 180; // Snap to 180 if between 177 and 183
+            } else if (newValue.doubleValue() >= 267 && newValue.doubleValue() <= 273) {
+                snappedValue = 270; // Snap to 270 if between 267 and 273
+            }
+            String formattedValue = String.format(Locale.US, "%.2f", snappedValue);
+            changeHandler.accept(Double.parseDouble(formattedValue));
+        });
     }
 
     private void applyImageSizeChanges(double newSize) {
@@ -150,6 +167,7 @@ public class EMSTicketDesigner implements Initializable {
             imageView.setRotate(newSize); // Set the rotation of the image
         }
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -264,16 +282,12 @@ public class EMSTicketDesigner implements Initializable {
         if (selectedFile != null) {
             Image image = new Image(selectedFile.toURI().toString());
             ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
             setupNode(imageView);
             setSelectedNode(imageView);
-
-            // Assuming you want to maintain the aspect ratio but fit the image within certain bounds:
-            double maxSize = 100; // Example max size for the slider or based on your UI design
-            double scale = Math.min(maxSize / image.getWidth(), maxSize / image.getHeight());
-            imageView.setFitWidth(image.getWidth() * scale);
-            imageView.setFitHeight(image.getHeight() * scale);
-            imageSizeSider.setValue(maxSize * scale);
-
+            double halfWidth = ticketArea.getWidth() * 0.5; // New img fill 50% of ticket width
+            imageView.setFitWidth(halfWidth);
+            imageSizeSider.setValue(halfWidth);
             imageRotateSlider.setValue(imageView.getRotate());
             ticketArea.getChildren().add(imageView);
         }
@@ -456,37 +470,30 @@ public class EMSTicketDesigner implements Initializable {
         }
         return picturePlaceholder;
     }
-
     @FXML // Here create the Ticket object and send it through layer to database
     private void saveButton() {
-        for (Node node : ticketArea.getChildren()) {  // We go through all image
-            if (node instanceof ImageView imageView) {
-                String newId = null;
-                try {
-                    newId = String.valueOf(systemIMGModel.createSystemIMG(imageView.getImage()));
-                    imageView.setId(newId); //TODO Compress picture so it dont take up to much space
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
         String ticketName = txtInputTicketName.getText();
-
-        if (ticketName.isEmpty())   {
+        if (ticketName.isEmpty()) {
             displayErrorModel.displayErrorC("Missing Intern Name");
             return;
-        }
-        else if (json.length() <= 3)   {
+        } else if (ticketArea.getChildren().isEmpty()) {
             displayErrorModel.displayErrorC("Missing Design in Ticket");
             return;
-        } //TODO Save it in Database Json can max be 4000 sign so make ticket max or make Json 2
-        else if (json.length() >= 4000)   {
-            displayErrorModel.displayErrorC("In the moment to many thing in your Ticket" + json.length() + "/4000");
+        }
+
+        int totalCharacters = getTotalCharactersIMGDB();
+        String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
+        //TODO Save it in Database Json can max be 4000 sign so make ticket max or make Json 2
+        //We check that the JSON dont fill  more then 4000 signs and with space of the ID the image will givet when this i true
+        if (json.length()+totalCharacters >= 4000){
+            saveImageAndSetID();
+            displayErrorModel.displayErrorC("In the moment to many things in your Ticket" + json.length() + "/4000");
             return;
         }
-        Tickets newTicket = new Tickets(0 ,0 ,ticketName, json);
         try {
+            saveImageAndSetID();
+            String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
+            Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
             ticketModel.createNewTicket(newTicket);
             backButton();
         } catch (Exception e) {
@@ -494,7 +501,118 @@ public class EMSTicketDesigner implements Initializable {
         }
     }
 
-    //This method set up a JSon in a given pane
+    // Here we calculate how many character image are going to use in the database
+    private int getTotalCharactersIMGDB() {
+        int totalCharacters;
+        try {
+            int value = systemIMGModel.getNextIDSystemIMG();
+            int numberOfImages = ticketArea.getChildren().size(); // Number of images
+            StringBuilder concatenatedIds = new StringBuilder();
+
+            for (int i = 0; i < numberOfImages; i++) {
+                concatenatedIds.append(value + i);
+            }
+            totalCharacters = (concatenatedIds.length()-(numberOfImages));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return totalCharacters;
+    }
+
+    // Here we save each img in ticket and give the image instance right ID
+    public void saveImageAndSetID() {
+        for (Node node : ticketArea.getChildren()) {
+            if (node instanceof ImageView imageView) {
+                String newId = null;
+                try {
+                    String imageUrl = imageView.getImage().getUrl();
+                    if (imageUrl != null) {
+                        byte[] compressedImageData = null; // Declare the variable outside the if blocks
+                        if (imageUrl.toLowerCase().endsWith(".png")) {
+                            compressedImageData = compressImageTo500KB(imageView.getImage(), "png");
+                        } else if (imageUrl.toLowerCase().endsWith(".jpg") || imageUrl.toLowerCase().endsWith(".jpeg")) {
+                            compressedImageData = compressImageTo500KB(imageView.getImage(), "jpg");
+                        }
+                        // Check if compression was successful before proceeding
+                        if (compressedImageData != null) {
+                            // Set the compressed image to the ImageView
+                            Image compressedImage = new Image(new ByteArrayInputStream(compressedImageData));
+                            imageView.setImage(compressedImage);
+                            // Set the ID for the image view
+                            newId = String.valueOf(systemIMGModel.createSystemIMG(compressedImage));
+                            imageView.setId(newId);
+                        } else {
+                            displayErrorModel.displayErrorC("Failed to compress one of the images. Using original.");
+                            // Set the ID for the image view with original image
+                            newId = String.valueOf(systemIMGModel.createSystemIMG(imageView.getImage()));
+                            imageView.setId(newId);
+                        }
+                    } else {
+                        displayErrorModel.displayErrorC("One of the pictures is corrupt");
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+
+
+
+    public byte[] compressImageTo500KB(Image image, String format) throws IOException {
+        System.out.println("Compressing image type " + format);
+        //TODO Make it work
+        // Convert JavaFX Image to BufferedImage
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+
+        // Get the original image size
+        ByteArrayOutputStream originalOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, format, originalOutputStream);
+        long originalSize = originalOutputStream.size();
+        System.out.println("Original image size: " + originalSize + " bytes");
+
+        // Initialize variables
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        float quality = 0.9f; // Initial quality
+        byte[] imageData = null;
+
+        // Perform compression until image size is below 500KB or quality reaches minimum
+        while (originalSize > 500 * 1024 && quality > 0) {
+            // Clear the output stream
+            outputStream.reset();
+
+            // Write the image to the output stream with the given quality
+            ImageIO.write(bufferedImage, format, outputStream);
+
+            // Get the compressed image data
+            imageData = outputStream.toByteArray();
+
+            // Update the original size with the compressed size
+            originalSize = imageData.length;
+
+            // Update the quality for the next compression
+            quality -= 0.1f;
+        }
+
+        // Output the new compressed size
+        System.out.println("Compressed image size: " + originalSize + " bytes");
+
+        return imageData;
+    }
+
+
+
+
+
+    private byte[] getImageData(Image image) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+        ImageIO.write(bufferedImage, "png", outputStream);
+        return outputStream.toByteArray();
+    }
+
+    //This method set up a JSON in a given pane
     public void setupTicketView(String json, Pane paneName) {
         paneName.getChildren().clear(); // We clear the area, then we recreate it from the JSON
         Pane recreatedPane = TicketSerializerRecreate.cloneTicketAreaFromJson(json);

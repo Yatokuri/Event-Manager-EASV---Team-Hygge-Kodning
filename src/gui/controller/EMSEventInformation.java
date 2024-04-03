@@ -7,10 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -18,6 +15,7 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EMSEventInformation implements Initializable {
@@ -47,7 +45,7 @@ public class EMSEventInformation implements Initializable {
     public void setEMSAdmin(EMSAdmin emsAdmin) {
         this.emsAdmin = emsAdmin;
     }
-
+    private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -103,13 +101,24 @@ public class EMSEventInformation implements Initializable {
     }
 
     public void deleteButton() {
-        try {
-            eventModel.deleteEvent(eventBeingUpdated);
-            emsCoordinator.startupProgram(); // Refresh UI
-            backButton();
-        } catch (Exception e) {
-            displayErrorModel.displayErrorC("Unable to delete event");
-        }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("You will delete event " + eventBeingUpdated.getEventName());
+            alert.setContentText("Are you ok with this?");
+            // Set the icon for the dialog window
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(mainIcon);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    eventModel.deleteEvent(eventBeingUpdated);
+                    emsCoordinator.startupProgram(); // Refresh UI
+                } catch (Exception e) {
+                    displayErrorModel.displayErrorC("Unable to delete event");
+                }
+                backButton();
+            }
     }
 
     public void updateButton() {
@@ -126,9 +135,7 @@ public class EMSEventInformation implements Initializable {
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();
             // Set event handler for window hiding event, so we can update the event
-            EMSCoordinatorEventCUStage.setOnHiding(event -> {
-                setupEventInformation();
-            });
+            EMSCoordinatorEventCUStage.setOnHiding(event -> setupEventInformation());
             EMSCoordinatorEventCUStage.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSCoordinatorEventCUStage.show();
         } catch (IOException e) {

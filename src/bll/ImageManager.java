@@ -12,4 +12,5 @@ public class ImageManager {
     public ImageView readSystemIMG(int selectedUser) throws Exception { return image_DB.readSystemIMG(selectedUser);}
     public void updateSystemIMG(int id, Image image) throws Exception { image_DB.uploadSystemIMG(id, image);}
     public void deleteSystemIMG(int selectedUser) throws Exception { image_DB.deleteSystemIMG(selectedUser);}
+    public int getNextIDSystemIMG() throws Exception { return image_DB.getNextIDSystemIMG();}
 }

@@ -28,5 +28,6 @@ public class ImageModel {
     public void updateSystemIMG(int IMGID, Image image) throws Exception{ imageManager.updateSystemIMG(IMGID, image);}
 
     public void deleteSystemIMG(int IMGID) throws Exception{ imageManager.deleteSystemIMG(IMGID);}
+    public int getNextIDSystemIMG() throws Exception{ return imageManager.getNextIDSystemIMG();}
 
 }
