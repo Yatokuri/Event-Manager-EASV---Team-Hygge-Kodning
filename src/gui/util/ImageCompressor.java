@@ -10,12 +10,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ImageCompressor { // System to compress IMG
-
+    private static boolean isCancelled = false;
     public static Image compressImageTo500KB(Image fxImage) throws IOException {
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(fxImage, null);
 
             byte[] pngBytes = compressPNGWithResizing(bufferedImage);
-            if (pngBytes.length <= 500 * 1024) {
+        assert pngBytes != null;
+        if (pngBytes.length <= 500 * 1024) {
                 return new Image(new ByteArrayInputStream(pngBytes));
             }
 
@@ -36,6 +37,11 @@ public class ImageCompressor { // System to compress IMG
             compressedImage = tempOutputStream.toByteArray();
 
             scale -= 0.1; // Reduce size by 10% for the next iteration if necessary
+
+            if (isCancelled) {
+                return null;
+            }
+
         } while (compressedImage.length > 500 * 1024 && scale > 0.1);
 
         return compressedImage;
@@ -49,5 +55,11 @@ public class ImageCompressor { // System to compress IMG
         g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
         g.dispose();
         return resizedImage;
+    }
+    public static void cancelCompressor() {
+        isCancelled = true; // To stop compressor if user want to cancel
+    }
+    public static void enableCompressor() {
+        isCancelled = false; // To start compressor so you can use it again
     }
 }

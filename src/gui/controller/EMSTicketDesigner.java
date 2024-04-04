@@ -7,13 +7,13 @@ import gui.util.ImageCompressor;
 import gui.util.TicketSerializerRecreate;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -59,6 +59,8 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private HBox deleteDropRelease, eventHBoxSection;
     @FXML
+    private VBox loadingBox;
+    @FXML
     private TextField txtInputSelectedText, txtInputSelectedImage, txtJsonInput, txtInputTicketName;
     @FXML
     private ColorPicker colorPicker;
@@ -73,6 +75,7 @@ public class EMSTicketDesigner implements Initializable {
 
     private EMSCoordinator emsCoordinator;
     private EventModel eventModel;
+    private ImageCompressor imageCompressor;
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
@@ -82,7 +85,7 @@ public class EMSTicketDesigner implements Initializable {
     private User currentUser;
     private Stage emsTicketMainStage;
     private boolean menuButtonVisible = false;
-    private ProgressIndicator progressIndicator;
+    private boolean cancelledNewTicket = false;
 
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
@@ -488,61 +491,70 @@ public class EMSTicketDesigner implements Initializable {
             return;
         }
         // Show loading animation
-        progressIndicator = showLoadingAnimation();
+        showLoadingAnimation();
+        cancelledNewTicket = false;
+        ImageCompressor.enableCompressor();
+        saveButton.setDisable(true);
+        backButton.setText("Cancel");
+
 
         // Create a background task
         new Thread(() -> {
             try {
-                saveButton.setDisable(true);
-                backButton.setText("Cancel");
                 saveImageAndSetID(); // Perform long-running operations here
-                Platform.runLater(() -> updateUIAfterImageProcessing(progressIndicator, ticketName)); // Update UI after processing
+                Platform.runLater(() -> updateUIAfterImageProcessing(ticketName)); // Update UI after processing
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    saveButton.setDisable(false);
-                    backButton.setText("Back");
-                    eventHBoxSection.setVisible(true);
+                    if (cancelledNewTicket) {return;}
+                    enableGUIObject();
                     displayErrorModel.displayErrorC("Could not save image and set ID");
-                    anchorPane.getChildren().remove(progressIndicator); // Remove loading animation on failure
                 });
             }
         }).start();
-
     }
 
-    private ProgressIndicator showLoadingAnimation() { // This show an indicator while image got compressed etc.
+    private ProgressIndicator showLoadingAnimation() { // This show an indicator with lbl under while image got compressed etc.
         ProgressIndicator progressIndicator = new ProgressIndicator();
-        anchorPane.getChildren().add(progressIndicator);
+        loadingBox = new VBox();
+        Label lbl = new Label("Please wait while the system creates the ticket.");
+        lbl.setStyle("-fx-font-size: 18px");
+        lbl.setWrapText(true);
+        loadingBox.setAlignment(Pos.CENTER);
+        loadingBox.setSpacing(5);
+        loadingBox.getChildren().addAll(progressIndicator, lbl);
+        anchorPane.getChildren().add(loadingBox);
         progressIndicator.setMinSize(250, 250);
         progressIndicator.setMaxSize(250, 250);
         progressIndicator.setPrefSize(250, 250);
-        setProgressIndicatorPosition(progressIndicator);
+        setLoadingBoxPosition(loadingBox);
 
         // Update position when anchorPane size changes
-        anchorPane.widthProperty().addListener((obs, oldWidth, newWidth) -> setProgressIndicatorPosition(progressIndicator));
-        anchorPane.heightProperty().addListener((obs, oldHeight, newHeight) -> setProgressIndicatorPosition(progressIndicator));
+        anchorPane.widthProperty().addListener((obs, oldWidth, newWidth) -> setLoadingBoxPosition(loadingBox));
+        anchorPane.heightProperty().addListener((obs, oldHeight, newHeight) -> setLoadingBoxPosition(loadingBox));
         eventHBoxSection.setVisible(false);
         return progressIndicator;
     }
 
-    private void setProgressIndicatorPosition(ProgressIndicator progressIndicator) {
-        double centerX = (eventHBoxSection.getWidth()/2 - (double) 250 / 2);
-        double centerY = eventHBoxSection.getHeight() - 250;
-        progressIndicator.setLayoutX(centerX);
-        progressIndicator.setLayoutY(centerY);
+    private void setLoadingBoxPosition(VBox loadingBox) {
+        double centerX = (eventHBoxSection.getWidth()/2 - (double) 370 / 2);
+        double centerY = eventHBoxSection.getHeight() - 280;
+        loadingBox.setLayoutX(centerX);
+        loadingBox.setLayoutY(centerY);
     }
 
-    private void updateUIAfterImageProcessing(ProgressIndicator progressIndicator, String ticketName) {
+    private void updateUIAfterImageProcessing(String ticketName) {
         Platform.runLater(() -> {
             try {
+                if (cancelledNewTicket) {return;} // If user want to cancel
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
                 Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
                 ticketModel.createNewTicket(newTicket);
+                backButton.setText("Back");
                 backButton();
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Could not save image and set ID");
             } finally {
-                anchorPane.getChildren().remove(progressIndicator); // Remove loading animation
+                anchorPane.getChildren().remove(loadingBox); // Remove loading animation
             }
         });
     }
@@ -574,8 +586,11 @@ public class EMSTicketDesigner implements Initializable {
                     String imageUrl = imageView.getImage().getUrl();
                     if (imageUrl != null) {
                         // Set the ID for the image view with original image
-                        newId = String.valueOf(systemIMGModel.createSystemIMG(ImageCompressor.compressImageTo500KB(imageView.getImage())));
-                        imageView.setId(newId);
+                        Image compressedImage = ImageCompressor.compressImageTo500KB(imageView.getImage());
+                        if (compressedImage != null) {
+                            newId = String.valueOf(systemIMGModel.createSystemIMG(compressedImage));
+                            imageView.setId(newId);
+                        }
                     } else {
                         displayErrorModel.displayErrorC("One of the pictures is corrupt");
                     }
@@ -640,23 +655,41 @@ public class EMSTicketDesigner implements Initializable {
         ticketAreaClone.getChildren().addAll(recreatedPane.getChildren());
     }
 
+
+    private void enableGUIObject()    {
+        saveButton.setDisable(false);
+        eventHBoxSection.setVisible(true);
+        backButton.setText("Back");
+        anchorPane.getChildren().remove(loadingBox);
+    }
+
     @FXML
     private void backButton() {
         // Bring the emsCoordinatorStage to front
         if (Objects.equals(backButton.getText(), "Cancel")) {
-            // Reset UI elements as needed
-            //TODO Stop the compressor thread and delete already created image in DB
-            saveButton.setDisable(false);
-            backButton.setText("Back");
-            eventHBoxSection.setVisible(true);
-            anchorPane.getChildren().remove(progressIndicator);
+            cancelledNewTicket = true; // So other method in class know it cancel time
+            ImageCompressor.cancelCompressor(); // Tell IMG compressor to stop compress IMG
+            enableGUIObject();
+            for (Node node : ticketArea.getChildren()) { //If there was added IMG removed them
+                if (node instanceof ImageView imageView) {
+                    String imageId = imageView.getId();
+                    if (imageId != null && !"0".equals(imageId)) {
+                        try {
+                            systemIMGModel.deleteSystemIMG(Integer.parseInt(imageId));
+                        } catch (Exception e) {
+                            displayErrorModel.displayErrorC("Could not delete image");
+                        }
+                    }
+                }
+            }
+            return;
         }
         emsTicketMainStage.show();
         emsCoordinator.startupProgram();
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
         Event.fireEvent(parent, new WindowEvent(parent, WindowEvent.WINDOW_CLOSE_REQUEST));
-
     }
+
 //*******************PROFILE*DROPDOWN*MENU************************************
     public void profilePicture() { // Profile IMG also control dropdown
         if (menuButtonVisible) {
