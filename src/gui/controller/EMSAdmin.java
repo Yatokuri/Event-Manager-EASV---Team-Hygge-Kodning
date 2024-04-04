@@ -40,6 +40,7 @@ public class EMSAdmin {
     private EventModel eventModel;
     private TicketModel ticketModel;
     private UserModel userModel;
+    private EventTicketsModel eventTicketsModel;
     private static Event eventBeingUpdated;
     private HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
     private boolean menuButtonVisible = false;
@@ -62,6 +63,7 @@ public class EMSAdmin {
             eventModel = EventModel.getInstance();
             ticketModel = TicketModel.getInstance();
             archivedEventModel = ArchivedEventModel.getInstance();
+            eventTicketsModel = EventTicketsModel.getInstance();
         } catch (Exception e) {
             displayErrorModel.displayError(e);
         }
@@ -183,6 +185,7 @@ public class EMSAdmin {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     archivedEventModel.archiveEvent(event);
+                    eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
                     eventModel.deleteEvent(event);
                     setupEvents();
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
@@ -261,7 +264,7 @@ public class EMSAdmin {
             EMSEventInformation.showAndWait();
             Platform.runLater(this::startupProgram);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
             alert.showAndWait();
         }

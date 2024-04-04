@@ -52,6 +52,7 @@ public class EMSTicketMain implements Initializable {
     public Scene ticketMainStage;
     private EventModel eventModel;
     private UserModel userModel;
+    private EventTicketsModel eventTicketsModel;
     private TicketModel ticketModel;
     private final DisplayErrorModel displayErrorModel;
 
@@ -75,6 +76,7 @@ public class EMSTicketMain implements Initializable {
         userModel = UserModel.getInstance();
         ticketModel = TicketModel.getInstance();
         eventModel = EventModel.getInstance();
+        eventTicketsModel = EventTicketsModel.getInstance();
     }
 
     @Override
@@ -93,7 +95,14 @@ public class EMSTicketMain implements Initializable {
     }
 
     public void setupTableview() {
-        tblEventTickets.setItems(ticketModel.getObsTickets());
+
+        try {
+            eventTicketsModel.eventTickets(selectedEvent);
+            tblEventTickets.setItems(eventTicketsModel.getObservableEventsTickets());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
         tblEventTickets.setPlaceholder(new Label("No ticket found"));
@@ -272,6 +281,7 @@ public class EMSTicketMain implements Initializable {
                     if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
                             //ticketModel.deleteTicket(tickets);
+                            //eventTicketsModel.deleteTicketsFromEvent(tickets);
                             System.out.println("You want to delete " +  tickets.getTicketName() + "but it deactivated");
                         } catch (Exception e) {
                             displayErrorModel.displayErrorC("User not deleted try again");
