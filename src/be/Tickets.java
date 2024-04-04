@@ -5,12 +5,22 @@ public class Tickets {
     private int ticketQuantity;
     private String ticketName;
     private String ticketJSON;
+    private int isILocal;
 
-    public Tickets(int ticketID, int ticketQuantity, String ticketName, String ticketJSON) {
+    public Tickets(int ticketID, int ticketQuantity, String ticketName, String ticketJSON, int isILocal) {
         this.ticketQuantity = ticketQuantity;
         this.ticketName = ticketName;
         this.ticketJSON = ticketJSON;
         this.ticketID = ticketID;
+        this.isILocal = isILocal;
+    }
+
+    public int getIsILocal() {
+        return isILocal;
+    }
+
+    public void setILocal(int ILocal) {
+        isILocal = ILocal;
     }
 
     public int getTicketID() {

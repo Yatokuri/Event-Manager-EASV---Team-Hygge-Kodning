@@ -81,8 +81,12 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="This Event" />
-                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" text="Global" />
+                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="This Event">
+                           <HBox.margin>
+                              <Insets right="-15.0" />
+                           </HBox.margin>
+                        </Button>
+                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="TicketDesignerToogle" text="Global" />
                      </children>
                   </HBox>
                </children>

@@ -64,42 +64,14 @@ public class GlobalTickets_DB {
     }
 
 
-
-
-
-    public void updateTicketInEvent(Tickets ticket, Tickets oldTicket, Event event) throws Exception {
-        String sql = "UPDATE dbo.EventTickets SET TicketID = ? WHERE TicketID = ? AND EventID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, ticket.getTicketID());
-            stmt.setInt(2, oldTicket.getTicketID());
-            stmt.setInt(3, event.getEventID());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new Exception("Could not update ticket", ex);
-        }
-    }
-
-    public void deleteAllTicketFromEvent(Event event) throws Exception {
-        String sql = "DELETE FROM dbo.EventTickets WHERE EventID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, event.getEventID());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new Exception("Could not delete all ticket from event", ex);
-        }
-    }
-
     // Helper method to generate a Ticket object from the ResultSet
     private Tickets generateTicket(ResultSet rs) throws SQLException {
         int ticketID = rs.getInt("TicketID");
         int ticketQuantity = rs.getInt("TicketQuantity");
         String ticketName = rs.getString("TicketName");
         String ticketJSON = rs.getString("TicketJSON");
-        return new Tickets(ticketID, ticketQuantity, ticketName, ticketJSON);
+        int ticketLocal = rs.getInt("TicketLocal");
+        return new Tickets(ticketID, ticketQuantity, ticketName, ticketJSON, ticketLocal);
     }
 
 }

@@ -52,6 +52,8 @@ public class EMSAdminCoordinatorManager implements Initializable {
     @FXML
     private Label lblNewPasswordUsername;
 
+    private final Image defaultProfile = new Image("Icons/User_Icon.png");
+
     public EMSAdminCoordinatorManager() {
     }
 

@@ -99,7 +99,8 @@ public class EventTickets_DB {
         int ticketQuantity = rs.getInt("TicketQuantity");
         String ticketName = rs.getString("TicketName");
         String ticketJSON = rs.getString("TicketJSON");
-        return new Tickets(ticketID, ticketQuantity, ticketName, ticketJSON);
+        int ticketLocal = rs.getInt("TicketLocal");
+        return new Tickets(ticketID, ticketQuantity, ticketName, ticketJSON, ticketLocal);
     }
 
 }

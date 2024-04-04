@@ -78,12 +78,14 @@ public class EMSTicketDesigner implements Initializable {
     private double yOffset = 0;
 
     private EMSCoordinator emsCoordinator;
+    private EMSTicketMain emsTicketMain;
     private EventModel eventModel;
     private ImageCompressor imageCompressor;
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
     private EventTicketsModel eventTicketsModel;
+    private GlobalTicketsModel globalTicketsModel;
     private final DisplayErrorModel displayErrorModel;
 
     private be.Event selectedEvent;
@@ -91,7 +93,7 @@ public class EMSTicketDesigner implements Initializable {
     private Stage emsTicketMainStage;
     private boolean menuButtonVisible = false;
     private boolean cancelledNewTicket = false;
-    private boolean isItLocalTicket = true;
+    private int isItLocalTicket = 1;
 
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
@@ -102,6 +104,8 @@ public class EMSTicketDesigner implements Initializable {
     public void setEMSTicketMainStage(Stage emsTicketMainStage) {
         this.emsTicketMainStage = emsTicketMainStage;
     }
+
+    public void setEMSTicketMain(EMSTicketMain emsTicketMain) {this.emsTicketMain = emsTicketMain;}
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
         this.emsCoordinator = emsCoordinator;
     }
@@ -113,6 +117,7 @@ public class EMSTicketDesigner implements Initializable {
         eventModel = EventModel.getInstance();
         systemIMGModel = ImageModel.getInstance();
         eventTicketsModel = EventTicketsModel.getInstance();
+        globalTicketsModel = GlobalTicketsModel.getInstance();
     }
 
     public void startupProgram() { //This setup program
@@ -554,8 +559,13 @@ public class EMSTicketDesigner implements Initializable {
             try {
                 if (cancelledNewTicket) {return;} // If user want to cancel
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
-                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
+                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
                 ticketModel.createNewTicket(newTicket);
+                if (isItLocalTicket == 0)   { // Mean it's a global ticket
+                    globalTicketsModel.addGlobalTickets(newTicket);
+                    backButton.setText("Back");
+                    backButton();
+                }
                 eventTicketsModel.addTicketsToEvent(newTicket, selectedEvent);
                 backButton.setText("Back");
                 backButton();
@@ -694,6 +704,7 @@ public class EMSTicketDesigner implements Initializable {
         }
         emsTicketMainStage.show();
         emsCoordinator.startupProgram();
+        emsTicketMain.recreateTableview();
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
         Event.fireEvent(parent, new WindowEvent(parent, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
@@ -780,11 +791,9 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private void toggleButtonType() {
         if (toggleButtonType.isSelected()) {
-            System.out.println("Global selected");
-            isItLocalTicket  = false;
+            isItLocalTicket = 0;
         } else {
-            System.out.println("Local selected");
-            isItLocalTicket = true;
+            isItLocalTicket = 1;
         }
     }
 
@@ -793,4 +802,6 @@ public class EMSTicketDesigner implements Initializable {
         toggleButtonType.setSelected(!toggleButtonType.isSelected());
         toggleButtonType();
     }
+
+
 }

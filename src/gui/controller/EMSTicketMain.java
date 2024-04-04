@@ -168,6 +168,7 @@ public class EMSTicketMain implements Initializable {
             EMSTicketDesigner.setMaximized(true);
             EMSTicketDesigner controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
+            controller.setEMSTicketMain(this);
             controller.startupProgram();
             EMSTicketDesigner.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSTicketDesigner.show();
