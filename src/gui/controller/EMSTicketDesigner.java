@@ -198,6 +198,8 @@ public class EMSTicketDesigner implements Initializable {
                 txtInputTicketName.setStyle("-fx-border-color: red;");
             }
         }
+        else
+            txtInputTicketName.setStyle("-fx-border-color: null");
     }
 
     @FXML

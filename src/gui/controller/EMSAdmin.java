@@ -258,7 +258,6 @@ public class EMSAdmin {
             EMSEventInformation controller = loader.getController();
             controller.setEventModel(eventModel);
             controller.setEMSAdmin(this);
-            controller.setArchivedEventModel(archivedEventModel);
             controller.startupProgram();
             EMSEventInformation.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSEventInformation.showAndWait();

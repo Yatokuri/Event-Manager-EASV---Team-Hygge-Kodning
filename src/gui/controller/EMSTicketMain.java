@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -47,7 +48,7 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private StackPane profilePicturePane;
     @FXML
-    private TableView<Tickets> tblEventTickets;
+    private TableView<Tickets> tblEventTickets, tblEventTicketsUsers;
     @FXML
     private TableColumn<Tickets, String> colTicketName;
     @FXML
@@ -110,6 +111,18 @@ public class EMSTicketMain implements Initializable {
             combinedList.addAll(eventTicketsModel.getObservableEventsTickets());
             combinedList.addAll(globalTicketsModel.getObservableGlobalTickets());
             tblEventTickets.setItems(combinedList);
+            tblEventTickets.setRowFactory(tv -> {
+                TableRow<Tickets> row = new TableRow<>();
+                row.setOnMouseClicked(event -> {
+                    if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+                        Tickets rowData = row.getItem();
+                        if (rowData != null) {
+                            setupTblEventTicketsUsers(rowData);
+                        }
+                    }
+                });
+                return row;
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -120,6 +133,7 @@ public class EMSTicketMain implements Initializable {
         colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
         tblEventTickets.setPlaceholder(new Label("No ticket found"));
+        tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
         colTicketName.setOnEditCommit(event -> {
             String ticketName = event.getNewValue(); // Get the new ticket name
             System.out.println("Clicked ticket name: " + ticketName); // Print the clicked ticket name
@@ -141,6 +155,12 @@ public class EMSTicketMain implements Initializable {
                         Label bullet = new Label("● ");
                         Label usernameLabel = new Label(item);
                         setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
+                        getTableView().setOnMouseClicked(event -> {
+                            if (getTableView().getSelectionModel().getSelectedItem() == null) {
+                                setupTblEventTicketsUsers(null);
+                            }
+                        });
+
                         setOnMouseClicked(event -> { // So we can click on ticket to see them
                             if (!isEmpty()) {
                                 Tickets ticket = getTableView().getItems().get(getIndex());
@@ -153,6 +173,15 @@ public class EMSTicketMain implements Initializable {
                 }
             };
         });
+    }
+    public void setupTblEventTicketsUsers(Tickets ticket) {
+        if (ticket == null) {
+            tblEventTicketsUsers.getItems().clear();
+            tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
+            return;
+        }
+        tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " has not been sold yet"));
+        //TODO Add stuff there check if users have purchase this ticket
     }
     public void createTicketButton() { //When use of the button no one is selected
         ticketModel.setCurrentTicket(null);

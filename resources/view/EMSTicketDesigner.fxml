@@ -86,7 +86,7 @@
                               <Insets right="-15.0" />
                            </HBox.margin>
                         </Button>
-                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="TicketDesignerToogle" text="Global" />
+                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="Global" />
                      </children>
                   </HBox>
                </children>

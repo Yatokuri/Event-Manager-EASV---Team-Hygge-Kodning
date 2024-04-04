@@ -230,7 +230,7 @@
 
 /* Set the background color of selected row */
 .userListAdmin .table-row-cell:selected {
-    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-background-color: derive(-ButtonHoverColor, 0%);
 }
 
 /* Set text color to white for selected cells */
@@ -246,7 +246,7 @@
 
 /* Remove hover effect */
 .userListAdmin .table-row-cell:hover {
-    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-background-color: derive(-ButtonHoverColor, 0%);
 }
 
 
@@ -443,10 +443,55 @@
     -fx-background-color: transparent;
 }
 
-.toggle-button .mfx-ripple-generator {
-    -mfx-ripple-color: derive(-ButtonHoverColor, 10%);
-    -fx-opacity: 0.2;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+
+/* Target the line inside the toggle button */
+.ticketDesignerToggle.mfx-toggle-button .line {
+    -fx-stroke: #a6a5a5; /* Set the line color */
+    -fx-stroke-line-cap: ROUND;
+    -fx-opacity: 0.3;
+}
+/* Target the circle inside the toggle button */
+.ticketDesignerToggle.mfx-toggle-button  {
+    -mfx-main: derive(-MainColor, 0%);
+    -mfx-secondary: derive(-MainColor, 0%);
+    -mfx-radius: 12px;
+    -mfx-length: 45px;
+}
+/* Target the effect button give when used */
+.ticketDesignerToggle.mfx-toggle-button .mfx-ripple-generator {
+    -mfx-animation-speed: 1.5;
+    -mfx-ripple-radius: 10;
+    -mfx-ripple-color: -mfx-main;
+    -mfx-ripple-opacity: 0.4;
+}
+
+/* Here we control the custom TimePicker */
+.timePicker {
+    -fx-background-color: white;
+    -fx-border-color: #000000;
+    -fx-border-width: 1px;
+    -fx-padding: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+.timePicker .label {
+    -fx-text-fill: black;
+}
+
+/* Hide the increment and decrement buttons */
+.timePicker .increment-arrow,
+.timePicker .decrement-arrow {
+    -fx-padding: 0;
+}
+
+/* Hide the increment and decrement buttons' arrows */
+.timePicker .increment-arrow-button,
+.timePicker .decrement-arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* Hide the spinner buttons completely */
+.timePicker .spinner-buttons {
+    -fx-opacity: 0;
 }
 

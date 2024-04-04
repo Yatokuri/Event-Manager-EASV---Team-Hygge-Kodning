@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="453.0" prefWidth="632.0" styleClass="eventInformationWindow" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSEventInformation">
+<AnchorPane prefHeight="453.0" prefWidth="632.0" styleClass="eventInformationWindow" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSEventInformation">
    <children>
       <HBox fx:id="navBar" prefHeight="83.0" prefWidth="680.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -29,7 +29,7 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="402.0">
                      <children>
-                        <Label fx:id="eventNameLabel" prefHeight="53.0" prefWidth="251.0" text="Event Name">
+                        <Label fx:id="eventNameLabel" prefHeight="53.0" prefWidth="330.0" text="Event Name">
                            <font>
                               <Font size="36.0" />
                            </font>

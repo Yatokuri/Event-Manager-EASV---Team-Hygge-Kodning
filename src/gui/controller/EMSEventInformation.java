@@ -43,7 +43,6 @@ public class EMSEventInformation implements Initializable {
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) { this.emsCoordinator = emsCoordinator; }
     public void setEMSCoordinatorScene(Scene emsCoordinatorScene) { this.emsCoordinatorScene = emsCoordinatorScene; }
     public void setEMSAdmin(EMSAdmin emsAdmin) { this.emsAdmin = emsAdmin; }
-    public void setArchivedEventModel(ArchivedEventModel archivedEventModel) { this.archivedEventModel = archivedEventModel; }
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,6 +53,7 @@ public class EMSEventInformation implements Initializable {
         if (emsCoordinator != null) {
             eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
             eventTicketsModel = EventTicketsModel.getInstance();
+            archivedEventModel = ArchivedEventModel.getInstance();
         }
         if (emsAdmin != null)   { //Admin cannot update so we remove the button
             eventBeingUpdated = emsAdmin.getEventBeingUpdated();
