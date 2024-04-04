@@ -376,8 +376,12 @@ public class EMSTicketMain implements Initializable {
                     setGraphic(editButton);
                 if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
                     setGraphic(deleteButton);
-                if (getTableView().getColumns().indexOf(getTableColumn()) == 4)
-                    setGraphic(printButton);
+                if (rowData instanceof Tickets tickets){
+                    if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 1)
+                        setGraphic(saleButton);
+                    else if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 0)
+                        setGraphic(printButton);
+                }
             }
         }
         public static <S> javafx.util.Callback<TableColumn<S, Void>, TableCell<S, Void>> forTableColumn(TicketModel ticketModel) {
