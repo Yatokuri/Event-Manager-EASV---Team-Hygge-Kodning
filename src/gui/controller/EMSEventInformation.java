@@ -3,6 +3,7 @@ package gui.controller;
 import gui.model.ArchivedEventModel;
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
+import gui.model.EventTicketsModel;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,6 +29,7 @@ public class EMSEventInformation implements Initializable {
     public DisplayErrorModel displayErrorModel;
     public EventModel eventModel;
     public ArchivedEventModel archivedEventModel;
+    private EventTicketsModel eventTicketsModel;
     public be.Event eventBeingUpdated;
     public Scene emsCoordinatorScene;
 
@@ -48,9 +50,10 @@ public class EMSEventInformation implements Initializable {
 
     }
 
-    public void startupProgram() { // This setup program
+    public void startupProgram() throws Exception { // This setup program
         if (emsCoordinator != null) {
             eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
+            eventTicketsModel = EventTicketsModel.getInstance();
         }
         if (emsAdmin != null)   { //Admin cannot update so we remove the button
             eventBeingUpdated = emsAdmin.getEventBeingUpdated();
@@ -110,6 +113,7 @@ public class EMSEventInformation implements Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     archivedEventModel.archiveEvent(eventBeingUpdated);
+                    eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
                     eventModel.deleteEvent(eventBeingUpdated);
                     emsCoordinator.startupProgram(); // Refresh UI
                 } catch (Exception e) {

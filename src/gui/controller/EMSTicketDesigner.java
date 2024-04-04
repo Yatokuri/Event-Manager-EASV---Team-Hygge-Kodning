@@ -79,6 +79,7 @@ public class EMSTicketDesigner implements Initializable {
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
+    private EventTicketsModel eventTicketsModel;
     private final DisplayErrorModel displayErrorModel;
 
     private be.Event selectedEvent;
@@ -106,6 +107,7 @@ public class EMSTicketDesigner implements Initializable {
         ticketModel = TicketModel.getInstance();
         eventModel = EventModel.getInstance();
         systemIMGModel = ImageModel.getInstance();
+        eventTicketsModel = EventTicketsModel.getInstance();
     }
 
     public void startupProgram() { //This setup program
@@ -549,6 +551,7 @@ public class EMSTicketDesigner implements Initializable {
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
                 Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated);
                 ticketModel.createNewTicket(newTicket);
+                eventTicketsModel.addTicketsToEvent(newTicket, selectedEvent);
                 backButton.setText("Back");
                 backButton();
             } catch (Exception e) {
