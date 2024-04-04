@@ -3,6 +3,7 @@ package gui.model;
 import be.Event;
 import be.Tickets;
 import bll.EventTicketsManager;
+import bll.TicketManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -11,10 +12,12 @@ public class EventTicketsModel {
 
     private static EventTicketsModel instance;
     private final EventTicketsManager eventTicketsManager;
+    private final TicketManager ticketManager;
     private final ObservableList<Tickets> eventTicketsToBeViewed;
 
     private EventTicketsModel() throws Exception {
         eventTicketsManager = new EventTicketsManager();
+        ticketManager = new TicketManager();
         eventTicketsToBeViewed = FXCollections.observableArrayList();
         eventModel = EventModel.getInstance();
         for (Event p: eventModel.getObsEvents()) {
@@ -53,6 +56,7 @@ public class EventTicketsModel {
     public void deleteTicketsFromEvent (Tickets tickets, be.Event event) throws Exception { // Sends a request to the database to delete a tickets from a event
         eventTicketsManager.removeImageFromTickets(tickets); // Remove the IMG from db too
         eventTicketsManager.deleteTicketsFromEvent(tickets , event);
+        ticketManager.deleteTicket(tickets);
         eventTicketsToBeViewed.clear();
         eventTicketsToBeViewed.addAll(eventTicketsManager.getAllTicketsEvent(event)); // Updates the event observable list with the changes
     }
@@ -63,6 +67,11 @@ public class EventTicketsModel {
             eventTicketsManager.removeImageFromTickets(t);
         }
         eventTicketsManager.deleteAllTicketsFromEvent(event);
+        for (Tickets t : eventTicketsToBeViewed) { // Remove the ticket from db too
+            ticketManager.deleteTicket(t);
+        }
+        eventTicketsToBeViewed.clear();
+        eventTicketsToBeViewed.addAll(eventTicketsManager.getAllTicketsEvent(event)); // Updates the event observable list with the changes
     }
     public ObservableList<Tickets> getObservableEventsTickets() {return eventTicketsToBeViewed;} // Returns the event
 }
