@@ -48,6 +48,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
     private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,50}");
     private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,80}");
     private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*\n*]{3,300}");
+    private final Pattern eventStartDatePattern = Pattern.compile("[0-9]{4}+-[0-9]{2}+-[0-9]{2}+\s[0-9]{2}+:[0-9]{2}+:[0-9]{2}");
 
 
     public void setEventModel(EventModel eventModel) {
@@ -70,6 +71,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         eventNameTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventName());
         locationTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventLocation());
         eventNotesTextArea.textProperty().addListener((observable, oldValue, newValue) -> validateEventNotes());
+        eventStartDatePicker.accessibleTextProperty().addListener((observable, oldValue, newValue) -> validateEventStartDate());
     }
 
     public void setType(String type) {
@@ -94,7 +96,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
 
         eventStartDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
             @Override
             public String toString(LocalDate date){
@@ -107,7 +109,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             }
         });
         eventEndDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
             @Override
             public String toString(LocalDate date){
@@ -139,8 +141,10 @@ public class EMSCoordinatorEventCreator implements Initializable {
             displayErrorModel.displayErrorC("Missing Event Name");
             return;
         }
-        String eventStartDate = eventStartDatePicker.getEditor().getText();
-        if (eventStartDate == null || eventStartDate.isEmpty()){
+        String eventStartDate;
+        if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(eventStartDatePattern), eventStartDatePicker.getEditor().getText()))
+            eventStartDate = eventStartDatePicker.getEditor().getText();
+        else{
             displayErrorModel.displayErrorC("Missing Event start Date");
             return;
         }
@@ -184,7 +188,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             if (!eventStartDatePicker.getEditor().getText().isEmpty())
                 eventBeingUpdated.setEventStartDateTime(eventStartDatePicker.getEditor().getText());
             else {
-                displayErrorModel.displayErrorC("Missing Event Start Date");
+                displayErrorModel.displayErrorC("Missing Event Start Date & Time");
                 return;
             }
             eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
@@ -222,6 +226,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 eventNameTextField.setStyle("-fx-border-color: red;");
             }
         }
+        else
+            eventNameTextField.setStyle("-fx-border-color: null");
     }
 
     public void validateEventLocation(){
@@ -233,6 +239,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 locationTextField.setStyle("-fx-border-color: red;");
             }
         }
+        else
+            locationTextField.setStyle("-fx-background-color: null");
     }
 
     public void validateEventNotes(){
@@ -244,6 +252,20 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 eventNotesTextArea.setStyle("-fx-border-color: red;");
             }
         }
+        else
+            eventNotesTextArea.setStyle("-fx-border-color: null");
+    }
+    public void validateEventStartDate(){
+        if (!eventStartDatePicker.getEditor().getText().isEmpty()){
+            if (Pattern.matches(String.valueOf(eventNotesPattern),eventNotesTextArea.getText())){
+                eventStartDatePicker.setStyle("-fx-border-color: green;");
+            }
+            else {
+                eventStartDatePicker.setStyle("-fx-border-color: red;");
+            }
+        }
+        else
+            eventStartDatePicker.setStyle("-fx-border-color: null");
     }
     @FXML
     private void confirmButton() {
