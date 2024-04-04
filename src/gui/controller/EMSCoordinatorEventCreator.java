@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 
 public class EMSCoordinatorEventCreator implements Initializable {
 
+    public HBox eventStartDateTimePicker;
     private EMSCoordinator emsCoordinator;
 
     private EventModel eventModel;
@@ -48,7 +50,6 @@ public class EMSCoordinatorEventCreator implements Initializable {
     private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,50}");
     private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*]{3,80}");
     private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*\n*]{3,300}");
-    private final Pattern eventStartDatePattern = Pattern.compile("[0-9]{4}+-[0-9]{2}+-[0-9]{2}+\s[0-9]{2}+:[0-9]{2}+:[0-9]{2}");
 
 
     public void setEventModel(EventModel eventModel) {
@@ -71,7 +72,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         eventNameTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventName());
         locationTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventLocation());
         eventNotesTextArea.textProperty().addListener((observable, oldValue, newValue) -> validateEventNotes());
-        eventStartDatePicker.accessibleTextProperty().addListener((observable, oldValue, newValue) -> validateEventStartDate());
+        eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateEventStartDate());
     }
 
     public void setType(String type) {
@@ -81,7 +82,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
     public void startupProgram() { //This setup program
 
         eventNotesTextArea.setWrapText(true);
+
         eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
+
 
         if (type.equals("Create"))  {
             createUpdateEventLabel.setText("Create");
@@ -93,10 +96,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
             updateEventSetup();
         }
 
-
-
         eventStartDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             @Override
             public String toString(LocalDate date){
@@ -109,7 +110,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             }
         });
         eventEndDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             @Override
             public String toString(LocalDate date){
@@ -142,7 +143,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             return;
         }
         String eventStartDate;
-        if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(eventStartDatePattern), eventStartDatePicker.getEditor().getText()))
+        if (!eventStartDatePicker.getEditor().getText().isEmpty())
             eventStartDate = eventStartDatePicker.getEditor().getText();
         else{
             displayErrorModel.displayErrorC("Missing Event start Date");
