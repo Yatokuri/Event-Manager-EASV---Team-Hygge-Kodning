@@ -184,6 +184,7 @@ public class EMSCoordinator {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
+                    archivedEventModel.archiveEvent(event);
                     eventModel.deleteEvent(event);
                     setupEvents();
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));

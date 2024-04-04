@@ -182,6 +182,7 @@ public class EMSAdmin {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
+                    archivedEventModel.archiveEvent(event);
                     eventModel.deleteEvent(event);
                     setupEvents();
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
@@ -254,6 +255,7 @@ public class EMSAdmin {
             EMSEventInformation controller = loader.getController();
             controller.setEventModel(eventModel);
             controller.setEMSAdmin(this);
+            controller.setArchivedEventModel(archivedEventModel);
             controller.startupProgram();
             EMSEventInformation.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSEventInformation.showAndWait();

@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.model.ArchivedEventModel;
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
 import javafx.event.Event;
@@ -26,6 +27,7 @@ public class EMSEventInformation implements Initializable {
     public EMSAdmin emsAdmin;
     public DisplayErrorModel displayErrorModel;
     public EventModel eventModel;
+    public ArchivedEventModel archivedEventModel;
     public be.Event eventBeingUpdated;
     public Scene emsCoordinatorScene;
 
@@ -36,15 +38,10 @@ public class EMSEventInformation implements Initializable {
     public void setEventModel(EventModel eventModel) {
         this.eventModel = eventModel;
     }
-    public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
-        this.emsCoordinator = emsCoordinator;
-    }
-    public void setEMSCoordinatorScene(Scene emsCoordinatorScene)  {
-        this.emsCoordinatorScene = emsCoordinatorScene;
-    }
-    public void setEMSAdmin(EMSAdmin emsAdmin) {
-        this.emsAdmin = emsAdmin;
-    }
+    public void setEMSCoordinator(EMSCoordinator emsCoordinator) { this.emsCoordinator = emsCoordinator; }
+    public void setEMSCoordinatorScene(Scene emsCoordinatorScene) { this.emsCoordinatorScene = emsCoordinatorScene; }
+    public void setEMSAdmin(EMSAdmin emsAdmin) { this.emsAdmin = emsAdmin; }
+    public void setArchivedEventModel(ArchivedEventModel archivedEventModel) { this.archivedEventModel = archivedEventModel; }
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -112,6 +109,7 @@ public class EMSEventInformation implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
+                    archivedEventModel.archiveEvent(eventBeingUpdated);
                     eventModel.deleteEvent(eventBeingUpdated);
                     emsCoordinator.startupProgram(); // Refresh UI
                 } catch (Exception e) {
@@ -132,6 +130,7 @@ public class EMSEventInformation implements Initializable {
             EMSCoordinatorEventCreator controller = loader.getController();
             controller.setType("Update");
             controller.setEventModel(eventModel);
+            controller.setArchivedEventModel(archivedEventModel);
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();
             // Set event handler for window hiding event, so we can update the event

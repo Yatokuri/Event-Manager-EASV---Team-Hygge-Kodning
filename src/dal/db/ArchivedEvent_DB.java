@@ -84,14 +84,14 @@ public class ArchivedEvent_DB {
     }
 
     private be.Event generateArchivedEvent(ResultSet rs) throws SQLException {
-        String eventName = rs.getString("EventName");
-        String eventStart = rs.getString("EventStart");
-        String eventEnd = rs.getString("EventEnd");
-        String location = rs.getString("Location");
-        String locationGuidance = rs.getString("LocationGuidance");
-        String eventNotes = rs.getString("EventNotes");
-        int eventID = rs.getInt("EventID");
-        return new Event(eventName, eventStart, eventEnd, location, locationGuidance, eventNotes, eventID);
+        String archivedEventName = rs.getString("ArchivedEventName");
+        String archivedEventStart = rs.getString("ArchivedEventStart");
+        String archivedEventEnd = rs.getString("ArchivedEventEnd");
+        String archivedLocation = rs.getString("ArchivedLocation");
+        String archivedLocationGuidance = rs.getString("ArchivedLocationGuidance");
+        String archivedEventNotes = rs.getString("ArchivedEventNotes");
+        int archivedEventID = rs.getInt("ArchivedEventID");
+        return new Event(archivedEventName, archivedEventStart, archivedEventEnd, archivedLocation, archivedLocationGuidance, archivedEventNotes, archivedEventID);
     }
 
 }

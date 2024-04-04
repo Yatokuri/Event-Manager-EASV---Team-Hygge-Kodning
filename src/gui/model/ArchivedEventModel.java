@@ -15,7 +15,6 @@ public class ArchivedEventModel {
     private ArchivedEventModel() throws Exception {
         archivedEventManager = new ArchivedEventManager();
         archivedEventsToBeViewed = FXCollections.observableArrayList();
-        archivedEventsToBeViewed.addAll(archivedEventManager.getAllEvents());
     }
 
     // Public method to get the singleton instance, so we have control over data
@@ -30,6 +29,10 @@ public class ArchivedEventModel {
         return instance;
     }
 
+    public ObservableList<Event> getArchivedEventsToBeViewed() throws Exception {
+        archivedEventsToBeViewed.addAll(archivedEventManager.getAllArchivedEvents());
+        return archivedEventsToBeViewed;
+    }
     public ObservableList<Event> getObsArchivedEvents() { return archivedEventsToBeViewed; }
 
     public Event archiveEvent(be.Event newEvent) throws Exception {

@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.model.ArchivedEventModel;
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
 import javafx.event.Event;
@@ -27,6 +28,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     private EventModel eventModel;
 
+    private ArchivedEventModel archivedEventModel;
+
     private final DisplayErrorModel displayErrorModel;
 
     private be.Event eventBeingUpdated;
@@ -50,6 +53,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
     public void setEventModel(EventModel eventModel) {
         this.eventModel = eventModel;
     }
+
+    public void setArchivedEventModel(ArchivedEventModel archivedEventModel) { this.archivedEventModel = archivedEventModel;}
 
 
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
@@ -126,8 +131,11 @@ public class EMSCoordinatorEventCreator implements Initializable {
     }
 
     private void createNewEvent(){
-        String eventName = eventNameTextField.getText();
-        if (eventName == null || eventNameTextField.getText().isEmpty()){
+
+        String eventName;
+        if (!eventNameTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventNamePattern), eventNameTextField.getText()))
+            eventName = eventNameTextField.getText();
+        else {
             displayErrorModel.displayErrorC("Missing Event Name");
             return;
         }
@@ -139,20 +147,23 @@ public class EMSCoordinatorEventCreator implements Initializable {
         String eventEndDate = null;
         if (!eventEndDatePicker.getEditor().getText().isEmpty())
             eventEndDate = eventEndDatePicker.getEditor().getText();
-        String location = locationTextField.getText();
-        if (location == null || locationTextField.getText().isEmpty()){
+        String location;
+        if (!locationTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventLocationPattern), locationTextField.getText()))
+            location = locationTextField.getText();
+        else {
             displayErrorModel.displayErrorC("Location for Event Missing");
             return;
         }
         String locationGuidance = null;
         if (!locationGuidanceTextField.getText().isEmpty())
             locationGuidance = locationGuidanceTextField.getText();
-        String eventNotes = eventNotesTextArea.getText();
-        if (eventNotes == null || eventNotesTextArea.getText().isEmpty()){
+        String eventNotes;
+        if (!eventNotesTextArea.getText().isEmpty() && Pattern.matches(String.valueOf(eventNotesPattern), eventNotesTextArea.getText()))
+            eventNotes = eventNotesTextArea.getText();
+        else {
             displayErrorModel.displayErrorC("Missing notes for Event");
             return;
         }
-
         be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1);
         try {
             eventModel.createNewEvent(event);

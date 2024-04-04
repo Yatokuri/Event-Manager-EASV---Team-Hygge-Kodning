@@ -10,7 +10,7 @@ public class ArchivedEventManager {
 
     public ArchivedEventManager() throws Exception { archivedEvent_DB = new ArchivedEvent_DB();  }
 
-    public List<be.Event> getAllEvents() throws Exception { return archivedEvent_DB.getAllArchivedEvents(); }
+    public List<be.Event> getAllArchivedEvents() throws Exception { return archivedEvent_DB.getAllArchivedEvents(); }
 
     public be.Event archiveEvent(be.Event newEvent) throws Exception { return archivedEvent_DB.ArchiveEvent(newEvent); }
 
