@@ -23,8 +23,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -47,7 +51,7 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private TableColumn<Tickets, Integer> colTicketQuantity;
     @FXML
-    private TableColumn<User, Void> colRemove;
+    private TableColumn<User, Void> colEdit, colRemove, colPrintSale;
     private EMSCoordinator emsCoordinator;
     public Scene ticketMainStage;
     private EventModel eventModel;
@@ -59,6 +63,7 @@ public class EMSTicketMain implements Initializable {
     private be.Event selectedEvent;
     private User currentUser;
     private Stage emsCoordinatorStage;
+    private Tickets selectedTicket;
     private boolean menuButtonVisible = false;
 
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
@@ -111,6 +116,8 @@ public class EMSTicketMain implements Initializable {
             System.out.println("Clicked ticket name: " + ticketName); // Print the clicked ticket name
         });
         colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
+        colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
+        colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
         // Custom cell factory for the colUsername column so we can do "● Name"
         colTicketName.setCellFactory(column -> {
             return new TableCell<Tickets, String>() {
@@ -129,7 +136,8 @@ public class EMSTicketMain implements Initializable {
                             if (!isEmpty()) {
                                 Tickets ticket = getTableView().getItems().get(getIndex());
                                 ticketModel.setCurrentTicket(ticket);
-                                createTicket();
+                                selectedTicket = ticket;
+
                             }
                         });
                     }
@@ -148,7 +156,7 @@ public class EMSTicketMain implements Initializable {
             Stage EMSTicketDesigner = new Stage();
             EMSTicketDesigner.setTitle("Ticket Designer");
             EMSTicketDesigner.getIcons().add(new Image("/icons/mainIcon.png"));
-            EMSTicketDesigner.setMaximized(false);
+            EMSTicketDesigner.setMaximized(true);
             EMSTicketDesigner controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();
@@ -163,8 +171,6 @@ public class EMSTicketMain implements Initializable {
             alert.showAndWait();
         }
     }
-
-
 
     @FXML
     private void backButton() {
@@ -213,8 +219,6 @@ public class EMSTicketMain implements Initializable {
         profilePicture.setScaleY(0.61);
     }
 
-
-
     @FXML
     private void openArchivedEvents(ActionEvent actionEvent) {
     }
@@ -256,13 +260,22 @@ public class EMSTicketMain implements Initializable {
 
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
-        private final javafx.scene.control.Button deleteButton;
+        private final Button deleteButton, editButton, printButton, saleButton;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
+        private final Image deleteIcon = new Image("/Icons/Trash_Icon.png");
+        private final Image editIcon = new Image("Icons/Pencil_Icon.png");
+        private final Image printIcon = new Image("Icons/Print_Icon.png");
+        private final Image saleIcon = new Image("Icons/Basket_Icon.png");
         public ButtonCell(TicketModel ticketModel) {
             this.displayErrorModel = new DisplayErrorModel();
 
-            deleteButton = new javafx.scene.control.Button("- ");
+            deleteButton = new Button();
+            ImageView deleteImage = new ImageView();
+            deleteImage.setFitWidth(20);
+            deleteImage.setFitHeight(20);
+            deleteImage.setImage(deleteIcon);
+            deleteButton.setGraphic(deleteImage);
             deleteButton.setPrefWidth(20); // Set preferred width
             deleteButton.setPrefHeight(20); // Set preferred height
             deleteButton.setOnAction(event -> {
@@ -291,9 +304,55 @@ public class EMSTicketMain implements Initializable {
                     }
                 }
             });
+
+            editButton = new Button();
+            ImageView editImage = new ImageView();
+            editImage.setFitWidth(20);
+            editImage.setFitHeight(20);
+            editImage.setImage(editIcon);
+            editButton.setGraphic(editImage);
+            editButton.setPrefWidth(20); // Set preferred width
+            editButton.setPrefHeight(20); // Set preferred height
+            editButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets) {
+
+                }
+            });
+
+            saleButton = new Button();
+            ImageView saleImage = new ImageView();
+            saleImage.setFitWidth(20);
+            saleImage.setFitHeight(20);
+            saleImage.setImage(saleIcon);
+            saleButton.setGraphic(saleImage);
+            saleButton.setPrefWidth(20);
+            saleButton.setPrefHeight(20);
+            saleButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets){
+                    openPrintWindow();
+                }
+            });
+
+            printButton = new Button();
+            ImageView printImage = new ImageView();
+            printImage.setFitWidth(20);
+            printImage.setFitHeight(20);
+            printImage.setImage(printIcon);
+            printButton.setGraphic(printImage);
+            printButton.setPrefWidth(20);
+            printButton.setPrefHeight(20);
+            printButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets){
+                    openPrintWindow();
+                }
+            });
         }
 
-
+        private void openPrintWindow() {
+        }
 
         @Override
         protected void updateItem(Void item, boolean empty) {
@@ -302,9 +361,12 @@ public class EMSTicketMain implements Initializable {
                 setGraphic(null);
             } else {
                 S rowData = getTableView().getItems().get(getIndex());
-                if (rowData instanceof Tickets tickets) {
-                        setGraphic(deleteButton);
-                }
+                if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
+                    setGraphic(editButton);
+                if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
+                    setGraphic(deleteButton);
+                if (getTableView().getColumns().indexOf(getTableColumn()) == 4)
+                    setGraphic(printButton);
             }
         }
         public static <S> javafx.util.Callback<TableColumn<S, Void>, TableCell<S, Void>> forTableColumn(TicketModel ticketModel) {
