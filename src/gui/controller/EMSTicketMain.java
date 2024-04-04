@@ -4,6 +4,8 @@ import be.Tickets;
 import be.User;
 import gui.model.*;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -57,6 +59,7 @@ public class EMSTicketMain implements Initializable {
     private EventModel eventModel;
     private UserModel userModel;
     private EventTicketsModel eventTicketsModel;
+    private GlobalTicketsModel globalTicketsModel;
     private TicketModel ticketModel;
     private final DisplayErrorModel displayErrorModel;
 
@@ -81,6 +84,7 @@ public class EMSTicketMain implements Initializable {
         userModel = UserModel.getInstance();
         ticketModel = TicketModel.getInstance();
         eventModel = EventModel.getInstance();
+        globalTicketsModel = GlobalTicketsModel.getInstance();
         eventTicketsModel = EventTicketsModel.getInstance();
     }
 
@@ -99,15 +103,20 @@ public class EMSTicketMain implements Initializable {
         setupTableview();
     }
 
-    public void setupTableview() {
-
+    public void recreateTableview() {
         try {
             eventTicketsModel.eventTickets(selectedEvent);
-            tblEventTickets.setItems(eventTicketsModel.getObservableEventsTickets());
+            ObservableList<Tickets> combinedList = FXCollections.observableArrayList();
+            combinedList.addAll(eventTicketsModel.getObservableEventsTickets());
+            combinedList.addAll(globalTicketsModel.getObservableGlobalTickets());
+            tblEventTickets.setItems(combinedList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public void setupTableview() {
+        recreateTableview();
         colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
         tblEventTickets.setPlaceholder(new Label("No ticket found"));
@@ -295,6 +304,7 @@ public class EMSTicketMain implements Initializable {
                         try {
                             //ticketModel.deleteTicket(tickets);
                             //eventTicketsModel.deleteTicketsFromEvent(tickets);
+                            //recreateTableview();
                             System.out.println("You want to delete " +  tickets.getTicketName() + "but it deactivated");
                         } catch (Exception e) {
                             displayErrorModel.displayErrorC("User not deleted try again");

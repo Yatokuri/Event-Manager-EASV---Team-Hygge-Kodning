@@ -442,3 +442,11 @@
     -fx-indeterminate-repeat-count: 2;
     -fx-background-color: transparent;
 }
+
+.toggle-button .mfx-ripple-generator {
+    -mfx-ripple-color: derive(-ButtonHoverColor, 10%);
+    -fx-opacity: 0.2;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+

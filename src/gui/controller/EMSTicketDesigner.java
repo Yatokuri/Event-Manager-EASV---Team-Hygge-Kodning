@@ -5,8 +5,10 @@ import be.User;
 import gui.model.*;
 import gui.util.ImageCompressor;
 import gui.util.TicketSerializerRecreate;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -70,6 +72,8 @@ public class EMSTicketDesigner implements Initializable {
     private StackPane profilePicturePane;
     @FXML
     private Button saveButton, backButton;
+    @FXML
+    private MFXToggleButton toggleButtonType;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -87,6 +91,7 @@ public class EMSTicketDesigner implements Initializable {
     private Stage emsTicketMainStage;
     private boolean menuButtonVisible = false;
     private boolean cancelledNewTicket = false;
+    private boolean isItLocalTicket = true;
 
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
@@ -770,5 +775,22 @@ public class EMSTicketDesigner implements Initializable {
         controller.setPrimaryStage(currentStage);
         controller.startupProgram();
         currentStage.setScene(new Scene(root));
+    }
+
+    @FXML
+    private void toggleButtonType() {
+        if (toggleButtonType.isSelected()) {
+            System.out.println("Global selected");
+            isItLocalTicket  = false;
+        } else {
+            System.out.println("Local selected");
+            isItLocalTicket = true;
+        }
+    }
+
+    @FXML
+    private void btnToggleButtonType(ActionEvent actionEvent) {
+        toggleButtonType.setSelected(!toggleButtonType.isSelected());
+        toggleButtonType();
     }
 }
