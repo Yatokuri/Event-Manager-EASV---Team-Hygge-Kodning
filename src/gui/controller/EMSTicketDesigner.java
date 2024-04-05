@@ -2,7 +2,10 @@ package gui.controller;
 
 import be.Tickets;
 import be.User;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import gui.model.*;
+import gui.util.BarCode;
 import gui.util.ImageCompressor;
 import gui.util.TicketSerializerRecreate;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
@@ -38,8 +41,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import java.io.File;
-import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
@@ -81,6 +86,7 @@ public class EMSTicketDesigner implements Initializable {
     private EMSTicketMain emsTicketMain;
     private EventModel eventModel;
     private ImageCompressor imageCompressor;
+    private BarCode barCode = new BarCode();
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
@@ -203,8 +209,17 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML
-    private void btnAddGenerateQR() {
-        //TODO User can add Image move, resize and rotate them and generate automatic
+    private void btnAddGenerateQR() throws Exception {
+        // Generate QR code image with specified data and error correction level
+        Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
+        hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+        BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique", hashmap, 100, 100);
+        // Save QR code image to file named "QR.png"
+        File outputFile = new File("QR.png");
+        ImageIO.write(qrCodeImage, "png", outputFile);
+        // Load saved image into ImageView
+        Image image = new Image(outputFile.toURI().toString());
+        setupNewImage(image, "QR");
     }
     @FXML
     private void btnAddID() {
@@ -296,16 +311,20 @@ public class EMSTicketDesigner implements Initializable {
 
         if (selectedFile != null) {
             Image image = new Image(selectedFile.toURI().toString());
-            ImageView imageView = new ImageView(image);
-            imageView.setPreserveRatio(true);
-            setupNode(imageView);
-            setSelectedNode(imageView);
-            double halfWidth = ticketArea.getWidth() * 0.5; // New img fill 50% of ticket width
-            imageView.setFitWidth(halfWidth);
-            imageSizeSider.setValue(halfWidth);
-            imageRotateSlider.setValue(imageView.getRotate());
-            ticketArea.getChildren().add(imageView);
+            setupNewImage(image, "Normal");
         }
+    }
+
+    private void setupNewImage(Image image, String type) {
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(!Objects.equals(type, "QR")); //If Image is QR the ration but not could be changed to make sure it can be scanned
+        setupNode(imageView);
+        setSelectedNode(imageView);
+        double halfWidth = ticketArea.getWidth() * 0.5; // New img fill 50% of ticket width
+        imageView.setFitWidth(halfWidth);
+        imageSizeSider.setValue(halfWidth);
+        imageRotateSlider.setValue(imageView.getRotate());
+        ticketArea.getChildren().add(imageView);
     }
 
     private void setupNode(Node node) {

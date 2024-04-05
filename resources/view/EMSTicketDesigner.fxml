@@ -105,7 +105,7 @@
                            <children>
                               <Button fx:id="btnAddText" mnemonicParsing="false" onAction="#btnAddText" prefWidth="75.0" text="Add Text" />
                               <Button fx:id="btnAddImage" mnemonicParsing="false" onAction="#btnAddImage" prefWidth="75.0" text="Add Image" />
-                              <Button fx:id="btnAddGenerateQR" disable="true" mnemonicParsing="false" onAction="#btnAddGenerateQR" prefWidth="75.0" text="Add QR" />
+                              <Button fx:id="btnAddGenerateQR" mnemonicParsing="false" onAction="#btnAddGenerateQR" prefWidth="75.0" text="Add QR" />
                               <Button fx:id="btnAddID" disable="true" mnemonicParsing="false" onAction="#btnAddID" prefWidth="75.0" text="Add ID" />
                            </children>
                         </HBox>

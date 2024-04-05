@@ -5,6 +5,7 @@ import be.Tickets;
 import dal.db.Ticket_DB;
 
 import java.util.Collection;
+import java.util.List;
 public class TicketManager {
     private final Ticket_DB ticket_DB;
     private ImageManager imageManager;
@@ -21,7 +22,7 @@ public class TicketManager {
     public void updateSoldTicket(TicketSold selectedTicketSold) throws Exception { ticket_DB.updateSoldTicket(selectedTicketSold); }
 
     public void deleteSoldTicket(TicketSold selectedTicketSold) throws Exception { ticket_DB.deleteSoldTicket(selectedTicketSold); }
-
+    public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {return ticket_DB.getAllSoldTickets(tickets);}
 
     public Collection<Tickets> getAllTickets() throws Exception { return ticket_DB.getAllTicket();}
     public void getTicket(Tickets selectedTicket) throws Exception { ticket_DB.getTicket(selectedTicket); }

@@ -10,7 +10,7 @@ import javafx.collections.ObservableList;
 public class TicketModel {
 
     private final TicketManager ticketManager;
-    private ObservableList<Tickets> ticketSoldToBeViewed;
+    private ObservableList<TicketSold> ticketSoldToBeViewed;
     private ObservableList<Tickets> ticketToBeViewed;
     private Tickets currentTicket;
     private static TicketModel instance;
@@ -35,8 +35,12 @@ public class TicketModel {
         }
         return instance;
     }
-
     //This is for sold/given Ticket
+    public void ticketsUser(be.Tickets tickets) throws Exception { // changes the ticket you are viewing and inserts the relevant user
+        ticketSoldToBeViewed.clear();
+        ticketSoldToBeViewed.addAll(ticketManager.getAllSoldTickets(tickets));
+    }
+    public ObservableList<TicketSold> getObservableSoldTickets() {return ticketSoldToBeViewed;}
     public TicketSold getSoldTicket(TicketSold ticketSoldToFetch) throws Exception {
         TicketSold ticketSold;
         ticketSold = ticketManager.getSoldTicket(ticketSoldToFetch);

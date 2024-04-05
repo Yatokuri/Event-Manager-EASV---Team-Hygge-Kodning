@@ -1,5 +1,6 @@
 package dal.db;
 
+import be.Event;
 import be.TicketSold;
 import be.Tickets;
 
@@ -18,7 +19,7 @@ public class Ticket_DB {
 
 
     public TicketSold createNewSoldTicket(TicketSold newTicketSold) throws Exception {
-        String sql = "INSERT INTO dbo.Ticket (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID, TicketEventID) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dbo.TicketSold (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID, TicketEventID) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
@@ -51,10 +52,29 @@ public class Ticket_DB {
         }
     }
 
+    public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {
+        ArrayList<TicketSold> allTicketsForEvent = new ArrayList<>();
+        String sql = "SELECT * FROM dbo.TicketSold WHERE TicketID = ?";
+        //String sql = "SELECT Tickets.* FROM Tickets JOIN dbo.EventTickets ON Tickets.TicketID = EventTickets.TicketID WHERE EventTickets.EventID = ?";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, tickets.getTicketID());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                TicketSold ticketSold = generateTicketSold(rs);
+                allTicketsForEvent.add(ticketSold);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not get tickets sold", ex);
+        }
+        return allTicketsForEvent;
+    }
+
     public TicketSold fetchSoldTicket(TicketSold ticketSoldToFetch) throws Exception {
-        String sql = "SELECT * FROM dbo.Ticket WHERE BuyerID = ?";
+        String sql = "SELECT * FROM dbo.TicketSold WHERE TransactionID = ?";
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setInt(1, ticketSoldToFetch.getBuyerID());
+            stmt.setInt(1, ticketSoldToFetch.getTransactionID());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             return new TicketSold(rs.getString("BuyerFirstName"),
@@ -62,7 +82,7 @@ public class Ticket_DB {
                     rs.getString("BuyerEmail"),
                     rs.getInt("TicketID"),
                     rs.getInt("TicketEventID"),
-                    rs.getInt("BuyerID"));
+                    rs.getInt("TransactionID"));
         }
         catch (SQLException ex){
             throw new Exception("Could not fetch Ticket", ex);
@@ -70,7 +90,7 @@ public class Ticket_DB {
     }
 
     public void updateSoldTicket(TicketSold ticketSold) throws Exception {
-        String sql = "UPDATE dbo.Ticket SET BuyerFirstName = ?, BuyerLastName = ?, BuyerEmail = ? WHERE BuyerID = ?";
+        String sql = "UPDATE dbo.TicketSold SET BuyerFirstName = ?, BuyerLastName = ?, BuyerEmail = ? WHERE TransactionID = ?";
 
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, ticketSold.getFirstName());
@@ -85,11 +105,11 @@ public class Ticket_DB {
     }
 
     public void deleteSoldTicket(TicketSold ticketSoldToDelete) throws Exception {
-        String sql = "DELETE FROM dbo.Ticket WHERE BuyerID = ?";
+        String sql = "DELETE FROM dbo.TicketSold WHERE TransactionID = ?";
 
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, ticketSoldToDelete.getBuyerID());
+            stmt.setInt(1, ticketSoldToDelete.getTransactionID());
             stmt.executeUpdate();
         }
         catch (SQLException ex){
@@ -115,12 +135,13 @@ public class Ticket_DB {
     }
 
     public Tickets createNewTicket(Tickets newTicket) throws Exception {
-        String sql = "INSERT INTO dbo.Tickets (TicketQuantity, TicketName, TicketJSON) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO dbo.Tickets (TicketQuantity, TicketName, TicketJSON, TicketLocal) VALUES (?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, newTicket.getTicketQuantity());
             pstmt.setString(2, newTicket.getTicketName());
             pstmt.setString(3, newTicket.getTicketJSON());
+            pstmt.setInt(4, newTicket.getTicketID());
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -137,13 +158,14 @@ public class Ticket_DB {
     }
 
     public void updateTicket(Tickets updatedTicket) throws Exception {
-        String sql = "UPDATE dbo.Tickets SET TicketQuantity = ?, TicketName = ?, TicketJSON = ? WHERE TicketID = ?";
+        String sql = "UPDATE dbo.Tickets SET TicketQuantity = ?, TicketName = ?, TicketJSON = ?, TicketLocal = ? WHERE TicketID = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, updatedTicket.getTicketQuantity());
             stmt.setString(2, updatedTicket.getTicketName());
             stmt.setString(3, updatedTicket.getTicketJSON());
-            stmt.setInt(4, updatedTicket.getTicketID());
+            stmt.setInt(4, updatedTicket.getIsILocal());
+            stmt.setInt(5, updatedTicket.getTicketID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
             throw new Exception("Could not update ticket", ex);
@@ -169,6 +191,17 @@ public class Ticket_DB {
         String ticketJSON = rs.getString("TicketJSON");
         int ticketLocal = rs.getInt("TicketLocal");
         return new Tickets(ticketID, ticketQuantity, ticketName, ticketJSON, ticketLocal);
+    }
+
+    // Helper method to generate a SoldTicket object from the ResultSet
+    public static TicketSold generateTicketSold(ResultSet rs) throws SQLException {
+        String firstName = rs.getString("BuyerFirstName");
+        String lastName = rs.getString("BuyerLastName");
+        String email = rs.getString("BuyerEmail");
+        int ticketID = rs.getInt("TicketID");
+        int ticketEventID = rs.getInt("TicketEventID");
+        int transactionID = rs.getInt("TransactionID");
+        return new TicketSold(firstName, lastName, email, ticketID, ticketEventID, transactionID);
     }
 
     public Tickets getTicket(Tickets ticketToFetch) throws Exception {

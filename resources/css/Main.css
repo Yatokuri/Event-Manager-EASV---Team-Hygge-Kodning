@@ -137,13 +137,13 @@
     -fx-text-fill: white;
 }
 .eventInformationWindow .text-area{
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-text-fill: white;
 
 }
 
 .eventInformationWindow .text-area .content {
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
 }
 
 .eventInformationWindow .label {
@@ -151,11 +151,11 @@
 }
 
 #eventInformationBackground{
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
 }
 
 .createUpdateEvent .button{
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-text-fill: white;
 }
 
@@ -167,7 +167,7 @@
 }
 
 #eventCreateUpdateBackgroundVbox {
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
 }
 
 #navBar {
@@ -182,17 +182,17 @@
 }
 
 #buttonColor {
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-text-fill: white;
 }
 
 #boxColor {
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-text-fill: white;
 }
 
 #backgroundColor{
-    -fx-background-color: #E4E4E4;
+    -fx-background-color: derive(-BackgroundColor, 0%);
     -fx-text-fill: black;
 }
 
@@ -425,7 +425,7 @@
 }
 
 .ticketbox {
-    -fx-background-color: #464646;
+    -fx-background-color: derive(-BoxButtonColor, 0%);
     -fx-text-fill: white;
 }
 /* So the user can copy its username but dont get border highlight*/
@@ -495,3 +495,20 @@
     -fx-opacity: 0;
 }
 
+
+/* CSS for the Shop system */
+.shopSystem .shopSystemInfo {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-text-fill: white;
+}
+
+.shopSystem .shopSystemTicket {
+    -fx-background-color: derive(-BoxButtonColor, 50%);
+    -fx-text-fill: white;
+    -fx-border-color: black;
+    -fx-border-width: 1,5px
+}
+
+.shopSystem .label{
+    -fx-text-fill: white;
+}

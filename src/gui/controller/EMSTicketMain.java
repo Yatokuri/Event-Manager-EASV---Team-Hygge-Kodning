@@ -1,5 +1,6 @@
 package gui.controller;
 
+import be.TicketSold;
 import be.Tickets;
 import be.User;
 import gui.model.*;
@@ -25,13 +26,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -48,13 +44,17 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private StackPane profilePicturePane;
     @FXML
-    private TableView<Tickets> tblEventTickets, tblEventTicketsUsers;
+    private TableView<Tickets> tblEventTickets;
+    @FXML
+    private TableView<TicketSold> tblEventTicketsUsers;
     @FXML
     private TableColumn<Tickets, String> colTicketName;
     @FXML
     private TableColumn<Tickets, Integer> colTicketQuantity;
     @FXML
-    private TableColumn<User, Void> colEdit, colRemove, colPrintSale;
+    private TableColumn<TicketSold, String> colUser;
+    @FXML
+    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove;
     private EMSCoordinator emsCoordinator;
     public Scene ticketMainStage;
     private EventModel eventModel;
@@ -132,15 +132,16 @@ public class EMSTicketMain implements Initializable {
         recreateTableview();
         colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
+        colUser.setCellValueFactory(new PropertyValueFactory<>("CustomUserInfo"));;
         tblEventTickets.setPlaceholder(new Label("No ticket found"));
         tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
         colTicketName.setOnEditCommit(event -> {
             String ticketName = event.getNewValue(); // Get the new ticket name
             System.out.println("Clicked ticket name: " + ticketName); // Print the clicked ticket name
         });
-        colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
-        colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
-        colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel));
+        colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
+        colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
+        colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
         // Custom cell factory for the colUsername column so we can do "● Name"
         colTicketName.setCellFactory(column -> {
             return new TableCell<Tickets, String>() {
@@ -180,7 +181,14 @@ public class EMSTicketMain implements Initializable {
             tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
             return;
         }
+        try {
+            ticketModel.ticketsUser(ticket);
+            tblEventTicketsUsers.setItems(ticketModel.getObservableSoldTickets());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " has not been sold yet"));
+
         //TODO Add stuff there check if users have purchase this ticket
     }
     public void createTicketButton() { //When use of the button no one is selected
@@ -297,6 +305,11 @@ public class EMSTicketMain implements Initializable {
         currentStage.setScene(new Scene(root));
     }
 
+    public void refreshUserTbl() throws Exception {
+        ticketModel.ticketsUser(selectedTicket);
+        tblEventTicketsUsers.setItems(ticketModel.getObservableSoldTickets());
+    }
+
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
         private final Button deleteButton, editButton, printButton, saleButton;
@@ -306,9 +319,11 @@ public class EMSTicketMain implements Initializable {
         private final Image editIcon = new Image("Icons/Pencil_Icon.png");
         private final Image printIcon = new Image("Icons/Print_Icon.png");
         private final Image saleIcon = new Image("Icons/Basket_Icon.png");
-        public ButtonCell(TicketModel ticketModel) {
+        private Tickets currentTicket;
+        private EMSTicketMain emsTicketMain;
+        public ButtonCell(TicketModel ticketModel, EMSTicketMain emsTicketMain) {
             this.displayErrorModel = new DisplayErrorModel();
-
+            this.emsTicketMain = emsTicketMain;
             deleteButton = new Button();
             ImageView deleteImage = new ImageView();
             deleteImage.setFitWidth(20);
@@ -371,7 +386,8 @@ public class EMSTicketMain implements Initializable {
             saleButton.setOnAction(event -> {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets){
-                    openPrintWindow();
+                    currentTicket = tickets;
+                    openShopWindow();
                 }
             });
 
@@ -389,6 +405,28 @@ public class EMSTicketMain implements Initializable {
                     openPrintWindow();
                 }
             });
+        }
+
+        private void openShopWindow() {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSTicketShop.fxml"));
+                Parent root = loader.load();
+                Stage EMSTicketShop = new Stage();
+                EMSTicketShop.setTitle("Ticket Shop");
+                EMSTicketShop.getIcons().add(new Image("/icons/mainIcon.png"));
+                EMSTicketShop.initModality(Modality.APPLICATION_MODAL);
+                EMSTicketShop controller = loader.getController();
+                EMSTicketShop.setResizable(false);
+                controller.setCurrentTicket(currentTicket);
+                controller.setEMSTicketMain(emsTicketMain);
+                controller.startupProgram();
+                EMSTicketShop.setScene(new Scene(root)); // Set the scene in the existing stage
+                EMSTicketShop.showAndWait();
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Try to restart program");
+                alert.showAndWait();
+            }
+
         }
 
         private void openPrintWindow() {
@@ -413,8 +451,8 @@ public class EMSTicketMain implements Initializable {
                 }
             }
         }
-        public static <S> javafx.util.Callback<TableColumn<S, Void>, TableCell<S, Void>> forTableColumn(TicketModel ticketModel) {
-            return param -> new ButtonCell<>(ticketModel);
+        public static <S> javafx.util.Callback<TableColumn<S, Void>, TableCell<S, Void>> forTableColumn(TicketModel ticketModel, EMSTicketMain emsTicketMain) {
+            return param -> new ButtonCell<>(ticketModel, emsTicketMain);
         }
     }
 }
