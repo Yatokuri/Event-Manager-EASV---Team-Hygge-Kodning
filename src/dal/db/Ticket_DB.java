@@ -18,6 +18,80 @@ public class Ticket_DB {
     }
 
 
+
+    public void createNewSoldTicketCode(String code, TicketSold newTicketSold) throws Exception {
+        String sql = "INSERT INTO dbo.Codes (Code, TicketID, TransactionID) VALUES (?, ?, ?)";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        {
+            // Bind parameters
+            stmt.setString(1, code);
+            stmt.setInt(2, newTicketSold.getTicketID());
+            stmt.setInt(3, newTicketSold.getTransactionID());
+            // Execute the insert
+            stmt.executeUpdate();
+        }
+        catch (SQLException ex)
+        {
+            throw new Exception("Could not create Code", ex);
+        }
+    }
+
+    public String readNewSoldTicketCode(TicketSold ticketSoldToFetch) throws Exception {
+        String sql = "SELECT * FROM dbo.Codes WHERE TransactionID = ?";
+        try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, ticketSoldToFetch.getTransactionID());
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            return rs.getString("Code");
+        }
+        catch (SQLException ex){
+            throw new Exception("Could not read Code", ex);
+        }
+    }
+
+    public void updateNewSoldTicketCode(TicketSold ticketSoldToUpdate) throws Exception {
+        String sql = "UPDATE dbo.Codes SET BuyerFirstName = ?, BuyerLastName = ?, BuyerEmail = ? WHERE TransactionID = ?";
+
+        try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, ticketSoldToUpdate.getFirstName());
+            stmt.setString(2, ticketSoldToUpdate.getLastName());
+            stmt.setString(3, ticketSoldToUpdate.getEmail());
+            stmt.setInt(4, ticketSoldToUpdate.getTicketID());
+            stmt.executeUpdate();
+        }
+        catch (SQLException ex){
+            throw new Exception("Could not update Ticket", ex);
+        }
+    }
+
+    public void deleteSoldTicketCode(TicketSold ticketSoldToDelete) throws Exception {
+        String sql = "DELETE FROM dbo.Codes WHERE TransactionID = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ticketSoldToDelete.getTransactionID());
+            stmt.executeUpdate();
+        }
+        catch (SQLException ex){
+            throw new Exception("Could not delete Code", ex);
+        }
+    }
+
+    public void deleteAllCodeOnTicket(Tickets ticketSoldToDelete) throws Exception {
+        String sql = "DELETE FROM dbo.Codes WHERE TicketID = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ticketSoldToDelete.getTicketID());
+            stmt.executeUpdate();
+        }
+        catch (SQLException ex){
+            throw new Exception("Could not delete Codes", ex);
+        }
+    }
+
+
     public TicketSold createNewSoldTicket(TicketSold newTicketSold) throws Exception {
         String sql = "INSERT INTO dbo.TicketSold (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID, TicketEventID) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();

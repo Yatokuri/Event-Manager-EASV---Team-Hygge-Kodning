@@ -54,7 +54,7 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private TableColumn<TicketSold, String> colUser;
     @FXML
-    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove;
+    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove, colUsersTicketPrint;
     private EMSCoordinator emsCoordinator;
     public Scene ticketMainStage;
     private EventModel eventModel;
@@ -142,6 +142,8 @@ public class EMSTicketMain implements Initializable {
         colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
         colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
+        colUsersTicketRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
+        colUsersTicketPrint.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         // Custom cell factory for the colUsername column so we can do "● Name"
         colTicketName.setCellFactory(column -> {
             return new TableCell<Tickets, String>() {
@@ -188,8 +190,6 @@ public class EMSTicketMain implements Initializable {
             throw new RuntimeException(e);
         }
         tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " has not been sold yet"));
-
-        //TODO Add stuff there check if users have purchase this ticket
     }
     public void createTicketButton() { //When use of the button no one is selected
         ticketModel.setCurrentTicket(null);
@@ -305,14 +305,28 @@ public class EMSTicketMain implements Initializable {
         currentStage.setScene(new Scene(root));
     }
 
-    public void refreshUserTbl() throws Exception {
+    public void refreshUserTbl() throws Exception { // This method try to update the tbl Users
+        if (selectedTicket == null) {
+            Tickets selectedRow = tblEventTickets.getSelectionModel().getSelectedItem();
+            if (selectedRow != null) {
+                selectedTicket = selectedRow;
+            } else {
+                return;
+            }
+        }
         ticketModel.ticketsUser(selectedTicket);
         tblEventTicketsUsers.setItems(ticketModel.getObservableSoldTickets());
+    }
+    public TableView getTblEventTicketsUsers() {
+        return tblEventTicketsUsers;
+    }
+    public TableView getTblEventTickets() {
+        return tblEventTickets;
     }
 
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
-        private final Button deleteButton, editButton, printButton, saleButton;
+        private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
         private final Image deleteIcon = new Image("/Icons/Trash_Icon.png");
@@ -347,9 +361,11 @@ public class EMSTicketMain implements Initializable {
                     Optional<ButtonType> result = alert.showAndWait();
                     if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
+                            // ticketModel.deleteAllCodeOnTicket(tickets);
                             //ticketModel.deleteTicket(tickets);
                             //eventTicketsModel.deleteTicketsFromEvent(tickets);
                             //recreateTableview();
+                           // ticketModel.deleteAllCodeOnTicket(tickets);
                             System.out.println("You want to delete " +  tickets.getTicketName() + "but it deactivated");
                         } catch (Exception e) {
                             displayErrorModel.displayErrorC("User not deleted try again");
@@ -405,7 +421,49 @@ public class EMSTicketMain implements Initializable {
                     openPrintWindow();
                 }
             });
+            removeUserButton = new Button();
+            ImageView removeUserImage = new ImageView();
+            removeUserImage.setFitWidth(20);
+            removeUserImage.setFitHeight(20);
+            removeUserImage.setImage(deleteIcon); // You need to define the removeUserIcon image
+            removeUserButton.setGraphic(removeUserImage);
+            removeUserButton.setPrefWidth(20);
+            removeUserButton.setPrefHeight(20);
+            removeUserButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof TicketSold ticketSold) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmation Dialog");
+                    alert.setHeaderText("You will delete " + ticketSold.getFirstName() + " ticket");
+                    alert.setContentText("Are you ok with this? User can no longer use it!");
+                    // Set the icon for the dialog window
+                    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(mainIcon);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        try {
+                            ticketModel.deleteSoldTicketCode(ticketSold);
+                            ticketModel.deleteSoldTicket(ticketSold);
+                            emsTicketMain.refreshUserTbl(); // Refresh the table view after removing the user
+                        } catch (Exception e) {
+                            displayErrorModel.displayErrorC("User not removed. Please try again.");
+                        }
+                    }
+                }
+            });
+            printButtonUser = new Button();
+            printButtonUser.setGraphic(printImage);
+            printButtonUser.setPrefWidth(20);
+            printButtonUser.setPrefHeight(20);
+            printButtonUser.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof TicketSold tickets){
+                    openPrintWindow();
+                }
+            });
         }
+
 
         private void openShopWindow() {
             try {
@@ -439,15 +497,25 @@ public class EMSTicketMain implements Initializable {
                 setGraphic(null);
             } else {
                 S rowData = getTableView().getItems().get(getIndex());
-                if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
-                    setGraphic(editButton);
-                if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
-                    setGraphic(deleteButton);
-                if (rowData instanceof Tickets tickets){
-                    if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 1)
-                        setGraphic(saleButton);
-                    else if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 0)
-                        setGraphic(printButton);
+                TableView<?> currentTableView = getTableView();
+
+                if (currentTableView == emsTicketMain.getTblEventTickets()) {
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
+                        setGraphic(editButton);
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
+                        setGraphic(deleteButton);
+                    if (rowData instanceof Tickets tickets) {
+                        if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 1)
+                            setGraphic(saleButton);
+                        else if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 0)
+                            setGraphic(printButton);
+                    }
+                }
+                else if (currentTableView == emsTicketMain.getTblEventTicketsUsers()) {
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 1)
+                        setGraphic(removeUserButton);
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
+                        setGraphic(printButtonUser);
                 }
             }
         }

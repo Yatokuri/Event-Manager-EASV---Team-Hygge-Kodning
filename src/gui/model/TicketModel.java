@@ -57,8 +57,25 @@ public class TicketModel {
         ticketManager.updateSoldTicket(updatedTicketSold);
     }
 
-    public void deleteEvent(TicketSold selectedTicketSold) throws Exception {
+    public void deleteSoldTicket(TicketSold selectedTicketSold) throws Exception {
         ticketManager.deleteSoldTicket(selectedTicketSold);
+    }
+
+    //This is for Ticket Code
+    public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {;
+        ticketManager.createNewSoldTicketCode(newTicketSoldCode);
+    }
+    public String readNewSoldTicketCode(TicketSold selectedTicket) throws Exception {
+        return ticketManager.readNewSoldTicketCode(selectedTicket);
+    }
+    public void updateCodeOnTicket(TicketSold selectedTicket) throws Exception  {
+        ticketManager.updateCodeOnTicket(selectedTicket);
+    }
+    public void deleteSoldTicketCode(TicketSold selectedTicket) throws Exception {
+        ticketManager.deleteSoldTicketCode(selectedTicket);
+    }
+    public void deleteAllCodeOnTicket(Tickets selectedTicketID) throws Exception {
+        ticketManager.deleteAllCodeOnTicket(selectedTicketID);
     }
 
     //This is for Ticket

@@ -190,9 +190,9 @@ public class EMSTicketShop implements Initializable {
             String Email = txtInputEmail.getText();
             TicketSold soldTicket = new TicketSold(FName,LName, Email, currentTicket.getTicketID(), 0 ,0);
             try {
-                ticketModel.createNewSoldTicket(soldTicket);
+                TicketSold newTicketSold = ticketModel.createNewSoldTicket(soldTicket);
+                ticketModel.createNewSoldTicketCode(newTicketSold);
                 emsTicketMain.refreshUserTbl();
-                //TODO Add the part there generated codes to the code DB
                 cancelButton();
             } catch (Exception e) {
                 throw new RuntimeException(e);

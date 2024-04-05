@@ -210,10 +210,14 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void btnAddGenerateQR() throws Exception {
+        if (hasNodeWithId(ticketArea, "-10")) {
+            displayErrorModel.displayErrorC("Only 1 QR/Barcode in the moment");
+            return; // Exit the method
+        }
         // Generate QR code image with specified data and error correction level
         Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
         hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-        BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique", hashmap, 100, 100);
+        BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique later", hashmap, 100, 100);
         // Save QR code image to file named "QR.png"
         File outputFile = new File("QR.png");
         ImageIO.write(qrCodeImage, "png", outputFile);
@@ -226,6 +230,15 @@ public class EMSTicketDesigner implements Initializable {
         //TODO User can add used fx. seat row and number etc.
     }
 
+    // Method to check if any nodes have the specified ID
+    private boolean hasNodeWithId(Parent parent, String id) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            if (node instanceof ImageView && Objects.equals(node.getId(), id)) {
+                return true;
+            }
+        }
+        return false;
+    }
     @FXML // Button to clear selected nodes
     private void btnDeleteSelectedNote() {
         if (selectedNode != null) {
@@ -318,6 +331,7 @@ public class EMSTicketDesigner implements Initializable {
     private void setupNewImage(Image image, String type) {
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(!Objects.equals(type, "QR")); //If Image is QR the ration but not could be changed to make sure it can be scanned
+        if (Objects.equals(type, "QR"))   {imageView.setId(String.valueOf(-10));} // QR also get -10 so, we only can create one
         setupNode(imageView);
         setSelectedNode(imageView);
         double halfWidth = ticketArea.getWidth() * 0.5; // New img fill 50% of ticket width
