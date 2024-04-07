@@ -132,6 +132,7 @@ public class EMSEventInformation implements Initializable {
             EMSCoordinatorEventCUStage.getIcons().add(new Image("/icons/mainIcon.png"));
             EMSCoordinatorEventCUStage.initModality(Modality.APPLICATION_MODAL);
             EMSCoordinatorEventCreator controller = loader.getController();
+            EMSCoordinatorEventCUStage.setResizable(false);
             controller.setType("Update");
             controller.setEventModel(eventModel);
             controller.setArchivedEventModel(archivedEventModel);

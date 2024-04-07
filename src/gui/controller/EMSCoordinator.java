@@ -37,6 +37,8 @@ public class EMSCoordinator {
     private AnchorPane anchorPane;
     @FXML
     private StackPane profilePicturePane;
+    @FXML
+    private ScrollPane scrollPaneEvent;
     private static EMSCoordinator instance;
     private final DisplayErrorModel displayErrorModel;
     private EventModel eventModel;
@@ -46,6 +48,8 @@ public class EMSCoordinator {
     private ArchivedEventModel archivedEventModel;
     private static Event eventBeingUpdated;
     private HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
+
+    private Pane lastEventBox;
 
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
@@ -85,6 +89,14 @@ public class EMSCoordinator {
             double width = newValue.doubleValue(); // Get the new width of the AnchorPane
             int columnWidth = 300+40; // Width of each EventBox and margin
             tilePane.setPrefColumns((int) (width / columnWidth)); // Set the new preferred number
+            int remainderSpace = (int) Math.ceil(((width - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
+            for (Pane pane : allEventBoxes.values()) { //We set new insets for all event
+                Insets insets = new Insets(20,remainderSpace, 20, remainderSpace);
+                TilePane.setMargin(pane, insets);
+
+            } //And then the last special box
+            Insets insets = new Insets(20, remainderSpace, 20, remainderSpace);
+            TilePane.setMargin(lastEventBox, insets);
         });
         try { //We read user have image if something go wrong we show default
             userModel.readUserProfileIMG(userModel.getLoggedInUser());
@@ -150,7 +162,7 @@ public class EMSCoordinator {
             TilePane.setMargin(eventBox, insets); // Apply the insets to the eventBox
             tilePane.getChildren().add(eventBox);
         } //The last is a + to add new one for coordinator
-            Pane lastEventBox = createLastEventBox();
+            lastEventBox = createLastEventBox();
             Insets insets = new Insets(20); // Set the insets for margin or padding
             TilePane.setMargin(lastEventBox, insets); // Apply the insets to the lastEventBox
             tilePane.getChildren().add(lastEventBox);
@@ -285,6 +297,7 @@ public class EMSCoordinator {
             EMSCoordinatorEventCUStage.getIcons().add(new Image("/icons/mainIcon.png"));
             EMSCoordinatorEventCUStage.initModality(Modality.APPLICATION_MODAL);
             EMSCoordinatorEventCreator controller = loader.getController();
+            EMSCoordinatorEventCUStage.setResizable(false);
             controller.setType("Create");
             controller.setEventModel(eventModel);
             controller.setEMSCoordinator(this);
@@ -308,6 +321,7 @@ public class EMSCoordinator {
             EMSEventInformation.getIcons().add(new Image("/icons/mainIcon.png"));
             EMSEventInformation.initModality(Modality.APPLICATION_MODAL);
             EMSEventInformation controller = loader.getController();
+            EMSEventInformation.setResizable(false);
             controller.setEventModel(eventModel);
             controller.setEMSCoordinator(this);
             controller.setEMSCoordinatorScene(profilePicture.getScene());

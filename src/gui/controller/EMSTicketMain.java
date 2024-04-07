@@ -116,8 +116,8 @@ public class EMSTicketMain implements Initializable {
         comboBoxEventList.setOnAction((ActionEvent event) -> {
             be.Event selectedEventFromCombo = comboBoxEventList.getSelectionModel().getSelectedItem();
             if (selectedEventFromCombo != null) {
-                recreateTableview();
                 selectedEvent = selectedEventFromCombo;
+                recreateTableview();
                 lblEventTitle.setText(selectedEvent.getEventName());
                 tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
                 tblEventTicketsUsers.getItems().clear();
@@ -511,7 +511,7 @@ public class EMSTicketMain implements Initializable {
                     currentTicketSold = ticketSold;
                     try {
                         TicketToPDF ticketToPDF = new TicketToPDF();
-                        ticketToPDF.makeTicketsToPDF(ticketSold, emsTicketMain.getTicketArea());
+                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea());
                     } catch (Exception e) {
                         displayErrorModel.displayErrorC("Try to save as PDF again");
                     }

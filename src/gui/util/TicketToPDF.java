@@ -85,13 +85,14 @@ public class TicketToPDF {
         return outputFile;
     }
 
-    public void makeTicketsToPDF(TicketSold ticketSold, Pane ticketArea) throws Exception {
+    public void makeTicketToPDF(TicketSold ticketSold, Pane ticketArea) throws Exception {
         List<TicketSold> singleTicketList = new ArrayList<>();
         singleTicketList.add(ticketSold);
         makeTicketsToPDF(singleTicketList, ticketArea);
     }
     public void makeTicketsToPDF(List<TicketSold> ticketSoldList,  Pane ticketArea) throws Exception {
         this.ticketArea = ticketArea;
+        pageGrids.clear();
         // Clear any existing content
         ticketArea.getChildren().clear();
         int ticketsPerPage = 9; // Assuming 9 tickets per page

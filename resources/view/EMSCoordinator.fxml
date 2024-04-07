@@ -91,10 +91,13 @@
                 </HBox>
                 <HBox fx:id="eventHBoxSection" VBox.vgrow="ALWAYS">
                <children>
-                  <ScrollPane hbarPolicy="NEVER" styleClass="dynamicEvent" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
+                  <ScrollPane fx:id="scrollPaneEvent" hbarPolicy="NEVER" styleClass="dynamicEvent" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
                      <content>
                         <TilePane fx:id="tilePane" />
                      </content>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </ScrollPane>
                </children></HBox>
             </children>

@@ -80,6 +80,11 @@ public class EMSAdmin {
             double width = newValue.doubleValue(); // Get the new width of the AnchorPane - the margin
             int columnWidth = 300+40; // Width of each EventBox and margin
             tilePane.setPrefColumns((int) (width / columnWidth)); // Set the new preferred number
+            int remainderSpace = (int) Math.ceil(((width - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
+            for (Pane pane : allEventBoxes.values()) { //We set new insets for all event
+                Insets insets = new Insets(20,remainderSpace, 20, remainderSpace);
+                TilePane.setMargin(pane, insets);
+            }
         });
         try { //We read user have image if something go wrong we show default
             userModel.readUserProfileIMG(userModel.getLoggedInUser());
@@ -256,6 +261,7 @@ public class EMSAdmin {
             EMSEventInformation.getIcons().add(new Image("/icons/mainIcon.png"));
             EMSEventInformation.initModality(Modality.APPLICATION_MODAL);
             EMSEventInformation controller = loader.getController();
+            EMSEventInformation.setResizable(false);
             controller.setEventModel(eventModel);
             controller.setEMSAdmin(this);
             controller.startupProgram();

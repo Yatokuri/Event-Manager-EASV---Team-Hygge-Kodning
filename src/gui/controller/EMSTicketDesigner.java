@@ -583,10 +583,12 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     private void setLoadingBoxPosition(VBox loadingBox) {
-        double centerX = (eventHBoxSection.getWidth()/2 - (double) 370 / 2);
-        double centerY = eventHBoxSection.getHeight() - 280;
-        loadingBox.setLayoutX(centerX);
-        loadingBox.setLayoutY(centerY);
+        Platform.runLater(() -> {
+            double centerX = (eventHBoxSection.getWidth() / 2 - (double) 370 / 2);
+            double centerY = eventHBoxSection.getHeight() / 2;
+            loadingBox.setLayoutX(centerX);
+            loadingBox.setLayoutY(centerY);
+        });
     }
 
     private void updateUIAfterImageProcessing(String ticketName) {
