@@ -75,6 +75,9 @@ public class EMSCoordinator {
     public Event getEventBeingUpdated(){
         return eventBeingUpdated;
     }
+    public void setEventBeingUpdated(Event event){
+        eventBeingUpdated  = event;
+    }
     public void startupProgram() { // This setup op the program
         menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
         setupEvents();  // Setup dynamic event

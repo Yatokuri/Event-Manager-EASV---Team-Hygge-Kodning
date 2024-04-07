@@ -37,7 +37,7 @@ public class TicketManager {
     public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {return ticket_DB.getAllSoldTickets(tickets);}
 
     public Collection<Tickets> getAllTickets() throws Exception { return ticket_DB.getAllTicket();}
-    public void getTicket(Tickets selectedTicket) throws Exception { ticket_DB.getTicket(selectedTicket); }
+    public Tickets getTicket(int selectedTicket) throws Exception { return ticket_DB.getTicket(selectedTicket);}
     public void updateTicket(Tickets selectedTicket) throws Exception { ticket_DB.updateTicket(selectedTicket); }
     public void deleteTicket(Tickets selectedTicket) throws Exception {
         imageManager.deleteSystemIMG(selectedTicket.getTicketID());

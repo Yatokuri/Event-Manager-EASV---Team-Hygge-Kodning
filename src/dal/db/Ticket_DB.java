@@ -41,15 +41,16 @@ public class Ticket_DB {
         String sql = "SELECT * FROM dbo.Codes WHERE TransactionID = ?";
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, ticketSoldToFetch.getTransactionID());
-            stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            return rs.getString("Code");
-        }
-        catch (SQLException ex){
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Code");
+            } else {
+                throw new Exception("No code found");
+            }
+        } catch (SQLException ex) {
             throw new Exception("Could not read Code", ex);
         }
     }
-
     public void updateNewSoldTicketCode(TicketSold ticketSoldToUpdate) throws Exception {
         String sql = "UPDATE dbo.Codes SET BuyerFirstName = ?, BuyerLastName = ?, BuyerEmail = ? WHERE TransactionID = ?";
 
@@ -215,7 +216,7 @@ public class Ticket_DB {
             pstmt.setInt(1, newTicket.getTicketQuantity());
             pstmt.setString(2, newTicket.getTicketName());
             pstmt.setString(3, newTicket.getTicketJSON());
-            pstmt.setInt(4, newTicket.getTicketID());
+            pstmt.setInt(4, newTicket.getIsILocal());
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -278,12 +279,12 @@ public class Ticket_DB {
         return new TicketSold(firstName, lastName, email, ticketID, ticketEventID, transactionID);
     }
 
-    public Tickets getTicket(Tickets ticketToFetch) throws Exception {
+    public Tickets getTicket(int ticketToFetch) throws Exception {
         Tickets ticket;
         String sql = "SELECT * FROM dbo.Tickets WHERE TicketID = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, ticketToFetch.getTicketID());
+            pstmt.setInt(1, ticketToFetch);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     ticket = generateTicket(rs);

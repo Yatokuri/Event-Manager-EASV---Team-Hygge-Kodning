@@ -512,3 +512,17 @@
 .shopSystem .label{
     -fx-text-fill: white;
 }
+/* ComboBox to easy change event */
+.eventListComboBox.mfx-text-field {
+    -mfx-main: transparent;
+    -fx-font-size: 16;
+    -fx-alignment: center-left;
+}
+
+.eventListComboBox.mfx-text-field .caret {
+    -mfx-main: derive(-MainColor, 0%);
+}
+.eventListComboBox .mfx-combo-box-cell{
+    -mfx-hover: derive(-MainColor, 75%);
+    -mfx-selected: derive(-MainColor, 20%);
+}

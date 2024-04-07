@@ -70,4 +70,9 @@ public class Event {
     public void setEventID(int eventID) {
         this.eventID = eventID;
     }
+
+    @Override
+    public String toString() {
+        return eventName;
+    }
 }

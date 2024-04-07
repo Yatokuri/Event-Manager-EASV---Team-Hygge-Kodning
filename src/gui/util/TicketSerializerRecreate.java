@@ -2,9 +2,9 @@ package gui.util;
 
 
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -22,10 +22,14 @@ public class TicketSerializerRecreate {
             JSONObject jsonObject = new JSONObject();
             if (node instanceof Label) { // We make custom type to save space
                 jsonObject.put("ty", "Lbl");
-            } else if (node instanceof ImageView) {
-                jsonObject.put("ty", "Img");
-            }
-            else {
+            } else if (node instanceof ImageView imageView) {
+                Image image = imageView.getImage();
+                if (image != null && image.getUrl() != null && image.getUrl().contains("QR")) {
+                    jsonObject.put("ty", "QR");
+                } else {
+                    jsonObject.put("ty", "Img");
+                }
+            } else {
                 jsonObject.put("ty", node.getClass().getSimpleName());
             }
             jsonObject.put("lX", node.getLayoutX());
@@ -103,6 +107,7 @@ public class TicketSerializerRecreate {
                     node = text;
                     break;
                 case "Img":
+                case "QR":
                     ImageView imageView = new ImageView();
                     double fitWidth = jsonObject.optDouble("fW", 100); // Default width if not specified
                     double fitHeight = jsonObject.optDouble("fH", 100); // Default height if not specified
@@ -116,6 +121,9 @@ public class TicketSerializerRecreate {
                     imageView.setRotate(jsonObject.optDouble("rI", 0)); // Default rotation if not specified
                     imageView.setId(jsonObject.optString("id", "")); // The ID of the image in the database
                     node = imageView;
+                if (type.equals("QR"))   {
+                    imageView.getProperties().put("isQRCode", true);
+                }
                     break;
                 default:
                     node = null;

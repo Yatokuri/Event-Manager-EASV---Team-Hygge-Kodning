@@ -88,7 +88,7 @@ public class TicketModel {
         ticketManager.deleteTicket(tickets); //TODO When you delete you should also remove all image or?
         ticketToBeViewed.remove(tickets);
     }
-    public void readTicket(Tickets tickets) throws Exception{ ticketManager.getTicket(tickets);}
+    public Tickets readTicket(int tickets) throws Exception{ return ticketManager.getTicket(tickets);}
     public void updateTicket(Tickets tickets) throws Exception{ ticketManager.updateTicket(tickets);}
 
     public Tickets getCurrentTicket() { return currentTicket; }
