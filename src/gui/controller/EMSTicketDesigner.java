@@ -1,10 +1,7 @@
 package gui.controller;
 
-import be.TicketSold;
 import be.Tickets;
 import be.User;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import gui.model.*;
 import gui.util.BarCode;
 import gui.util.ImageCompressor;
@@ -25,12 +22,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -45,7 +42,8 @@ import javafx.stage.WindowEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
@@ -88,9 +86,9 @@ public class EMSTicketDesigner implements Initializable {
     private EventModel eventModel;
     private final UserModel userModel;
     private final TicketModel ticketModel;
-    private ImageModel systemIMGModel;
-    private EventTicketsModel eventTicketsModel;
-    private GlobalTicketsModel globalTicketsModel;
+    private final ImageModel systemIMGModel;
+    private final EventTicketsModel eventTicketsModel;
+    private final GlobalTicketsModel globalTicketsModel;
     private final DisplayErrorModel displayErrorModel;
 
     private be.Event selectedEvent;
@@ -271,7 +269,6 @@ public class EMSTicketDesigner implements Initializable {
         }
     }
 
-
     // Method to update font style based on the selected text
     private void updateFontStyle(Label label) {
         boldCheckBox.setSelected(label.getFont().getStyle().contains("Bold"));
@@ -360,10 +357,12 @@ public class EMSTicketDesigner implements Initializable {
         }
     }
 
-    public void btnReplaceMissingTicketInfo(ActionEvent actionEvent) {
+    public void btnReplaceMissingTicketInfo() {
+        //TODO Missing code for replacing of deleted segments of the standard ticket design
     }
 
-    public void btnSetupTicketDesign(ActionEvent actionEvent) {
+    public void btnSetupTicketDesign() {
+        //TODO Missing code for insertion of event information
     }
 
     private void handleMousePressed(MouseEvent event) {
@@ -547,9 +546,9 @@ public class EMSTicketDesigner implements Initializable {
         int totalCharacters = getTotalCharactersIMGDB();
         String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
         //TODO Save it in Database Json can max be 4000 sign so make ticket max or make Json 2
-        //We check that the JSON dont fill  more then 4000 signs and with space of the ID the image will givet when this i true
+        //We check that the JSON doesnt fill more then 4000 signs and with space for the ID the image will give when this is true
         if (json.length()+totalCharacters >= 4000){
-            displayErrorModel.displayErrorC("In the moment to many things in your Ticket" + json.length() + "/4000");
+            displayErrorModel.displayErrorC("Too many things in your ticket at this moment " + json.length() + "/4000");
             return;
         }
         // Show loading animation
@@ -765,6 +764,7 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void openArchivedEvents() {
+        //TODO Make a display for archived events so the coordinators can get inspired by past events
     }
 
     public void openOptions() {
@@ -824,6 +824,7 @@ public class EMSTicketDesigner implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            ticketArea.getChildren().clear();
             changeTicketDisplay();
         }
     }
@@ -837,7 +838,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML
-    private void btnToggleButtonType(ActionEvent actionEvent) {
+    private void btnToggleButtonType() {
         toggleButtonType.setSelected(!toggleButtonType.isSelected());
         toggleButtonType();
     }
