@@ -1,5 +1,6 @@
 package gui.controller;
 
+import be.TicketSold;
 import be.Tickets;
 import be.User;
 import com.google.zxing.EncodeHintType;
@@ -58,7 +59,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private ImageView profilePicture;
     @FXML
-    private Pane ticketArea, ticketAreaClone;
+    private Pane ticketArea;
     @FXML
     private CheckBox boldCheckBox, italicCheckBox, underlineCheckBox;
     @FXML
@@ -68,7 +69,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private VBox loadingBox;
     @FXML
-    private TextField txtInputSelectedText, txtInputSelectedImage, txtJsonInput, txtInputTicketName;
+    private TextField txtInputSelectedText, txtInputSelectedImage, txtInputTicketName;
     @FXML
     private ColorPicker colorPicker;
     @FXML
@@ -85,8 +86,6 @@ public class EMSTicketDesigner implements Initializable {
     private EMSCoordinator emsCoordinator;
     private EMSTicketMain emsTicketMain;
     private EventModel eventModel;
-    private ImageCompressor imageCompressor;
-    private BarCode barCode = new BarCode();
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private ImageModel systemIMGModel;
@@ -107,6 +106,11 @@ public class EMSTicketDesigner implements Initializable {
     private ArchivedEventModel archivedEventModel;
     private Node selectedNode;  // Global variable to store the selected Node
 
+    private static final int EVENT_TICKET_WIDTH = 900;
+    private static final int EVENT_TICKET_HEIGHT = 250;
+    private static final int ONE_TIME_TICKET_WIDTH = 200;
+    private static final int ONE_TIME_TICKET_HEIGHT = 300;
+
     public void setEMSTicketMainStage(Stage emsTicketMainStage) {
         this.emsTicketMainStage = emsTicketMainStage;
     }
@@ -126,6 +130,13 @@ public class EMSTicketDesigner implements Initializable {
         globalTicketsModel = GlobalTicketsModel.getInstance();
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setupDragAndDrop();
+        enableTextSelection();
+        changeTicketDisplay();
+        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTicketName());
+    }
     public void startupProgram() { //This setup program
         currentUser = userModel.getLoggedInUser();
         selectedEvent = emsCoordinator.getEventBeingUpdated();
@@ -187,14 +198,6 @@ public class EMSTicketDesigner implements Initializable {
         }
     }
 
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        setupDragAndDrop();
-        enableTextSelection();
-        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTicketName());
-    }
-
     public void validateTicketName(){
         if (!txtInputTicketName.getText().isEmpty()){
             if (Pattern.matches("[a-zæøåA-ZÆØÅ0-9\s*]{3,30}",txtInputTicketName.getText())){
@@ -251,14 +254,6 @@ public class EMSTicketDesigner implements Initializable {
             }
         }
         return false;
-    }
-    @FXML // Button to clear selected nodes
-    private void btnDeleteSelectedNote() {
-        if (selectedNode != null) {
-            ticketArea.getChildren().remove(selectedNode);
-            txtInputSelectedText.clear();
-            selectedNode = null;
-        }
     }
 
     @FXML // Button to clear everything in the ticket
@@ -363,6 +358,12 @@ public class EMSTicketDesigner implements Initializable {
             setDefaultFont(label); // Use default font
            // updateFontStyle(label); // Use same font as the selected before
         }
+    }
+
+    public void btnReplaceMissingTicketInfo(ActionEvent actionEvent) {
+    }
+
+    public void btnSetupTicketDesign(ActionEvent actionEvent) {
     }
 
     private void handleMousePressed(MouseEvent event) {
@@ -805,9 +806,34 @@ public class EMSTicketDesigner implements Initializable {
     private void toggleButtonType() {
         if (toggleButtonType.isSelected()) {
             isItLocalTicket = 0;
+            warningBox();
         } else {
             isItLocalTicket = 1;
+            warningBox();
         }
+    }
+
+    private void warningBox(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("Warning, changing ticket type will wipe current ticket");
+        alert.setContentText("Are you ok with this?");
+        // Set the icon for the dialog window
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(mainIcon);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            changeTicketDisplay();
+        }
+    }
+
+    private void changeTicketDisplay(){
+        if (isItLocalTicket == 1)
+            ticketArea.setPrefSize(EVENT_TICKET_WIDTH, EVENT_TICKET_HEIGHT);
+
+        if (isItLocalTicket == 0)
+            ticketArea.setPrefSize(ONE_TIME_TICKET_WIDTH, ONE_TIME_TICKET_HEIGHT);
     }
 
     @FXML

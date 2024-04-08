@@ -93,37 +93,28 @@
             </HBox>
             <HBox fx:id="eventHBoxSection" VBox.vgrow="ALWAYS">
                <children>
-                  <Region prefHeight="250.0" prefWidth="90.0" />
-                  <Pane fx:id="ticketArea" maxHeight="250.0" maxWidth="900.0" minHeight="250.0" minWidth="900.0" prefHeight="250.0" prefWidth="900.0" style="-fx-background-color: green;">
+                  <Region />
+                  <Pane fx:id="ticketArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="900.0" style="-fx-background-color: #cbecec;" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets left="5.0" />
+                        <Insets left="90.0" />
                      </HBox.margin></Pane>
-                  <Region prefHeight="250.0" prefWidth="0.0" />
+                  <Region prefHeight="250.0" />
                </children>
                <VBox.margin>
                   <Insets bottom="15.0" />
                </VBox.margin></HBox>
-            <VBox prefHeight="471.0" prefWidth="562.0" spacing="18.0">
+            <VBox spacing="18.0">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox>
                      <children>
                         <HBox spacing="20.0">
                            <children>
                               <Button fx:id="btnAddText" mnemonicParsing="false" onAction="#btnAddText" prefWidth="75.0" text="Add Text" />
                               <Button fx:id="btnAddImage" mnemonicParsing="false" onAction="#btnAddImage" prefWidth="75.0" text="Add Image" />
                               <Button fx:id="btnAddGenerateQR" mnemonicParsing="false" onAction="#btnAddGenerateQR" prefWidth="75.0" text="Add QR" />
-                              <Button fx:id="btnAddID" disable="true" mnemonicParsing="false" onAction="#btnAddID" prefWidth="75.0" text="Add ID" />
                               <Button fx:id="btnAddBarcode" mnemonicParsing="false" onAction="#btnAddBarcode" prefWidth="85.0" text="Add Barcode" />
+                              <Button fx:id="btnAddID" disable="true" mnemonicParsing="false" onAction="#btnAddID" prefWidth="75.0" text="Add ID" />
                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="20.0">
-                           <children>
-                              <Button fx:id="btnDeleteSelectedNote" mnemonicParsing="false" onAction="#btnDeleteSelectedNote" text="Delete Selected" />
-                              <Button fx:id="btnDeleteEverything" mnemonicParsing="false" onAction="#btnDeleteEverything" text="Clear Ticket" />
-                           </children>
-                           <HBox.margin>
-                              <Insets left="350.0" />
-                           </HBox.margin>
                         </HBox>
                      </children>
                   </HBox>
@@ -170,7 +161,7 @@
                               </HBox>
                               <HBox VBox.vgrow="ALWAYS">
                                  <children>
-                                    <ColorPicker fx:id="colorPicker" minHeight="25.0" onAction="#colorPicker" HBox.hgrow="ALWAYS">
+                                    <ColorPicker fx:id="colorPicker" onAction="#colorPicker" HBox.hgrow="ALWAYS">
                                        <value>
                                           <Color />
                                        </value>
@@ -185,7 +176,7 @@
                               <Insets bottom="5.0" />
                            </HBox.margin>
                         </VBox>
-                        <VBox fx:id="sectionImage" prefHeight="147.0" prefWidth="280.0" spacing="10.0">
+                        <VBox fx:id="sectionImage" spacing="10.0">
                            <children>
                               <Label text="Change selected image format" />
                               <TextField fx:id="txtInputSelectedImage" editable="false" promptText="Nothing selected" />
@@ -198,6 +189,9 @@
                                                 <Label text="Image size" />
                                                 <Slider fx:id="imageSizeSider" max="500.0" min="1" value="12" />
                                              </children>
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
                                           </VBox>
                                           <VBox>
                                              <children>
@@ -206,21 +200,69 @@
                                              </children>
                                           </VBox>
                                        </children>
+                                       <VBox.margin>
+                                          <Insets top="34.0" />
+                                       </VBox.margin>
                                     </HBox>
                                  </children>
                               </VBox>
                            </children>
                         </VBox>
-                        <VBox prefHeight="59.0" prefWidth="592.0">
+                        <VBox>
                            <children>
-                              <Label text="Drag to delete" />
-                              <VBox VBox.vgrow="ALWAYS">
+                              <HBox>
                                  <children>
-                                    <HBox fx:id="deleteDropRelease" prefHeight="142.0" prefWidth="391.0" style="-fx-background-color: red;" />
+                                    <VBox>
+                                       <children>
+                                          <Button fx:id="btnSetupTicket" mnemonicParsing="false" onAction="#btnSetupTicketDesign" prefWidth="125.0" text="Setup Ticket">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="btnReplaceMissingTicketInfo" mnemonicParsing="false" onAction="#btnReplaceMissingTicketInfo" prefWidth="125.0" text="Replace Missing">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="btnDeleteEverything" mnemonicParsing="false" onAction="#btnDeleteEverything" prefWidth="125.0" text="Wipe Ticket">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="15.0" right="15.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <HBox>
+                           <children>
+                              <VBox>
+                                 <children>
+                                    <Label text="Drag to delete">
+                                       <VBox.margin>
+                                          <Insets left="35.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <HBox fx:id="deleteDropRelease">
+                                       <children>
+                                          <ImageView fx:id="removeAreaImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                             <HBox.margin>
+                                                <Insets top="10.0" />
+                                             </HBox.margin>
+                                             <image>
+                                                <Image url="@../icons/Trash_Icon.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </HBox>
                                  </children>
                               </VBox>
                            </children>
-                        </VBox>
+                        </HBox>
                      </children>
                   </HBox>
                   <HBox>
@@ -237,7 +279,7 @@
                                     </ImageView>
                                  </children>
                               </HBox>
-                              <TextField fx:id="txtInputTicketName" prefWidth="287.0" promptText="Intern name" />
+                              <TextField fx:id="txtInputTicketName" prefWidth="277.0" promptText="Intern name" />
                            </children>
                         </VBox>
                      </children>

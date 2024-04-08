@@ -33,10 +33,10 @@ import java.util.*;
 
 public class TicketToPDF {
 
-    private static final int EVENT_TICKET_WIDTH = 940;
+    private static final int EVENT_TICKET_WIDTH = 900;
     private static final int EVENT_TICKET_HEIGHT = 250;
-    private static final int ONE_TIME_TICKET_WIDTH = 250;
-    private static final int ONE_TIME_TICKET_HEIGHT = 350;
+    private static final int ONE_TIME_TICKET_WIDTH = 200;
+    private static final int ONE_TIME_TICKET_HEIGHT = 300;
 
     private final DisplayErrorModel displayErrorModel;
 
