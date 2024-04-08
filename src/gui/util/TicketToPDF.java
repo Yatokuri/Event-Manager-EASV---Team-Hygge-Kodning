@@ -89,6 +89,12 @@ public class TicketToPDF {
         }
         return outputFile;
     }
+    public void makeGlobalTicketToPDF(Tickets currentTicket, int result) throws Exception {
+       // ticketModel.readTicket(ticketSold.getTicketID());
+        System.out.println(currentTicket + " - " + result);
+        List<Tickets> ticketCopies = new ArrayList<>(Collections.nCopies(result, currentTicket));
+       // makeTicketsToPDF(ticketCopies, ticketArea);
+    }
 
     public void makeTicketToPDF(TicketSold ticketSold, Pane ticketArea) throws Exception {
         List<TicketSold> singleTicketList = new ArrayList<>();
