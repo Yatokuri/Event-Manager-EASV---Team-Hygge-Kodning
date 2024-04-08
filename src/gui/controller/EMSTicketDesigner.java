@@ -672,44 +672,6 @@ public class EMSTicketDesigner implements Initializable {
         paneName.getChildren().addAll(recreatedPane.getChildren());
     }
 
-    @FXML // Only to test stuff - Don't Delete
-    private void btnCreateCheckJson() {
-        btnCreateJson();
-        btnCheckJson();
-        txtJsonInput.clear();
-    }
-    @FXML //Only to test stuff - Don't Delete
-    private void btnCreateJson() { //Here we create JSON of TicketArea and print to Console
-        int newId = 0;
-        for (Node node : ticketArea.getChildren()) {  // Assign IDs to all ImageView nodes in ticketArea
-            if (node instanceof ImageView imageView) {
-                //String newId = ticketModel.getIdFromData(); //TODO see saveButton
-                imageView.setId(String.valueOf(newId));
-                newId++;
-            }
-        }
-        String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
-        txtJsonInput.setText(json);
-        System.out.println(json);
-    }
-    @FXML //Only to test stuff - Don't Delete
-    private void btnCheckJson() { //We take JSOn from input and create the Ticket ticketAreaClone from it
-        if (txtJsonInput.getText().isEmpty())   {return;}
-        ticketAreaClone.getChildren().clear(); // We clear the area, then we recreate it from the JSON
-        Pane recreatedPane = TicketSerializerRecreate.cloneTicketAreaFromJson(txtJsonInput.getText());
-        // When its recreate we inset right Image from database
-        for (Node node : recreatedPane.getChildren()) {
-            if (node instanceof ImageView imageView) {
-                String id = imageView.getId();
-                Image image = getImageByID(id);
-                if (image != null) {
-                    imageView.setImage(image);
-                }
-            }
-        }
-        ticketAreaClone.getChildren().addAll(recreatedPane.getChildren());
-    }
-
 
     private void enableGUIObject()    {
         saveButton.setDisable(false);
@@ -841,4 +803,6 @@ public class EMSTicketDesigner implements Initializable {
     }
 
 
+    public void btnAddBarcode(ActionEvent actionEvent) {
+    }
 }

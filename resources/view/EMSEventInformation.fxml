@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="453.0" prefWidth="632.0" styleClass="eventInformationWindow" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSEventInformation">
+<AnchorPane prefHeight="453.0" prefWidth="632.0" styleClass="eventInformationWindow" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSEventInformation">
    <children>
       <HBox fx:id="navBar" prefHeight="83.0" prefWidth="680.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -43,15 +43,18 @@
                      <children>
                         <Label fx:id="eventStartTimeLabel" text="Event Start TIme">
                            <VBox.margin>
-                              <Insets bottom="5.0" />
+                              <Insets bottom="5.0" top="10.0" />
                            </VBox.margin>
                         </Label>
                         <Label fx:id="eventEndTimeLabel" text="Event End Time">
                            <VBox.margin>
-                              <Insets bottom="5.0" />
+                              <Insets bottom="5.0" top="5.0" />
                            </VBox.margin>
                         </Label>
-                        <Label fx:id="eventLocationLabel" text="Event Location" />
+                        <Label fx:id="eventLocationLabel" text="Event Location">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin></Label>
                      </children>
                   </VBox>
                </children>

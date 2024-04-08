@@ -380,7 +380,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             }
         }
         else
-            locationTextField.setStyle("-fx-background-color: null");
+            locationTextField.setStyle("-fx-border-color: null");
     }
 
     public void validateEventNotes(){

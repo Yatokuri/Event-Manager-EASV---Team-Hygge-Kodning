@@ -21,7 +21,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
    <children>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -81,25 +81,31 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="This Event">
+                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="Event">
                            <HBox.margin>
                               <Insets right="-15.0" />
                            </HBox.margin>
                         </Button>
-                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="Global" />
+                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="One Time" />
                      </children>
                   </HBox>
                </children>
             </HBox>
             <HBox fx:id="eventHBoxSection" VBox.vgrow="ALWAYS">
                <children>
-                  <Region prefWidth="50.0" />
-                  <Pane fx:id="ticketArea" maxHeight="350.0" maxWidth="250.0" minHeight="350.0" minWidth="250.0" prefHeight="350.0" prefWidth="250.0" style="-fx-background-color: green;">
+                  <Region prefHeight="250.0" prefWidth="90.0" />
+                  <Pane fx:id="ticketArea" maxHeight="250.0" maxWidth="900.0" minHeight="250.0" minWidth="900.0" prefHeight="250.0" prefWidth="900.0" style="-fx-background-color: green;">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin></Pane>
-                  <Region prefWidth="50.0" />
-                  <VBox spacing="18.0" HBox.hgrow="ALWAYS">
+                  <Region prefHeight="250.0" prefWidth="0.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" />
+               </VBox.margin></HBox>
+            <VBox prefHeight="471.0" prefWidth="562.0" spacing="18.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <HBox spacing="20.0">
                            <children>
@@ -107,6 +113,7 @@
                               <Button fx:id="btnAddImage" mnemonicParsing="false" onAction="#btnAddImage" prefWidth="75.0" text="Add Image" />
                               <Button fx:id="btnAddGenerateQR" mnemonicParsing="false" onAction="#btnAddGenerateQR" prefWidth="75.0" text="Add QR" />
                               <Button fx:id="btnAddID" disable="true" mnemonicParsing="false" onAction="#btnAddID" prefWidth="75.0" text="Add ID" />
+                              <Button fx:id="btnAddBarcode" mnemonicParsing="false" onAction="#btnAddBarcode" prefWidth="85.0" text="Add Barcode" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="20.0">
@@ -114,150 +121,132 @@
                               <Button fx:id="btnDeleteSelectedNote" mnemonicParsing="false" onAction="#btnDeleteSelectedNote" text="Delete Selected" />
                               <Button fx:id="btnDeleteEverything" mnemonicParsing="false" onAction="#btnDeleteEverything" text="Clear Ticket" />
                            </children>
+                           <HBox.margin>
+                              <Insets left="350.0" />
+                           </HBox.margin>
                         </HBox>
-                        <VBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="132.0" prefWidth="1080.0" spacing="5.0">
+                     <children>
+                        <VBox fx:id="sectionText" spacing="10.0">
                            <children>
-                              <Label text="Drag to delete" />
-                              <VBox VBox.vgrow="ALWAYS">
+                              <Label text="Change selected text format" />
+                              <TextField fx:id="txtInputSelectedText" editable="false" promptText="Nothing selected" />
+                              <HBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <CheckBox fx:id="boldCheckBox" onAction="#boldItalicUnderlineChanged" text="Bold" />
+                                       </children>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <CheckBox fx:id="italicCheckBox" onAction="#boldItalicUnderlineChanged" text="Italic" />
+                                       </children>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <CheckBox fx:id="underlineCheckBox" onAction="#boldItalicUnderlineChanged" text="Underline" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <VBox>
+                                       <children>
+                                          <Label text="Font size" />
+                                          <Slider fx:id="textfontSizeSlider" max="100" min="1" value="12" />
+                                       </children>
+                                    </VBox>
+                                    <VBox>
+                                       <children>
+                                          <Label text="Text rotation" />
+                                          <Slider fx:id="textRotateSlider" max="360.0" value="12" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <ColorPicker fx:id="colorPicker" minHeight="25.0" onAction="#colorPicker" HBox.hgrow="ALWAYS">
+                                       <value>
+                                          <Color />
+                                       </value>
+                                    </ColorPicker>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="5.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox fx:id="sectionImage" prefHeight="147.0" prefWidth="280.0" spacing="10.0">
+                           <children>
+                              <Label text="Change selected image format" />
+                              <TextField fx:id="txtInputSelectedImage" editable="false" promptText="Nothing selected" />
+                              <VBox>
                                  <children>
                                     <HBox>
                                        <children>
-                                          <HBox fx:id="deleteDropRelease" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: red;" />
+                                          <VBox>
+                                             <children>
+                                                <Label text="Image size" />
+                                                <Slider fx:id="imageSizeSider" max="500.0" min="1" value="12" />
+                                             </children>
+                                          </VBox>
+                                          <VBox>
+                                             <children>
+                                                <Label text="Image rotation" />
+                                                <Slider fx:id="imageRotateSlider" max="360.0" value="12" />
+                                             </children>
+                                          </VBox>
                                        </children>
                                     </HBox>
                                  </children>
                               </VBox>
                            </children>
                         </VBox>
-                        <HBox spacing="5.0">
+                        <VBox prefHeight="59.0" prefWidth="592.0">
                            <children>
-                              <VBox fx:id="sectionText" spacing="10.0">
+                              <Label text="Drag to delete" />
+                              <VBox VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Label text="Change selected text format" />
-                                    <TextField fx:id="txtInputSelectedText" editable="false" promptText="Nothing selected" />
-                                    <HBox VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <VBox HBox.hgrow="ALWAYS">
-                                             <children>
-                                                <CheckBox fx:id="boldCheckBox" onAction="#boldItalicUnderlineChanged" text="Bold" />
-                                             </children>
-                                          </VBox>
-                                          <VBox HBox.hgrow="ALWAYS">
-                                             <children>
-                                                <CheckBox fx:id="italicCheckBox" onAction="#boldItalicUnderlineChanged" text="Italic" />
-                                             </children>
-                                          </VBox>
-                                          <VBox HBox.hgrow="ALWAYS">
-                                             <children>
-                                                <CheckBox fx:id="underlineCheckBox" onAction="#boldItalicUnderlineChanged" text="Underline" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox>
-                                       <children>
-                                          <VBox>
-                                             <children>
-                                                <Label text="Font size" />
-                                                <Slider fx:id="textfontSizeSlider" max="100" min="1" value="12" />
-                                             </children>
-                                          </VBox>
-                                          <VBox>
-                                             <children>
-                                                <Label text="Text rotation" />
-                                                <Slider fx:id="textRotateSlider" max="360.0" value="12" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <ColorPicker fx:id="colorPicker" minHeight="25.0" onAction="#colorPicker" HBox.hgrow="ALWAYS">
-                                             <value>
-                                                <Color />
-                                             </value></ColorPicker>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                    </HBox>
-                                 </children>
-                                 <HBox.margin>
-                                    <Insets bottom="5.0" />
-                                 </HBox.margin>
-                              </VBox>
-                              <VBox fx:id="sectionImage" spacing="10.0">
-                                 <children>
-                                    <Label text="Change selected image format" />
-                                    <TextField fx:id="txtInputSelectedImage" editable="false" promptText="Nothing selected" />
-                                    <VBox>
-                                       <children>
-                                          <HBox>
-                                             <children>
-                                                <VBox>
-                                                   <children>
-                                                      <Label text="Image size" />
-                                                      <Slider fx:id="imageSizeSider" max="500.0" min="1" value="12" />
-                                                   </children>
-                                                </VBox>
-                                                <VBox>
-                                                   <children>
-                                                      <Label text="Image rotation" />
-                                                      <Slider fx:id="imageRotateSlider" max="360.0" value="12" />
-                                                   </children>
-                                                </VBox>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
+                                    <HBox fx:id="deleteDropRelease" prefHeight="142.0" prefWidth="391.0" style="-fx-background-color: red;" />
                                  </children>
                               </VBox>
                            </children>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <VBox>
-                                 <children>
-                                    <HBox>
-                                       <children>
-                                          <Label text="Give the Ticket a intern name" />
-                                          <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../icons/requiredInfoIcon.png" />
-                                             </image>
-                                          </ImageView>
-                                       </children>
-                                    </HBox>
-                                    <TextField fx:id="txtInputTicketName" prefWidth="287.0" promptText="Intern name" />
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
-                        <HBox spacing="10.0" VBox.vgrow="ALWAYS">
-                           <children>
-                              <VBox spacing="5.0">
-                                 <children>
-                                    <HBox spacing="20.0">
-                                       <children>
-                                          <Button fx:id="btnCreateJson" mnemonicParsing="false" onAction="#btnCreateJson" text="Create JSON" />
-                                          <Button fx:id="btnCreateCheckJson" mnemonicParsing="false" onAction="#btnCreateCheckJson" text="C&amp;C" />
-                                          <Button fx:id="btnCheckJson" mnemonicParsing="false" onAction="#btnCheckJson" text="Check created JSON" />
-                                       </children>
-                                    </HBox>
-                                    <TextField fx:id="txtJsonInput" promptText="Json" />
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
+                        </VBox>
                      </children>
-                  </VBox>
-                  <Region prefWidth="50.0" />
-                  <Pane fx:id="ticketAreaClone" maxHeight="350.0" maxWidth="250.0" minHeight="350.0" minWidth="250.0" prefHeight="350.0" prefWidth="250.0" style="-fx-background-color: green;">
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin></Pane>
-                  <Region prefWidth="50.0" />
-               </children></HBox>
+                  </HBox>
+                  <HBox>
+                     <children>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="Give the Ticket an internal name" />
+                                    <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/requiredInfoIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                              <TextField fx:id="txtInputTicketName" prefWidth="287.0" promptText="Intern name" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </VBox>
             <HBox alignment="TOP_RIGHT" spacing="10.0">
                <children>
                   <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Save Ticket">

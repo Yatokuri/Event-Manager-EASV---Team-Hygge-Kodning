@@ -33,13 +33,18 @@ import java.util.*;
 
 public class TicketToPDF {
 
-    private static final int TICKET_WIDTH = 250;
-    private static final int TICKET_HEIGHT = 350;
+    private static final int EVENT_TICKET_WIDTH = 940;
+    private static final int EVENT_TICKET_HEIGHT = 250;
+    private static final int ONE_TIME_TICKET_WIDTH = 250;
+    private static final int ONE_TIME_TICKET_HEIGHT = 350;
+
     private final DisplayErrorModel displayErrorModel;
 
 
     private final ImageModel systemIMGModel;
     private final TicketModel ticketModel;
+
+
     @FXML
     private Pane ticketArea;
     List<GridPane> pageGrids = new ArrayList<>();
@@ -92,13 +97,26 @@ public class TicketToPDF {
     }
     public void makeTicketsToPDF(List<TicketSold> ticketSoldList,  Pane ticketArea) throws Exception {
         this.ticketArea = ticketArea;
+        Tickets currentTicket = ticketModel.getCurrentTicket();
         pageGrids.clear();
         // Clear any existing content
         ticketArea.getChildren().clear();
-        int ticketsPerPage = 9; // Assuming 9 tickets per page
-        int pageNumber = 1;
-        int rows = 3; // Number of rows per page
-        int cols = 3; // Number of columns per page
+        int ticketsPerPage = 0; // Assuming 9 tickets per page
+        int pageNumber = 0;
+        int rows = 0; // Number of rows per page
+        int cols = 0; // Number of columns per page
+        if (currentTicket.getIsILocal() == 1){
+            ticketsPerPage = 4;
+            pageNumber = 1;
+            rows = 4;
+            cols = 1;
+        }
+        else if (currentTicket.getIsILocal() == 0){
+            ticketsPerPage = 9;
+            pageNumber = 1;
+            rows = 3;
+            cols = 3;
+        }
 
         for (int i = 0; i < ticketSoldList.size(); i += ticketsPerPage) {
             GridPane pageGrid = new GridPane();   // Create a new page GridPane to store tickets
@@ -118,7 +136,7 @@ public class TicketToPDF {
                     ticketPane = generateTicket(ticket, ticketSoldList.get(j)); // Generate ticket for the current ID
                 } else {
                     ticketPane = new Pane(); // Otherwise, create an empty placeholder
-                    ticketPane.setPrefSize(TICKET_WIDTH, TICKET_HEIGHT); // Set size to match ticket panes
+                    ticketPane.setPrefSize(ONE_TIME_TICKET_WIDTH, ONE_TIME_TICKET_HEIGHT); // Set size to match ticket panes
                 }
                 int row = (j / cols) % rows; // Calculate the row index (0 to 2)
                 int col = j % cols; // Calculate the column index (0 to 2)
@@ -158,7 +176,11 @@ public class TicketToPDF {
             ticketJSONCache.put(ticketID, ticketJSON);
         }
         Pane ticketPane = setupTicketView(ticketJSON, ticketArea, ticketSold);
-        ticketPane.setPrefSize(TICKET_WIDTH, TICKET_HEIGHT);
+
+        if (ticketModel.readTicket(ticketID).getIsILocal() == 1)
+            ticketPane.setPrefSize(EVENT_TICKET_WIDTH, EVENT_TICKET_HEIGHT);
+        if (ticketModel.readTicket(ticketID).getIsILocal() == 0)
+            ticketPane.setPrefSize(ONE_TIME_TICKET_WIDTH, ONE_TIME_TICKET_HEIGHT);
         ticketPane.setStyle("-fx-background-color: #cbecec");
         return ticketPane;
     }
