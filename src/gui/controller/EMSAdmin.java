@@ -77,14 +77,7 @@ public class EMSAdmin {
         menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
         setupEvents();  // Setup dynamic event
         anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            double width = newValue.doubleValue(); // Get the new width of the AnchorPane - the margin
-            int columnWidth = 300+40; // Width of each EventBox and margin
-            tilePane.setPrefColumns((int) (width / columnWidth)); // Set the new preferred number
-            int remainderSpace = (int) Math.ceil(((width - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
-            for (Pane pane : allEventBoxes.values()) { //We set new insets for all event
-                Insets insets = new Insets(20,remainderSpace, 20, remainderSpace);
-                TilePane.setMargin(pane, insets);
-            }
+            setupUpEventSpace(newValue.doubleValue());
         });
         try { //We read user have image if something go wrong we show default
             userModel.readUserProfileIMG(userModel.getLoggedInUser());
@@ -99,10 +92,18 @@ public class EMSAdmin {
         } catch (Exception ignored) {
         }
         setupProfilePicture(); // We set up the Profile
-
+        setupUpEventSpace(anchorPane.getWidth());
     }
 
-
+    public void setupUpEventSpace(double newValue) {
+        int columnWidth = 300+40; // Width of each EventBox and margin
+        tilePane.setPrefColumns((int) (newValue / columnWidth)); // Set the new preferred number
+        int remainderSpace = (int) Math.ceil(((newValue - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
+        for (Pane pane : allEventBoxes.values()) { //We set new insets for all event
+            Insets insets = new Insets(20,remainderSpace, 20, remainderSpace);
+            TilePane.setMargin(pane, insets);
+        }
+    }
 
     public void profilePicture() { // Profile IMG also control dropdown
         if (menuButtonVisible) {

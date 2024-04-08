@@ -216,8 +216,14 @@ public class EMSTicketPrinter implements Initializable {
                 TableView<?> currentTableView = getTableView();
 
                 if (currentTableView == emsTicketPrinter.getTBLTicketSold()) {
-                    if (getTableView().getColumns().indexOf(getTableColumn()) == 1)
-                        setGraphic(UsersAddToPrintButton);
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 1) {
+                        if (getGraphic() == UsersRemoveFromPrintButton) {
+                            setGraphic(UsersRemoveFromPrintButton);
+                        } // This way the graphic stay identical
+                        else {
+                            setGraphic(UsersAddToPrintButton);
+                }
+            }
                 } else if (currentTableView == emsTicketPrinter.getTBLTicketPrint()) {
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 1)
                         setGraphic(RemoveFromPrintButton);

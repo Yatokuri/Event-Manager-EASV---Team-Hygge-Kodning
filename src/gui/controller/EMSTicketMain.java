@@ -452,6 +452,7 @@ public class EMSTicketMain implements Initializable {
             printButton.setOnAction(event -> {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets){
+                    currentTicket = tickets;
                     openPrintWindow();
                 }
             });
@@ -520,8 +521,47 @@ public class EMSTicketMain implements Initializable {
         }
 
         private void openPrintWindow() {
-        }
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Print Window");
+            dialog.setHeaderText("Enter the number of tickets for: " + currentTicket.getTicketName());
+            dialog.setContentText("Number of Tickets:");
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(mainIcon);
 
+            // Set validation for numeric input
+            dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) { // Allow only digits
+                    dialog.getEditor().setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(input -> {
+                // Check if the input is empty or not a valid number
+                if (input.isEmpty() || Integer.parseInt(input) <= 0 || Integer.parseInt(input) > 100) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please enter a valid number of tickets (1 to 100).");
+                    alert.showAndWait();
+                    Stage stage2 = (Stage) alert.getDialogPane().getScene().getWindow();
+                    stage2.getIcons().add(mainIcon);
+                } else {
+                    // The user entered a valid number
+                    TicketToPDF ticketToPDF = null;
+                    try {
+                        ticketToPDF = new TicketToPDF();
+                    } catch (Exception e) {
+                        displayErrorModel.displayErrorC("Try again to print PDF");
+                    }
+                    assert ticketToPDF != null;
+                    try {
+                        ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
 
         private void openShopWindow() {
             try {
