@@ -211,19 +211,31 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private void btnAddGenerateQR() throws Exception {
         if (hasNodeWithId(ticketArea, "-10")) {
-            displayErrorModel.displayErrorC("Only 1 QR/Barcode in the moment");
+            displayErrorModel.displayErrorC("Only 1 QRCode allowed");
             return; // Exit the method
         }
         // Generate QR code image with specified data and error correction level
-        Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
-        hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-        BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique later", hashmap, 100, 100);
+        BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique later", 100, 100);
         // Save QR code image to file named "QR.png"
-        File outputFile = new File("QR.png");
+        File outputFile = new File("tmpFiles/QR.png");
         ImageIO.write(qrCodeImage, "png", outputFile);
         // Load saved image into ImageView
         Image image = new Image(outputFile.toURI().toString());
         setupNewImage(image, "QR");
+    }
+    @FXML
+    public void btnAddBarcode() throws IOException {
+        if (hasNodeWithId(ticketArea, "-15")){
+            displayErrorModel.displayErrorC("Only 1 Barcode allowed");
+            return;
+        }
+        //Generate Barcode
+        BufferedImage barcodeImage = BarCode.generateCode128BarcodeImage(200, 100);
+        File outputFile = new File("tmpFiles/Barcode.png");
+        ImageIO.write(barcodeImage, "png", outputFile);
+
+        Image image = new Image(outputFile.toURI().toString());
+        setupNewImage(image, "Barcode");
     }
     @FXML
     private void btnAddID() {
@@ -330,13 +342,14 @@ public class EMSTicketDesigner implements Initializable {
 
     private void setupNewImage(Image image, String type) {
         ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(!Objects.equals(type, "QR")); //If Image is QR the ration but not could be changed to make sure it can be scanned
-        if (Objects.equals(type, "QR"))   {imageView.setId(String.valueOf(-10));} // QR also get -10 so, we only can create one
+        imageView.setPreserveRatio(!Objects.equals(type, "QR") || !Objects.equals(type, "Barcode")); //If Image is QR the ratio should not be changeable to make sure it can be scanned
+        if (Objects.equals(type, "QR"))   { imageView.setId(String.valueOf(-10)); } // QR also get -10 so, we only can create one
+        if (Objects.equals(type, "Barcode")) { imageView.setId(String.valueOf(-15)); }
         setupNode(imageView);
         setSelectedNode(imageView);
-        double halfWidth = ticketArea.getWidth() * 0.5; // New img fill 50% of ticket width
-        imageView.setFitWidth(halfWidth);
-        imageSizeSider.setValue(halfWidth);
+        double quarterWidth = ticketArea.getWidth() * 0.25; // New img fill 25% of ticket width
+        imageView.setFitWidth(quarterWidth);
+        imageSizeSider.setValue(quarterWidth);
         imageRotateSlider.setValue(imageView.getRotate());
         ticketArea.getChildren().add(imageView);
     }
@@ -800,9 +813,5 @@ public class EMSTicketDesigner implements Initializable {
     private void btnToggleButtonType(ActionEvent actionEvent) {
         toggleButtonType.setSelected(!toggleButtonType.isSelected());
         toggleButtonType();
-    }
-
-
-    public void btnAddBarcode(ActionEvent actionEvent) {
     }
 }

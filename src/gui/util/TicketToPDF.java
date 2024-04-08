@@ -198,7 +198,7 @@ public class TicketToPDF {
                     Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
                     hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
                     assert image != null;
-                    BufferedImage qrCodeImage = BarCode.generateQRCodeImage(uniqueCode, hashmap, (int) image.getWidth(), (int) image.getHeight());
+                    BufferedImage qrCodeImage = BarCode.generateQRCodeImage(uniqueCode, (int) image.getWidth(), (int) image.getHeight());
                     Image QRfxImage = SwingFXUtils.toFXImage(qrCodeImage, null);
                     imageView.setImage(QRfxImage); //We convert QR to real IMG
                 }

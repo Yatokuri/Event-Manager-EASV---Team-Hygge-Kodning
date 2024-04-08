@@ -120,4 +120,5 @@ fabric.properties
 .DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij
-QR.png
+tmpFiles/QR.png
+tmpFiles/Barcode.png
