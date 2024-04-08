@@ -21,7 +21,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
    <children>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -91,21 +91,21 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox fx:id="eventHBoxSection" VBox.vgrow="ALWAYS">
+            <HBox fx:id="eventHBoxSection" alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <Region />
-                  <Pane fx:id="ticketArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="900.0" style="-fx-background-color: #cbecec;" HBox.hgrow="ALWAYS">
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Pane fx:id="ticketArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="900.0" styleClass="TicketAreaDesigner">
                      <HBox.margin>
-                        <Insets left="90.0" />
+                        <Insets />
                      </HBox.margin></Pane>
-                  <Region prefHeight="250.0" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
                </children>
                <VBox.margin>
                   <Insets bottom="15.0" />
                </VBox.margin></HBox>
-            <VBox spacing="18.0">
+            <VBox alignment="CENTER" spacing="18.0">
                <children>
-                  <HBox>
+                  <HBox alignment="CENTER">
                      <children>
                         <HBox spacing="20.0">
                            <children>
@@ -118,13 +118,13 @@
                         </HBox>
                      </children>
                   </HBox>
-                  <HBox prefHeight="132.0" prefWidth="1080.0" spacing="5.0">
+                  <HBox alignment="CENTER" prefHeight="132.0" prefWidth="1080.0" spacing="5.0">
                      <children>
                         <VBox fx:id="sectionText" spacing="10.0">
                            <children>
                               <Label text="Change selected text format" />
                               <TextField fx:id="txtInputSelectedText" editable="false" promptText="Nothing selected" />
-                              <HBox VBox.vgrow="ALWAYS">
+                              <HBox>
                                  <children>
                                     <VBox HBox.hgrow="ALWAYS">
                                        <children>
@@ -145,13 +145,13 @@
                               </HBox>
                               <HBox>
                                  <children>
-                                    <VBox>
+                                    <VBox HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label text="Font size" />
                                           <Slider fx:id="textfontSizeSlider" max="100" min="1" value="12" />
                                        </children>
                                     </VBox>
-                                    <VBox>
+                                    <VBox HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label text="Text rotation" />
                                           <Slider fx:id="textRotateSlider" max="360.0" value="12" />
@@ -182,9 +182,9 @@
                               <TextField fx:id="txtInputSelectedImage" editable="false" promptText="Nothing selected" />
                               <VBox>
                                  <children>
-                                    <HBox>
+                                    <HBox VBox.vgrow="ALWAYS">
                                        <children>
-                                          <VBox>
+                                          <VBox HBox.hgrow="ALWAYS">
                                              <children>
                                                 <Label text="Image size" />
                                                 <Slider fx:id="imageSizeSider" max="500.0" min="1" value="12" />
@@ -193,7 +193,7 @@
                                                 <Insets />
                                              </HBox.margin>
                                           </VBox>
-                                          <VBox>
+                                          <VBox HBox.hgrow="ALWAYS">
                                              <children>
                                                 <Label text="Image rotation" />
                                                 <Slider fx:id="imageRotateSlider" max="360.0" value="12" />
@@ -214,12 +214,12 @@
                                  <children>
                                     <VBox>
                                        <children>
-                                          <Button fx:id="btnSetupTicket" mnemonicParsing="false" onAction="#btnSetupTicketDesign" prefWidth="125.0" text="Setup Ticket">
+                                          <Button fx:id="btnSetupTicket" disable="true" mnemonicParsing="false" onAction="#btnSetupTicketDesign" prefWidth="125.0" text="Setup Ticket">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button fx:id="btnReplaceMissingTicketInfo" mnemonicParsing="false" onAction="#btnReplaceMissingTicketInfo" prefWidth="125.0" text="Replace Missing">
+                                          <Button fx:id="btnReplaceMissingTicketInfo" disable="true" mnemonicParsing="false" onAction="#btnReplaceMissingTicketInfo" prefWidth="125.0" text="Replace Missing">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>
@@ -247,9 +247,9 @@
                                           <Insets left="35.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <HBox fx:id="deleteDropRelease">
+                                    <HBox fx:id="deleteDropRelease" VBox.vgrow="ALWAYS">
                                        <children>
-                                          <ImageView fx:id="removeAreaImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                          <ImageView fx:id="deleteDropReleaseIMG" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                              <HBox.margin>
                                                 <Insets top="10.0" />
                                              </HBox.margin>
@@ -265,7 +265,7 @@
                         </HBox>
                      </children>
                   </HBox>
-                  <HBox>
+                  <HBox alignment="CENTER">
                      <children>
                         <VBox>
                            <children>

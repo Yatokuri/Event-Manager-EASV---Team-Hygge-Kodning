@@ -526,3 +526,10 @@
     -mfx-hover: derive(-MainColor, 75%);
     -mfx-selected: derive(-MainColor, 20%);
 }
+
+.TicketAreaDesigner {
+    -fx-background-color:  #cbecec;
+    -fx-border-width: 0.5;
+    -fx-border-color: derive(-BoxButtonColor, 50%);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 2, 0, 0, 0); /* Shadow effect */
+}

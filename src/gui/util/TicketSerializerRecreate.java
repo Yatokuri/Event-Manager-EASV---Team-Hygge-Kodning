@@ -12,6 +12,8 @@ import javafx.scene.text.FontWeight;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class TicketSerializerRecreate {
     //We use abbreviation in the JSON, so it take less space
     public static String serializeTicketAreaToJson(Pane ticketArea) {
@@ -26,7 +28,7 @@ public class TicketSerializerRecreate {
                     jsonObject.put("ty", "QR");
                 }
                 else if (image != null && image.getUrl() != null && image.getUrl().contains("Barcode")) {
-                    jsonObject.put("ty", "Barcode");
+                    jsonObject.put("ty", "BC");
                 }
                 else {
                     jsonObject.put("ty", "Img");
@@ -34,8 +36,8 @@ public class TicketSerializerRecreate {
             } else {
                 jsonObject.put("ty", node.getClass().getSimpleName());
             }
-            jsonObject.put("lX", node.getLayoutX());
-            jsonObject.put("lY", node.getLayoutY());
+            jsonObject.put("lX", String.format(Locale.US,  "%.2f", Math.floor(node.getLayoutX())));
+            jsonObject.put("lY", String.format(Locale.US, "%.2f", Math.floor(node.getLayoutY())));
 
             // Handle Text nodes
             if (node instanceof Label labelNode) {
@@ -110,7 +112,7 @@ public class TicketSerializerRecreate {
                     node = text;
                     break;
                 case "Img":
-                case "Barcode":
+                case "BC":
                 case "QR":
                     ImageView imageView = new ImageView();
                     double fitWidth = jsonObject.optDouble("fW", 100); // Default width if not specified
@@ -128,7 +130,7 @@ public class TicketSerializerRecreate {
                 if (type.equals("QR"))   {
                     imageView.getProperties().put("isQRCode", true);
                 }
-                if (type.equals("Barcode")){
+                if (type.equals("BC")){
                     imageView.getProperties().put("isBarcode", true);
                 }
                     break;

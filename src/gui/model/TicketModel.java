@@ -61,6 +61,10 @@ public class TicketModel {
         ticketManager.deleteSoldTicket(selectedTicketSold);
     }
 
+    public void deleteAllSoldOfOneTicket(int selectedTicketSold) throws Exception {
+        ticketManager.deleteAllSoldOfOneTicket(selectedTicketSold);
+    }
+
     //This is for Ticket Code
     public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {;
         ticketManager.createNewSoldTicketCode(newTicketSoldCode);

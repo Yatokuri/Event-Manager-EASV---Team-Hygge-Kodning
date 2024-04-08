@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.net.URL;
@@ -92,11 +93,11 @@ public class EMSTicketShop implements Initializable {
         loadingBox.setSpacing(5);
         loadingBox.getChildren().addAll(progressIndicator, lbl);
         ticketArea.getChildren().add(loadingBox);
-        progressIndicator.setMinSize(200, 200);
-        progressIndicator.setMaxSize(200, 200);
-        progressIndicator.setPrefSize(200, 200);
-        loadingBox.setLayoutX(25);
-        loadingBox.setLayoutY(50);
+        progressIndicator.setMinSize(200, 80);
+        progressIndicator.setMaxSize(200, 80);
+        progressIndicator.setPrefSize(200, 80);
+        loadingBox.setLayoutX(125);
+        loadingBox.setLayoutY(12.5);
     }
 
     public void setupTicketView(String json, Pane paneName) {
@@ -111,6 +112,19 @@ public class EMSTicketShop implements Initializable {
                     imageView.setImage(image);
                 }
             }
+        }   // Set layout properties to position the node in the top-left corner
+        for (Node node : recreatedPane.getChildren()) {
+            if (node instanceof ImageView imageView) {
+                imageView.setFitHeight(imageView.getFitHeight() != 0 ? imageView.getFitHeight()/2 : 0);
+                imageView.setFitWidth(imageView.getFitWidth() != 0 ? imageView.getFitWidth()/2 : 0);
+            }
+            if (node instanceof Label lbl) {
+                double fontSize = lbl.getFont().getSize();
+                double dividedFontSize = (fontSize != 0) ? fontSize / 2 : 0;
+                lbl.setFont(Font.font(dividedFontSize));
+            }
+                node.setLayoutX(node.getLayoutX() != 0 ? node.getLayoutX() / 2 : 0);
+                node.setLayoutY(node.getLayoutY() != 0 ? node.getLayoutY() / 2 : 0);
         }
         paneName.getChildren().addAll(recreatedPane.getChildren());
     }
@@ -191,7 +205,7 @@ public class EMSTicketShop implements Initializable {
             TicketSold soldTicket = new TicketSold(FName,LName, Email, currentTicket.getTicketID(),0);
             try {
                 TicketSold newTicketSold = ticketModel.createNewSoldTicket(soldTicket);
-                if (ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"QR\"") && ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"Barcode\"")) { // Means there is a QR / BARCODE
+                if (ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"QR\"") || ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"BC\"")) { // Means there is a QR / BARCODE
                     ticketModel.createNewSoldTicketCode(newTicketSold);
                 }
                 emsTicketMain.refreshUserTbl();

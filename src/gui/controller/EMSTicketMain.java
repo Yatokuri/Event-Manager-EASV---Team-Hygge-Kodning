@@ -210,13 +210,23 @@ public class EMSTicketMain implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " has not been sold yet"));
+        if (ticket.getIsILocal() == 1)
+            tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " has not been sold yet"));
+        else {
+            tblEventTicketsUsers.setPlaceholder(new Label(ticket.getTicketName() + " cannot be sold"));
+        }
     }
-    public void createTicketButton() { //When use of the button no one is selected
-        ticketModel.setCurrentTicket(null);
-        createTicket();
+    public void updateTicketButton(Tickets tickets) { // This is when user want to edit
+        ticketModel.setCurrentTicket(tickets);
+        openCUTicket("update");
     }
-    public void createTicket() {
+
+    @FXML
+    private void createTicketButton() {
+        openCUTicket("create");
+    }
+
+    public void openCUTicket(String type) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSTicketDesigner.fxml"));
             Parent root = loader.load();
@@ -227,6 +237,7 @@ public class EMSTicketMain implements Initializable {
             EMSTicketDesigner controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
             controller.setEMSTicketMain(this);
+            controller.setType(type);
             controller.startupProgram();
             EMSTicketDesigner.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSTicketDesigner.show();
@@ -419,7 +430,7 @@ public class EMSTicketMain implements Initializable {
             editButton.setOnAction(event -> {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets) {
-
+                    emsTicketMain.updateTicketButton(tickets);
                 }
             });
 
@@ -520,7 +531,7 @@ public class EMSTicketMain implements Initializable {
 
         private void openPrintWindow() {
             TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Print Window");
+            dialog.setTitle("Save as PDF");
             dialog.setHeaderText("Enter the number of tickets for: " + currentTicket.getTicketName());
             dialog.setContentText("Number of Tickets:");
             Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -570,7 +581,7 @@ public class EMSTicketMain implements Initializable {
                 EMSTicketShop.getIcons().add(new Image("/icons/mainIcon.png"));
                 EMSTicketShop.initModality(Modality.APPLICATION_MODAL);
                 EMSTicketShop controller = loader.getController();
-                EMSTicketShop.setResizable(false);
+                EMSTicketShop.setResizable(true);
                 controller.setCurrentTicket(currentTicket);
                 controller.setEMSTicketMain(emsTicketMain);
                 controller.startupProgram();

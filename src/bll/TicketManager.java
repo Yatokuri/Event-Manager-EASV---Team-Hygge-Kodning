@@ -36,6 +36,7 @@ public class TicketManager {
     public void updateSoldTicket(TicketSold selectedTicketSold) throws Exception { ticket_DB.updateSoldTicket(selectedTicketSold); }
 
     public void deleteSoldTicket(TicketSold selectedTicketSold) throws Exception { ticket_DB.deleteSoldTicket(selectedTicketSold); }
+    public void deleteAllSoldOfOneTicket(int selectedTicketSold) throws Exception { ticket_DB.deleteAllSoldOfOneTicket(selectedTicketSold); }
     public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {return ticket_DB.getAllSoldTickets(tickets);}
 
     public Collection<Tickets> getAllTickets() throws Exception { return ticket_DB.getAllTicket();}

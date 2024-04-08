@@ -55,7 +55,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private MenuButton menuButtonLoggedInUser;
     @FXML
-    private ImageView profilePicture;
+    private ImageView profilePicture, deleteDropReleaseIMG;
     @FXML
     private Pane ticketArea;
     @FXML
@@ -97,7 +97,7 @@ public class EMSTicketDesigner implements Initializable {
     private boolean menuButtonVisible = false;
     private boolean cancelledNewTicket = false;
     private int isItLocalTicket = 1;
-
+    private String type; // Do we update or delete
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     private final Image picturePlaceholder = new Image ("/Icons/LoginBackground.png");
@@ -117,6 +117,7 @@ public class EMSTicketDesigner implements Initializable {
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
         this.emsCoordinator = emsCoordinator;
     }
+    void setType(String type) { this.type = type; }
 
     public EMSTicketDesigner() throws Exception {
         displayErrorModel = new DisplayErrorModel();
@@ -161,10 +162,15 @@ public class EMSTicketDesigner implements Initializable {
         addSliderListener(imageRotateSlider.valueProperty(), this::applyImageRotateChanges);
 
         Tickets currentTicket = ticketModel.getCurrentTicket();
-        if (!(currentTicket == null))   { // Mean we want look at a Ticket
-            saveButton.setDisable(true);
+        if (Objects.equals(type, "update"))   { // Mean we want look at a Ticket
+            saveButton.setText("Update");
             setupTicketView(currentTicket.getTicketJSON(), ticketArea);
             txtInputTicketName.setText(currentTicket.getTicketName());
+            txtInputTicketName.setDisable(true);
+            if (currentTicket.getIsILocal() == 1)   {
+                toggleButtonType.setSelected(false);
+            }
+            toggleButtonType.setDisable(true);
         }
     }
 
@@ -258,7 +264,7 @@ public class EMSTicketDesigner implements Initializable {
     private void btnDeleteEverything() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("You will everything on the ticket");
+        alert.setHeaderText("You will delete everything on the ticket");
         alert.setContentText("Are you ok with this?");
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(mainIcon); // Set the icon for the dialog window
@@ -397,12 +403,14 @@ public class EMSTicketDesigner implements Initializable {
             // If released inside the ticketArea, adjust the selectedNode's position
             selectedNode.setLayoutX(event.getSceneX() - xOffset);
             selectedNode.setLayoutY(event.getSceneY() - yOffset);
-        } else if (intersectedNode == deleteDropRelease && selectedNode != null) {
+        } else if (intersectedNode == deleteDropReleaseIMG || intersectedNode == deleteDropRelease) {
             // If dropped into deleteDropRelease, remove the node and clear selections
-            ticketArea.getChildren().remove(selectedNode);
-            txtInputSelectedText.clear();
-            txtInputSelectedImage.clear();
-            selectedNode = null;
+            if (selectedNode != null) {
+                ticketArea.getChildren().remove(selectedNode);
+                txtInputSelectedText.clear();
+                txtInputSelectedImage.clear();
+                selectedNode = null;
+            }
         }
     }
 
@@ -611,7 +619,13 @@ public class EMSTicketDesigner implements Initializable {
                 if (cancelledNewTicket) {return;} // If user want to cancel
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
                 Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
-                ticketModel.createNewTicket(newTicket);
+
+                if (Objects.equals(type, "update"))   {
+                    ticketModel.updateTicket(newTicket);
+                }
+                else {
+                    ticketModel.createNewTicket(newTicket);
+                }
                 if (isItLocalTicket == 0)   { // Mean it's a global ticket
                     globalTicketsModel.addGlobalTickets(newTicket);
                     backButton.setText("Back");
@@ -804,16 +818,17 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void toggleButtonType() {
+        boolean previousSelection = isItLocalTicket == 0;
         if (toggleButtonType.isSelected()) {
             isItLocalTicket = 0;
-            warningBox();
+            warningBox(previousSelection);
         } else {
             isItLocalTicket = 1;
-            warningBox();
+            warningBox(previousSelection);
         }
     }
 
-    private void warningBox(){
+    private void warningBox(boolean previousSelection){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
         alert.setHeaderText("Warning, changing ticket type will wipe current ticket");
@@ -826,6 +841,9 @@ public class EMSTicketDesigner implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             ticketArea.getChildren().clear();
             changeTicketDisplay();
+        } else {
+            // Revert toggle button selection to previous state
+            toggleButtonType.setSelected(previousSelection);
         }
     }
 

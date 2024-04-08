@@ -189,6 +189,19 @@ public class Ticket_DB {
         }
     }
 
+    public void deleteAllSoldOfOneTicket(int ticketSoldToDelete) throws Exception {
+        String sql = "DELETE FROM dbo.TicketSold WHERE TicketID = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ticketSoldToDelete);
+            stmt.executeUpdate();
+        }
+        catch (SQLException ex){
+            throw new Exception("Could not Delete Tickets", ex);
+        }
+    }
+
     private static ArrayList<Tickets> allTickets;
 
     public List<Tickets> getAllTicket() throws Exception {

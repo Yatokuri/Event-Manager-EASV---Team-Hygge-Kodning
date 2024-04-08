@@ -211,6 +211,7 @@ public class EMSCoordinator {
                     eventModel.deleteEvent(event);
                     setupEvents();
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
+                    setupUpEventSpace(anchorPane.getWidth());
                 } catch (Exception ex) {
                     displayErrorModel.displayErrorC("Unable to delete event");
                 }
