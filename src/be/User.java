@@ -27,10 +27,6 @@ public class User {
 
     public void setPassword(String password) {this.password = password;}
 
-    private void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public Image getProfileIMG() {
         return profileIMG;
     }

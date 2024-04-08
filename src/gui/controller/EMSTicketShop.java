@@ -188,10 +188,10 @@ public class EMSTicketShop implements Initializable {
             String FName = txtInputFName.getText();
             String LName = txtInputLName.getText();
             String Email = txtInputEmail.getText();
-            TicketSold soldTicket = new TicketSold(FName,LName, Email, currentTicket.getTicketID(), 0 ,0);
+            TicketSold soldTicket = new TicketSold(FName,LName, Email, currentTicket.getTicketID(),0);
             try {
                 TicketSold newTicketSold = ticketModel.createNewSoldTicket(soldTicket);
-                if (ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"QR\"") && ticketModel.readTicket(newTicketSold.getTicketEventID()).getTicketJSON().contains("\"ty\":\"Barcode\"")) { // Means there is a QR / BARCODE
+                if (ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"QR\"") && ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"Barcode\"")) { // Means there is a QR / BARCODE
                     ticketModel.createNewSoldTicketCode(newTicketSold);
                 }
                 emsTicketMain.refreshUserTbl();

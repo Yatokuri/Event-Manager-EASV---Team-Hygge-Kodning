@@ -19,10 +19,6 @@ public class Tickets {
         return isILocal;
     }
 
-    public void setILocal(int ILocal) {
-        isILocal = ILocal;
-    }
-
     public int getTicketID() {
         return ticketID;
     }
@@ -43,16 +39,8 @@ public class Tickets {
         return ticketName;
     }
 
-    public void setTicketName(String ticketName) {
-        this.ticketName = ticketName;
-    }
-
     public String getTicketJSON() {
         return ticketJSON;
-    }
-
-    public void setTicketJSON(String ticketJSON) {
-        this.ticketJSON = ticketJSON;
     }
 
     @Override

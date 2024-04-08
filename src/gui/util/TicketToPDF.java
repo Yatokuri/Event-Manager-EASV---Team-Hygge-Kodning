@@ -208,6 +208,13 @@ public class TicketToPDF {
                     Image QRfxImage = SwingFXUtils.toFXImage(qrCodeImage, null);
                     imageView.setImage(QRfxImage); //We convert QR to real IMG
                 }
+                if (imageView.getProperties().containsKey("isBarcode")) {
+                    UUID uuid = UUID.randomUUID();
+                    assert image != null;
+                    BufferedImage barcodeImage = BarCode.generateCode128BarcodeImage(uuid, (int) image.getWidth(), (int) image.getHeight());
+                    Image BarcodefxImage = SwingFXUtils.toFXImage(barcodeImage, null);
+                    imageView.setImage(BarcodefxImage);
+                }
                 else if (image != null) {
                     imageView.setImage(image);
                 }

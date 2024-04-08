@@ -230,7 +230,8 @@ public class EMSTicketDesigner implements Initializable {
             return;
         }
         //Generate Barcode
-        BufferedImage barcodeImage = BarCode.generateCode128BarcodeImage(200, 100);
+        UUID uuid = UUID.randomUUID();
+        BufferedImage barcodeImage = BarCode.generateCode128BarcodeImage(uuid,200, 100);
         File outputFile = new File("tmpFiles/Barcode.png");
         ImageIO.write(barcodeImage, "png", outputFile);
 

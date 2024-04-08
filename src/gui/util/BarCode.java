@@ -21,10 +21,10 @@ public class BarCode {
     public BarCode(){
         displayErrorModel = new DisplayErrorModel();
     }
-    public static BufferedImage generateCode128BarcodeImage(int width, int height) {
-        String barcodeText = String.valueOf(UUID.randomUUID());
+    public static BufferedImage generateCode128BarcodeImage(UUID uuid, int width, int height) {
+        String barcodeText = String.valueOf(uuid);
 
-        Map<EncodeHintType, Object> hints = null;
+        Map<EncodeHintType, Object> hints;
         hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
         hints.put(EncodeHintType.CHARACTER_SET, "");
 

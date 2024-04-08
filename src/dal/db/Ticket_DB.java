@@ -94,7 +94,7 @@ public class Ticket_DB {
 
 
     public TicketSold createNewSoldTicket(TicketSold newTicketSold) throws Exception {
-        String sql = "INSERT INTO dbo.TicketSold (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID, TicketEventID) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dbo.TicketSold (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID) VALUES (?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
@@ -103,7 +103,6 @@ public class Ticket_DB {
             stmt.setString(2, newTicketSold.getLastName());
             stmt.setString(3, newTicketSold.getEmail());
             stmt.setInt(4, newTicketSold.getTicketID());
-            stmt.setInt(5, newTicketSold.getTicketEventID()); // Missing reference to Events
             // Run the specified SQL statement
             stmt.executeUpdate();
             // Get the generated ID from the DB
@@ -118,7 +117,6 @@ public class Ticket_DB {
                     newTicketSold.getLastName(),
                     newTicketSold.getEmail(),
                     newTicketSold.getTicketID(),
-                    newTicketSold.getTicketEventID(),
                     id);
         }
         catch (SQLException ex)
@@ -156,7 +154,6 @@ public class Ticket_DB {
                     rs.getString("BuyerLastName"),
                     rs.getString("BuyerEmail"),
                     rs.getInt("TicketID"),
-                    rs.getInt("TicketEventID"),
                     rs.getInt("TransactionID"));
         }
         catch (SQLException ex){
@@ -274,9 +271,8 @@ public class Ticket_DB {
         String lastName = rs.getString("BuyerLastName");
         String email = rs.getString("BuyerEmail");
         int ticketID = rs.getInt("TicketID");
-        int ticketEventID = rs.getInt("TicketEventID");
         int transactionID = rs.getInt("TransactionID");
-        return new TicketSold(firstName, lastName, email, ticketID, ticketEventID, transactionID);
+        return new TicketSold(firstName, lastName, email, ticketID, transactionID);
     }
 
     public Tickets getTicket(int ticketToFetch) throws Exception {

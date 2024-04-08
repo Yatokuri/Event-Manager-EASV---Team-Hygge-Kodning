@@ -2,14 +2,13 @@ package be;
 
 public class TicketSold {
     private String firstName, lastName, email;
-    private int ticketID, ticketEventID, transactionID;
+    private int ticketID, transactionID;
 
-    public TicketSold(String firstName, String lastName, String email, int ticketID, int ticketEventID, int transactionID){
+    public TicketSold(String firstName, String lastName, String email, int ticketID, int transactionID){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.ticketID = ticketID;
-        this.ticketEventID = ticketEventID;
         this.transactionID = transactionID;
     }
 
@@ -51,14 +50,6 @@ public class TicketSold {
 
     public void setTransactionID(int buyerID) {
         this.transactionID = buyerID;
-    }
-
-    public int getTicketEventID() {
-        return ticketEventID;
-    }
-
-    private void setTicketEventID(int ticketEventID) {
-        this.ticketEventID = ticketEventID;
     }
 
     //Custom message to the tbl view over sold ticket

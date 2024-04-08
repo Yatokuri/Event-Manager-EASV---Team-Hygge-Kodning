@@ -13,11 +13,6 @@ public class UserManager {
 
 
     public User checkLogin(String userName, String password) throws Exception {
-        String adminPassword = password;
-        //String hashedPassword = BCrypt.hashpw(adminPassword, BCrypt.gensalt());
-        //Print out the generated hash
-        //System.out.println("Generated BCrypt hash for admin password: " + hashedPassword);
-
         return user_DB.checkUserBCrypt(userName, password);
     }
 

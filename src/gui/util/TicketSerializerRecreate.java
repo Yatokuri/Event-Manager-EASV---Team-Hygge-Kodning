@@ -12,8 +12,6 @@ import javafx.scene.text.FontWeight;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Locale;
-
 public class TicketSerializerRecreate {
     //We use abbreviation in the JSON, so it take less space
     public static String serializeTicketAreaToJson(Pane ticketArea) {
@@ -26,7 +24,11 @@ public class TicketSerializerRecreate {
                 Image image = imageView.getImage();
                 if (image != null && image.getUrl() != null && image.getUrl().contains("QR")) {
                     jsonObject.put("ty", "QR");
-                } else {
+                }
+                else if (image != null && image.getUrl() != null && image.getUrl().contains("Barcode")) {
+                    jsonObject.put("ty", "Barcode");
+                }
+                else {
                     jsonObject.put("ty", "Img");
                 }
             } else {
@@ -87,6 +89,7 @@ public class TicketSerializerRecreate {
 
             javafx.scene.Node node;
             switch (type) {
+
                 case "Lbl":
                     Label text = new Label();
                     text.setText(jsonObject.optString("t", ""));
@@ -107,6 +110,7 @@ public class TicketSerializerRecreate {
                     node = text;
                     break;
                 case "Img":
+                case "Barcode":
                 case "QR":
                     ImageView imageView = new ImageView();
                     double fitWidth = jsonObject.optDouble("fW", 100); // Default width if not specified
@@ -123,6 +127,9 @@ public class TicketSerializerRecreate {
                     node = imageView;
                 if (type.equals("QR"))   {
                     imageView.getProperties().put("isQRCode", true);
+                }
+                if (type.equals("Barcode")){
+                    imageView.getProperties().put("isBarcode", true);
                 }
                     break;
                 default:
