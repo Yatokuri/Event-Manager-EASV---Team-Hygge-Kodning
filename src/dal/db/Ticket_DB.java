@@ -294,5 +294,42 @@ public class Ticket_DB {
         return ticket;
     }
 
+    public boolean checkGlobalTicketCode(TicketSold ticketSoldToFetch) throws Exception {
+        String sqlCheck = "SELECT * FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
+        String sqlDelete = "DELETE FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck);
+             PreparedStatement stmtDelete = conn.prepareStatement(sqlDelete)) {
+
+            stmtCheck.setInt(1, ticketSoldToFetch.getTransactionID());
+            ResultSet rs = stmtCheck.executeQuery();
+
+            if (rs.next()) {
+                // Record exists, return true
+                stmtDelete.setInt(1, ticketSoldToFetch.getTransactionID());
+                stmtDelete.executeUpdate(); // Remove the record from the table
+                return true;
+            } else {
+                // No record found, return false
+                return false;
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking and deleting record", ex);
+        }
+    }
+
+    public void generateNewGlobalTicketCode(String code) throws Exception {
+        String sql = "INSERT INTO dbo.GlobalCodes (GlobalCodes) VALUES (?)";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, code);
+            stmt.executeUpdate(); // Insert the new record into the table
+        } catch (SQLException ex) {
+            throw new Exception("Error while generating new code", ex);
+        }
+    }
 }
 

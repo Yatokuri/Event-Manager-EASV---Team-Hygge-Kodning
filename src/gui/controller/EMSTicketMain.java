@@ -31,8 +31,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -554,8 +552,8 @@ public class EMSTicketMain implements Initializable {
                         displayErrorModel.displayErrorC("Try again to print PDF");
                     }
                     assert ticketToPDF != null;
-                    try {
-                        ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input));
+                    try { //TODO Run on new threads this can be laggy
+                        ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

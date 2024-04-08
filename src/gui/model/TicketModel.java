@@ -94,4 +94,8 @@ public class TicketModel {
     public Tickets getCurrentTicket() { return currentTicket; }
     public void setCurrentTicket(Tickets tickets) {currentTicket = tickets;}
     public ObservableList<Tickets> getObsTickets() { return ticketToBeViewed; }
+
+    // This for global ticket code
+    public boolean checkGlobalTicketCode(TicketSold ticketSold) throws Exception { return ticketManager.checkGlobalTicketCode(ticketSold); }
+    public String generateNewGlobalTicketCode(TicketSold ticketSold) throws Exception { return ticketManager.generateNewGlobalTicketCode(ticketSold); }
 }

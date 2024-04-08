@@ -5,6 +5,8 @@ import be.Tickets;
 import dal.db.Ticket_DB;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 public class TicketManager {
@@ -44,7 +46,12 @@ public class TicketManager {
         ticket_DB.deleteTicket(selectedTicket);
     }
     public Tickets createNewTicket(Tickets selectedTicket) throws Exception { return ticket_DB.createNewTicket(selectedTicket); }
-
+    public boolean checkGlobalTicketCode(TicketSold ticketSoldToCheck) throws Exception {return ticket_DB.checkGlobalTicketCode(ticketSoldToCheck);}
+    public String generateNewGlobalTicketCode(TicketSold ticketSoldToGenerate) throws Exception {
+            String code = generateCode(ticketSoldToGenerate.getTransactionID());
+            ticket_DB.generateNewGlobalTicketCode(generateCode(ticketSoldToGenerate.getTransactionID()));
+            return code; // Return the generated code
+    }
     private static String generateRandomAlphanumeric(int length) { //Helper method to generate code
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
@@ -54,4 +61,13 @@ public class TicketManager {
         return sb.toString();
     }
 
+    public String generateCode(int ticketID) { //Helper method to generate global code
+        String datetimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        StringBuilder sb = new StringBuilder(datetimeString);
+        for (int i = 0; i < 10; i++) {
+            int randomIndex = secureRandom.nextInt(ALPHANUMERIC_CHARACTERS.length());
+            sb.append(ALPHANUMERIC_CHARACTERS.charAt(randomIndex));
+        }
+        return ticketID + "." + sb;
+        }
 }

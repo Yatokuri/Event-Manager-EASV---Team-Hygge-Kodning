@@ -89,11 +89,11 @@ public class TicketToPDF {
         }
         return outputFile;
     }
-    public void makeGlobalTicketToPDF(Tickets currentTicket, int result) throws Exception {
-       // ticketModel.readTicket(ticketSold.getTicketID());
-        System.out.println(currentTicket + " - " + result);
-        List<Tickets> ticketCopies = new ArrayList<>(Collections.nCopies(result, currentTicket));
-       // makeTicketsToPDF(ticketCopies, ticketArea);
+    public void makeGlobalTicketToPDF(Tickets currentTicket, int result, Pane ticketArea) throws Exception {
+        ticketModel.setCurrentTicket(currentTicket);
+        TicketSold NewTicketSold = new TicketSold("Global", "Global" , "Global", currentTicket.getTicketID(), -10);
+        List<TicketSold> ticketCopies = new ArrayList<>(Collections.nCopies(result, NewTicketSold));
+        makeTicketsToPDF(ticketCopies, ticketArea);
     }
 
     public void makeTicketToPDF(TicketSold ticketSold, Pane ticketArea) throws Exception {
@@ -200,7 +200,13 @@ public class TicketToPDF {
                 String id = imageView.getId();
                 Image image = getImageByID(id);
                 if (imageView.getProperties().containsKey("isQRCode")) { //If there is a QR code we generate a new one with the user unique code
-                    String uniqueCode = ticketModel.readNewSoldTicketCode(ticketsold);
+                    String uniqueCode;
+                    if (ticketsold.getTransactionID() == -10)   {
+                        uniqueCode = ticketModel.generateNewGlobalTicketCode(ticketsold);
+                    }
+                    else {
+                        uniqueCode = ticketModel.readNewSoldTicketCode(ticketsold);
+                    }
                     Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
                     hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
                     assert image != null;
@@ -208,7 +214,7 @@ public class TicketToPDF {
                     Image QRfxImage = SwingFXUtils.toFXImage(qrCodeImage, null);
                     imageView.setImage(QRfxImage); //We convert QR to real IMG
                 }
-                if (imageView.getProperties().containsKey("isBarcode")) {
+                else if (imageView.getProperties().containsKey("isBarcode")) {
                     UUID uuid = UUID.randomUUID();
                     assert image != null;
                     BufferedImage barcodeImage = BarCode.generateCode128BarcodeImage(uuid, (int) image.getWidth(), (int) image.getHeight());
