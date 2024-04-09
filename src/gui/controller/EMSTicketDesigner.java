@@ -699,6 +699,41 @@ public class EMSTicketDesigner implements Initializable {
             displayErrorModel.displayErrorC("Missing Design in Ticket");
             return;
         }
+        if (isItLocalTicket == 1){
+            if (lblEventName.getText().isEmpty() && lblEventName.getText() == null){
+                displayErrorModel.displayErrorC("No EventName on Ticket");
+                return;
+            }
+            if (lblEventLocation.getText().isEmpty() && lblEventLocation.getText() == null){
+                displayErrorModel.displayErrorC("No Event Location of Ticket");
+                return;
+            }
+            if (lblEventNotes.getText().isEmpty() && lblEventNotes.getText() == null){
+                displayErrorModel.displayErrorC("No Event Notes on Ticket");
+                return;
+            }
+            if (selectedEvent.getLocationGuidance() != null && lblEventLocationGuide.getText().isEmpty()){
+                displayErrorModel.displayErrorC("No Location Guidance on Ticket");
+                return;
+            }
+            if (lblEventStartDateTime.getText().isEmpty() && lblEventStartDateTime.getText() == null){
+                displayErrorModel.displayErrorC("No Start Date & Time on Ticket");
+                return;
+            }
+            if (selectedEvent.getEventEndDateTime() != null && lblEventEndDateTime.getText().isEmpty()){
+                displayErrorModel.displayErrorC("No End Date & Time on Ticket");
+                return;
+            }
+        }
+        if (!checkForProperty(ticketArea, "isQRCode")) {
+            displayErrorModel.displayErrorC("No QR Code on Ticket");
+            return;
+        }
+        if (!checkForProperty(ticketArea, "isBarcode")) {
+            displayErrorModel.displayErrorC("No Barcode on Ticket");
+            return;
+        }
+
 
         int totalCharacters = getTotalCharactersIMGDB();
         String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
@@ -1009,10 +1044,16 @@ public class EMSTicketDesigner implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             ticketArea.getChildren().clear();
-            if (isItLocalTicket == 0)
+            if (isItLocalTicket == 0) {
                 isItLocalTicket = 1;
-            else if (isItLocalTicket == 1)
+                btnSetupTicketDesign.setDisable(false);
+                btnReplaceMissingTicketInfo.setDisable(false);
+            }
+            else if (isItLocalTicket == 1) {
                 isItLocalTicket = 0;
+                btnSetupTicketDesign.setDisable(true);
+                btnReplaceMissingTicketInfo.setDisable(true);
+            }
             changeTicketDisplay();
 
         } else {
