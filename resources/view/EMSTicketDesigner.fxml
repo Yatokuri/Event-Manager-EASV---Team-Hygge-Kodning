@@ -229,6 +229,11 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
+                                          <Button fx:id="btnJSON" mnemonicParsing="false" onAction="#btnJSON" prefWidth="125.0" text="Get Layout">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
                                        </children>
                                        <HBox.margin>
                                           <Insets left="15.0" right="15.0" />
@@ -281,6 +286,12 @@
                               </HBox>
                               <TextField fx:id="txtInputTicketName" prefWidth="277.0" promptText="Intern name" />
                            </children>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <padding>
+                              <Insets top="-20.0" />
+                           </padding>
                         </VBox>
                      </children>
                   </HBox>

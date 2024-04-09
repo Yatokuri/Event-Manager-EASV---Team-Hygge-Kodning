@@ -205,6 +205,8 @@ public class EMSTicketShop implements Initializable {
             TicketSold soldTicket = new TicketSold(FName,LName, Email, currentTicket.getTicketID(),0);
             try {
                 TicketSold newTicketSold = ticketModel.createNewSoldTicket(soldTicket);
+                currentTicket.setTicketQuantity(currentTicket.getTicketQuantity()+1);
+                ticketModel.updateTicket(currentTicket);
                 if (ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"QR\"") || ticketModel.readTicket(newTicketSold.getTicketID()).getTicketJSON().contains("\"ty\":\"BC\"")) { // Means there is a QR / BARCODE
                     ticketModel.createNewSoldTicketCode(newTicketSold);
                 }

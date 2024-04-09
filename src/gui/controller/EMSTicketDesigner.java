@@ -9,6 +9,7 @@ import gui.util.TicketSerializerRecreate;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -79,7 +80,7 @@ public class EMSTicketDesigner implements Initializable {
     private MFXToggleButton toggleButtonType;
     private double xOffset = 0;
     private double yOffset = 0;
-
+    private Label lblEventName, lblEventStartDateTime, lblEventEndDateTime, lblEventNotes, lblEventLocationGuide, lblEventLocation;     // Automatic generated labels
     private EMSCoordinator emsCoordinator;
     private EMSTicketMain emsTicketMain;
     private EventModel eventModel;
@@ -219,7 +220,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private void btnAddGenerateQR() throws Exception {
         // Check if there's already an ImageView with 'isQRCode' property set to true
-        if (checkForBarcodeProperty(ticketArea, "isQRCode")) {
+        if (checkForProperty(ticketArea, "isQRCode")) {
             displayErrorModel.displayErrorC("Only 1 QRCODE allowed");
             return; // Exit the method if such an ImageView exists
         }
@@ -235,7 +236,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     public void btnAddBarcode() throws IOException {
         // Check if there's already an ImageView with 'isBarcode' property set to true
-        if (checkForBarcodeProperty(ticketArea, "isBarcode")) {
+        if (checkForProperty(ticketArea, "isBarcode")) {
             displayErrorModel.displayErrorC("Only 1 Barcode allowed");
             return; // Exit the method if such an ImageView exists
         }
@@ -254,10 +255,16 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     // Method to check if any nodes have the specified Properties
-    private boolean checkForBarcodeProperty(Pane ticketArea, String prop) {
+    private boolean checkForProperty(Pane ticketArea, String prop) {
         for (Node node : ticketArea.getChildren()) {
             if (node instanceof ImageView imageView) {
                 Boolean isBarcode = (Boolean) imageView.getProperties().get(prop);
+                if (Boolean.TRUE.equals(isBarcode)) {
+                    return true; // Found an ImageView with the 'prop' property set to true
+                }
+            }
+            if (node instanceof Label lbl) {
+                Boolean isBarcode = (Boolean) lbl.getProperties().get(prop);
                 if (Boolean.TRUE.equals(isBarcode)) {
                     return true; // Found an ImageView with the 'prop' property set to true
                 }
@@ -308,20 +315,21 @@ public class EMSTicketDesigner implements Initializable {
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(mainIcon);
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(text -> {
-            Label label = new Label(text);
-            setupNode(label);
-            setSelectedNode(label);
-            label.setMaxWidth(ticketArea.getWidth()); // Set maximum width to ticket area width
-            label.setWrapText(true); // Enable text wrapping
-            ticketArea.getChildren().add(label);
-            label.setTextFill(Color.BLACK); //Only if you do default
-            setDefaultFont(label); // Use default font
-            // updateFontStyle(label); // Use same font as the selected before
-
-        });
+        result.ifPresent(this::setupLabel);
     }
 
+    private Label setupLabel(String text)  {
+        Label label = new Label(text);
+        setupNode(label);
+        setSelectedNode(label);
+        label.setMaxWidth(ticketArea.getWidth()); // Set maximum width to ticket area width
+        label.setWrapText(true); // Enable text wrapping
+        ticketArea.getChildren().add(label);
+        label.setTextFill(Color.BLACK); //Only if you do default
+        setDefaultFont(label); // Use default font
+        // updateFontStyle(label); // Use same font as the selected before
+        return label;
+    }
     // Method to edit the label text
     private void editLabelText(Label label) {
         TextInputDialog dialog = new TextInputDialog(label.getText());
@@ -379,12 +387,70 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     public void btnReplaceMissingTicketInfo() {
-        //TODO Missing code for replacing of deleted segments of the standard ticket design
+        if (!selectedEvent.getEventName().isEmpty() && (!checkForProperty(ticketArea, "EventName")))    {
+            setupEventName();
+        }
+        if (!selectedEvent.getEventStartDateTime().isEmpty() && (!checkForProperty(ticketArea, "EventStartDateTime")))    {
+            setupEventStartDateTime();
+        }
+        if (!selectedEvent.getEventEndDateTime().isEmpty() && (!checkForProperty(ticketArea, "EventEndDateTime")))    {
+            setupEventEndDateTime();
+        }
+        if (!selectedEvent.getEventNotes().isEmpty() && (!checkForProperty(ticketArea, "EventNotes")))    {
+            setupEventNotes();
+        }
+        if (!selectedEvent.getLocationGuidance().isEmpty() && (!checkForProperty(ticketArea, "EventLocationGuide")))    {
+            setupEventLocationGuide();
+        }
+        if (!selectedEvent.getLocation().isEmpty() && (!checkForProperty(ticketArea, "EventLocation")))    {
+            setupEventLocation();
+        }
     }
 
-    public void btnSetupTicketDesign() {
-        //TODO Missing code for insertion of event information
+    public void btnSetupTicketDesign() { // We set up ticket with default info we just use missing cause first time all is missing
+        btnReplaceMissingTicketInfo();
     }
+
+
+    // TODO make it looks nice
+    private void setupEventName(){
+        lblEventName = setupLabel(selectedEvent.getEventName());
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 30);
+        lblEventName.setLayoutX(100);
+        lblEventName.setLayoutY(10);
+        lblEventName.setFont(defaultFont );
+        lblEventName.setTextFill(Color.YELLOW);
+        lblEventName.setFont(defaultFont);
+        lblEventName.getProperties().put("EventName" , true);
+    }
+
+    private void setupEventStartDateTime(){
+        lblEventStartDateTime = setupLabel(selectedEvent.getEventStartDateTime());
+        lblEventName.setLayoutX(150);
+        lblEventStartDateTime.getProperties().put("EventStartDateTime" , true);
+    }
+    private void setupEventEndDateTime(){
+        lblEventEndDateTime = setupLabel(selectedEvent.getEventEndDateTime());
+        lblEventName.setLayoutX(280);
+        lblEventEndDateTime.getProperties().put("EventEndDateTime" , true);
+    }
+    private void setupEventNotes(){
+        lblEventNotes = setupLabel(selectedEvent.getEventNotes());
+        lblEventName.setLayoutX(410);
+        lblEventNotes.getProperties().put("EventNotes" , true);
+    }
+    private void setupEventLocationGuide(){
+        lblEventLocationGuide = setupLabel(selectedEvent.getLocationGuidance());
+        lblEventName.setLayoutX(640);
+        lblEventLocationGuide.getProperties().put("EventLocationGuide" , true);
+    }
+    private void setupEventLocation(){
+        lblEventLocation = setupLabel(selectedEvent.getLocation());
+        lblEventName.setLayoutX(870);
+        lblEventLocation.getProperties().put("EventLocation" , true);
+    }
+
+
 
     private void handleMousePressed(MouseEvent event) {
         if (event.getSource() instanceof Node) {
@@ -871,10 +937,8 @@ public class EMSTicketDesigner implements Initializable {
     private void toggleButtonType() {
         boolean previousSelection = isItLocalTicket == 0;
         if (toggleButtonType.isSelected()) {
-            isItLocalTicket = 0;
             warningBox(previousSelection);
         } else {
-            isItLocalTicket = 1;
             warningBox(previousSelection);
         }
     }
@@ -891,7 +955,12 @@ public class EMSTicketDesigner implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             ticketArea.getChildren().clear();
+            if (isItLocalTicket == 0)
+                isItLocalTicket = 1;
+            else if (isItLocalTicket == 1)
+                isItLocalTicket = 0;
             changeTicketDisplay();
+
         } else {
             // Revert toggle button selection to previous state
             toggleButtonType.setSelected(previousSelection);
@@ -910,5 +979,10 @@ public class EMSTicketDesigner implements Initializable {
     private void btnToggleButtonType() {
         toggleButtonType.setSelected(!toggleButtonType.isSelected());
         toggleButtonType();
+    }
+
+    @FXML
+    private void btnJSON(ActionEvent actionEvent) {
+        System.out.println(TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea));
     }
 }

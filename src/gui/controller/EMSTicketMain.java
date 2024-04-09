@@ -487,6 +487,8 @@ public class EMSTicketMain implements Initializable {
                     Optional<ButtonType> result = alert.showAndWait();
                     if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
+                            currentTicket.setTicketQuantity(currentTicket.getTicketQuantity()-1);
+                            ticketModel.updateTicket(currentTicket);
                             ticketModel.deleteSoldTicketCode(ticketSold);
                             ticketModel.deleteSoldTicket(ticketSold);
                             emsTicketMain.refreshUserTbl(); // Refresh the table view after removing the user
