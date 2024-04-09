@@ -77,7 +77,7 @@ public class EMSTicketShop implements Initializable {
             } catch (InterruptedException e) {
                 displayErrorModel.displayErrorC("The ticket could not be loadet, You can still sell it!");
                 Label lbl = new Label(" Ticket could not be shown");
-                lbl.setStyle("-fx-font-size: 12px");
+                lbl.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
                 ticketArea.getChildren().add(lbl);
             }
         }).start();
@@ -87,7 +87,7 @@ public class EMSTicketShop implements Initializable {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         loadingBox = new VBox();
         Label lbl = new Label("Loading the ticket...");
-        lbl.setStyle("-fx-font-size: 18px");
+        lbl.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
         lbl.setWrapText(true);
         loadingBox.setAlignment(Pos.CENTER);
         loadingBox.setSpacing(5);

@@ -9,7 +9,6 @@ import gui.util.TicketSerializerRecreate;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -97,6 +96,8 @@ public class EMSTicketDesigner implements Initializable {
     private boolean menuButtonVisible = false;
     private boolean cancelledNewTicket = false;
     private int isItLocalTicket = 1;
+    private final List<Integer> imgListDeleteIfUpdate = new ArrayList<>();
+    private Tickets currentTicket;
     private String type; // Do we update or delete
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
@@ -161,16 +162,16 @@ public class EMSTicketDesigner implements Initializable {
         addSliderListener(textRotateSlider.valueProperty(), this::applyRotateChanges);
         addSliderListener(imageRotateSlider.valueProperty(), this::applyImageRotateChanges);
 
-        Tickets currentTicket = ticketModel.getCurrentTicket();
+        currentTicket = ticketModel.getCurrentTicket();
         if (Objects.equals(type, "update"))   { // Mean we want look at a Ticket
             saveButton.setText("Update");
             setupTicketView(currentTicket.getTicketJSON(), ticketArea);
             txtInputTicketName.setText(currentTicket.getTicketName());
             txtInputTicketName.setDisable(true);
-            if (currentTicket.getIsILocal() == 1)   {
-                toggleButtonType.setSelected(false);
-            }
+            toggleButtonType.setSelected(currentTicket.getIsILocal() != 1);
             toggleButtonType.setDisable(true);
+            isItLocalTicket = currentTicket.getIsILocal();
+            changeTicketDisplay();
         }
     }
 
@@ -217,9 +218,10 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void btnAddGenerateQR() throws Exception {
-        if (hasNodeWithId(ticketArea, "-10")) {
-            displayErrorModel.displayErrorC("Only 1 QRCode allowed");
-            return; // Exit the method
+        // Check if there's already an ImageView with 'isQRCode' property set to true
+        if (checkForBarcodeProperty(ticketArea, "isQRCode")) {
+            displayErrorModel.displayErrorC("Only 1 QRCODE allowed");
+            return; // Exit the method if such an ImageView exists
         }
         // Generate QR code image with specified data and error correction level
         BufferedImage qrCodeImage = BarCode.generateQRCodeImage("Placeholder every ticket will get a unique later", 100, 100);
@@ -232,9 +234,10 @@ public class EMSTicketDesigner implements Initializable {
     }
     @FXML
     public void btnAddBarcode() throws IOException {
-        if (hasNodeWithId(ticketArea, "-15")){
+        // Check if there's already an ImageView with 'isBarcode' property set to true
+        if (checkForBarcodeProperty(ticketArea, "isBarcode")) {
             displayErrorModel.displayErrorC("Only 1 Barcode allowed");
-            return;
+            return; // Exit the method if such an ImageView exists
         }
         //Generate Barcode
         UUID uuid = UUID.randomUUID();
@@ -250,14 +253,17 @@ public class EMSTicketDesigner implements Initializable {
         //TODO User can add used fx. seat row and number etc.
     }
 
-    // Method to check if any nodes have the specified ID
-    private boolean hasNodeWithId(Parent parent, String id) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            if (node instanceof ImageView && Objects.equals(node.getId(), id)) {
-                return true;
+    // Method to check if any nodes have the specified Properties
+    private boolean checkForBarcodeProperty(Pane ticketArea, String prop) {
+        for (Node node : ticketArea.getChildren()) {
+            if (node instanceof ImageView imageView) {
+                Boolean isBarcode = (Boolean) imageView.getProperties().get(prop);
+                if (Boolean.TRUE.equals(isBarcode)) {
+                    return true; // Found an ImageView with the 'prop' property set to true
+                }
             }
         }
-        return false;
+        return false; // No ImageView with the 'prop' property set to true was found
     }
 
     @FXML // Button to clear everything in the ticket
@@ -271,8 +277,18 @@ public class EMSTicketDesigner implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            ticketArea.getChildren().clear();
-        }
+            for (Node node : ticketArea.getChildren()) {
+                if (node instanceof ImageView imageView) {
+                    if (imageView.getId() != null)
+                        try {
+                            int id = Integer.parseInt(imageView.getId());
+                            imgListDeleteIfUpdate.add(id);
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                }
+            }
+        ticketArea.getChildren().clear();
     }
 
     // Method to update font style based on the selected text
@@ -281,7 +297,6 @@ public class EMSTicketDesigner implements Initializable {
         italicCheckBox.setSelected(label.getFont().getStyle().contains("Italic"));
         underlineCheckBox.setSelected(label.isUnderline());
         textfontSizeSlider.setValue(label.getFont().getSize());
-        colorPicker.setValue((Color) label.getTextFill());
     }
 
     @FXML
@@ -301,11 +316,8 @@ public class EMSTicketDesigner implements Initializable {
             label.setWrapText(true); // Enable text wrapping
             ticketArea.getChildren().add(label);
             label.setTextFill(Color.BLACK); //Only if you do default
-            label.setOnMouseClicked(event -> { // Handler if user want change image
-                if (event.getClickCount() == 2) {
-                    editLabelText(label);
-                }
-            });
+            setDefaultFont(label); // Use default font
+            // updateFontStyle(label); // Use same font as the selected before
 
         });
     }
@@ -341,9 +353,9 @@ public class EMSTicketDesigner implements Initializable {
 
     private void setupNewImage(Image image, String type) {
         ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(!Objects.equals(type, "QR") || !Objects.equals(type, "Barcode")); //If Image is QR the ratio should not be changeable to make sure it can be scanned
-        if (Objects.equals(type, "QR"))   { imageView.setId(String.valueOf(-10)); } // QR also get -10 so, we only can create one
-        if (Objects.equals(type, "Barcode")) { imageView.setId(String.valueOf(-15)); }
+        imageView.setPreserveRatio(!Objects.equals(type, "QR") || !Objects.equals(type, "BC")); //If Image is QR the ratio should not be changeable to make sure it can be scanned
+        if (Objects.equals(type, "QR"))   imageView.getProperties().put("isQRCode", true);
+        if (Objects.equals(type, "BC")) {  imageView.getProperties().put("isBarcode", true); }
         setupNode(imageView);
         setSelectedNode(imageView);
         double quarterWidth = ticketArea.getWidth() * 0.25; // New img fill 25% of ticket width
@@ -358,8 +370,11 @@ public class EMSTicketDesigner implements Initializable {
         node.setOnMouseDragged(this::handleMouseDragged);
         node.setOnMouseReleased(this::handleMouseReleased);
         if (node instanceof Label label) {
-            setDefaultFont(label); // Use default font
-           // updateFontStyle(label); // Use same font as the selected before
+            label.setOnMouseClicked(event -> { // Handler if user want change image
+                if (event.getClickCount() == 2) {
+                    editLabelText(label);
+                }
+            });
         }
     }
 
@@ -406,6 +421,13 @@ public class EMSTicketDesigner implements Initializable {
         } else if (intersectedNode == deleteDropReleaseIMG || intersectedNode == deleteDropRelease) {
             // If dropped into deleteDropRelease, remove the node and clear selections
             if (selectedNode != null) {
+                if (selectedNode instanceof ImageView img) {
+                    try { //We add the IMG to a list, so we can delete if later if we update (Update mode)
+                        int id = Integer.parseInt(img.getId());
+                        imgListDeleteIfUpdate.add(id);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
                 ticketArea.getChildren().remove(selectedNode);
                 txtInputSelectedText.clear();
                 txtInputSelectedImage.clear();
@@ -505,10 +527,17 @@ public class EMSTicketDesigner implements Initializable {
             txtInputSelectedText.setText(label.getText());
             txtInputSelectedImage.setText(null);
             txtInputSelectedText.setFont(Font.font("System", FontWeight.NORMAL, FontPosture.REGULAR, 12));
+            textRotateSlider.setValue(label.getRotate());
         } else if (node instanceof ImageView imageView) {
-            String imageName = getImageNameFromURL(imageView.getImage().getUrl());
-            txtInputSelectedImage.setText(imageName);
+            if (imageView.getProperties().containsKey("imageCauseWeUpdate")) { // Use containsKey() to check if the property exists
+                txtInputSelectedImage.setText("IMG.png " + imageView.getId());
+            } else {
+                String imageName = getImageNameFromURL(imageView.getImage().getUrl());
+                txtInputSelectedImage.setText(imageName);
+            }
             txtInputSelectedText.setText(null);
+            imageSizeSider.setValue(imageView.getFitWidth());
+            imageRotateSlider.setValue(imageView.getRotate());
         }
     }
     private String getImageNameFromURL(String imageURL) { // Extract the image name from the URL
@@ -618,15 +647,23 @@ public class EMSTicketDesigner implements Initializable {
             try {
                 if (cancelledNewTicket) {return;} // If user want to cancel
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
-                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
 
                 if (Objects.equals(type, "update"))   {
-                    ticketModel.updateTicket(newTicket);
+                    Tickets updatedTicket = new Tickets(currentTicket.getTicketID(), currentTicket.getTicketQuantity(), currentTicket.getTicketName(), jsonUpdated, currentTicket.getIsILocal());
+                    ticketModel.updateTicket(updatedTicket);
+                    for (Integer i : imgListDeleteIfUpdate)   {
+                        systemIMGModel.deleteSystemIMG(i);
+                    }
+                    backButton.setText("Back");
+                    backButton();
+                    return;
                 }
-                else {
+                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
+
+                if (isItLocalTicket == 1)   {
                     ticketModel.createNewTicket(newTicket);
                 }
-                if (isItLocalTicket == 0)   { // Mean it's a global ticket
+            if (isItLocalTicket == 0)   { // Mean it's a global ticket
                     globalTicketsModel.addGlobalTickets(newTicket);
                     backButton.setText("Back");
                     backButton();
@@ -664,7 +701,10 @@ public class EMSTicketDesigner implements Initializable {
     public void saveImageAndSetID() {
         for (Node node : ticketArea.getChildren()) {
             if (node instanceof ImageView imageView) {
-                String newId = null;
+                String newId;
+                if (imageView.getId() != null)  { // Means image is already on DB (Update mode)
+                    break;
+                }
                 try {
                     String imageUrl = imageView.getImage().getUrl();
                     if (imageUrl != null) {
@@ -689,11 +729,22 @@ public class EMSTicketDesigner implements Initializable {
         Pane recreatedPane = TicketSerializerRecreate.cloneTicketAreaFromJson(json);
         // When its recreate we inset right Image from database
         for (Node node : recreatedPane.getChildren()) {
+            setupNode(node);
             if (node instanceof ImageView imageView) {
                 String id = imageView.getId();
                 Image image = getImageByID(id);
                 if (image != null) {
                     imageView.setImage(image);
+                    imageView.getProperties().put("imageCauseWeUpdate", true);
+                    imageView.setPreserveRatio(!Objects.equals(type, "QR") || !Objects.equals(type, "BC")); //If Image is QR the ratio should not be changeable
+                }
+            }
+            if (node instanceof Label lbl) { // Set maximum width to ticket area width
+                if (currentTicket.getIsILocal() == 1)   {
+                    lbl.setMaxWidth(EVENT_TICKET_WIDTH);
+                }
+                else {
+                    lbl.setMaxWidth(ONE_TIME_TICKET_HEIGHT);
                 }
             }
         }

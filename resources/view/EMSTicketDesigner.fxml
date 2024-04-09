@@ -214,12 +214,12 @@
                                  <children>
                                     <VBox>
                                        <children>
-                                          <Button fx:id="btnSetupTicket" disable="true" mnemonicParsing="false" onAction="#btnSetupTicketDesign" prefWidth="125.0" text="Setup Ticket">
+                                          <Button fx:id="btnSetupTicket" mnemonicParsing="false" onAction="#btnSetupTicketDesign" prefWidth="125.0" text="Setup Ticket">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button fx:id="btnReplaceMissingTicketInfo" disable="true" mnemonicParsing="false" onAction="#btnReplaceMissingTicketInfo" prefWidth="125.0" text="Replace Missing">
+                                          <Button fx:id="btnReplaceMissingTicketInfo" mnemonicParsing="false" onAction="#btnReplaceMissingTicketInfo" prefWidth="125.0" text="Replace Missing">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>

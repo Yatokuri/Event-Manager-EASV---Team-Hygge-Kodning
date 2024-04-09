@@ -51,7 +51,7 @@
                <children>
                   <VBox>
                      <children>
-                        <HBox alignment="CENTER" styleClass="shopSystemInfo">
+                        <HBox alignment="CENTER" styleClass="shopSystemInfoTicket">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
