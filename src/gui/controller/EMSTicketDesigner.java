@@ -24,10 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -45,6 +42,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -61,7 +60,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private CheckBox boldCheckBox, italicCheckBox, underlineCheckBox;
     @FXML
-    private Slider textfontSizeSlider, textRotateSlider, imageSizeSider, imageRotateSlider;
+    private Slider textfontSizeSlider, textRotateSlider, imageSizeSlider, imageRotateSlider;
     @FXML
     private HBox deleteDropRelease, eventHBoxSection;
     @FXML
@@ -75,7 +74,7 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private StackPane profilePicturePane;
     @FXML
-    private Button saveButton, backButton;
+    private Button saveButton, backButton, btnSetupTicketDesign, btnReplaceMissingTicketInfo;
     @FXML
     private MFXToggleButton toggleButtonType;
     private double xOffset = 0;
@@ -137,6 +136,11 @@ public class EMSTicketDesigner implements Initializable {
         enableTextSelection();
         changeTicketDisplay();
         txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTicketName());
+        Platform.runLater(() -> imageRotateSlider.getScene().setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {   // Check if the pressed key is the Delete key
+                deleteKeyPress();
+            }
+        }));
     }
     public void startupProgram() { //This setup program
         currentUser = userModel.getLoggedInUser();
@@ -156,24 +160,44 @@ public class EMSTicketDesigner implements Initializable {
             applyFontStyleChanges(newValue.doubleValue());
         });
 
-        imageSizeSider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        imageSizeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             String formattedRotateValue = String.format(Locale.US, "%.2f", newValue.doubleValue());
             applyImageSizeChanges(Double.parseDouble(formattedRotateValue));
         });
         addSliderListener(textRotateSlider.valueProperty(), this::applyRotateChanges);
         addSliderListener(imageRotateSlider.valueProperty(), this::applyImageRotateChanges);
-
         currentTicket = ticketModel.getCurrentTicket();
         if (Objects.equals(type, "update"))   { // Mean we want look at a Ticket
-            saveButton.setText("Update");
-            setupTicketView(currentTicket.getTicketJSON(), ticketArea);
-            txtInputTicketName.setText(currentTicket.getTicketName());
-            txtInputTicketName.setDisable(true);
-            toggleButtonType.setSelected(currentTicket.getIsILocal() != 1);
-            toggleButtonType.setDisable(true);
-            isItLocalTicket = currentTicket.getIsILocal();
-            changeTicketDisplay();
+            setupUpdateVersion();
         }
+    }
+
+    private void deleteKeyPress()   {
+        if (selectedNode instanceof ImageView imageView) {
+            if (imageView.getId() != null)
+                try { // In update mode we must wait with delete IMG to the want update so they can go back
+                    int id = Integer.parseInt(imageView.getId());
+                    imgListDeleteIfUpdate.add(id);
+                } catch (NumberFormatException ignored) {}
+            }
+        if (selectedNode != null) {
+            ticketArea.getChildren().remove(selectedNode);
+            txtInputSelectedText.clear();
+            selectedNode = null;
+        }
+    }
+
+    private void setupUpdateVersion()    {
+        saveButton.setText("Update");
+        setupTicketView(currentTicket.getTicketJSON(), ticketArea);
+        txtInputTicketName.setText(currentTicket.getTicketName());
+        txtInputTicketName.setDisable(true);
+        toggleButtonType.setSelected(currentTicket.getIsILocal() != 1);
+        toggleButtonType.setDisable(true);
+        btnReplaceMissingTicketInfo.setDisable(true);
+        btnSetupTicketDesign.setDisable(true);
+        isItLocalTicket = currentTicket.getIsILocal();
+        changeTicketDisplay();
     }
 
     private void addSliderListener(DoubleProperty sliderProperty, Consumer<Double> changeHandler) {
@@ -304,6 +328,7 @@ public class EMSTicketDesigner implements Initializable {
         italicCheckBox.setSelected(label.getFont().getStyle().contains("Italic"));
         underlineCheckBox.setSelected(label.isUnderline());
         textfontSizeSlider.setValue(label.getFont().getSize());
+        colorPicker.setValue((Color) label.getTextFill());
     }
 
     @FXML
@@ -368,7 +393,7 @@ public class EMSTicketDesigner implements Initializable {
         setSelectedNode(imageView);
         double quarterWidth = ticketArea.getWidth() * 0.25; // New img fill 25% of ticket width
         imageView.setFitWidth(quarterWidth);
-        imageSizeSider.setValue(quarterWidth);
+        imageSizeSlider.setValue(quarterWidth);
         imageRotateSlider.setValue(imageView.getRotate());
         ticketArea.getChildren().add(imageView);
     }
@@ -415,42 +440,54 @@ public class EMSTicketDesigner implements Initializable {
     // TODO make it looks nice
     private void setupEventName(){
         lblEventName = setupLabel(selectedEvent.getEventName());
-        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 30);
-        lblEventName.setLayoutX(100);
-        lblEventName.setLayoutY(10);
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 43);
         lblEventName.setFont(defaultFont );
-        lblEventName.setTextFill(Color.YELLOW);
-        lblEventName.setFont(defaultFont);
+        lblEventName.setLayoutX(10);
+        lblEventName.setLayoutY(0);
+        lblEventName.setTextFill(Color.web("#108cf1")); // #FFFF00 represents yellow color in hexadecimal
         lblEventName.getProperties().put("EventName" , true);
     }
 
     private void setupEventStartDateTime(){
-        lblEventStartDateTime = setupLabel(selectedEvent.getEventStartDateTime());
-        lblEventName.setLayoutX(150);
+        lblEventStartDateTime = setupLabel(timeDateConverter(selectedEvent.getEventStartDateTime()));
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.ITALIC, 15);
+        lblEventStartDateTime.setFont(defaultFont );
+        lblEventStartDateTime.setLayoutX(10);
+        lblEventStartDateTime.setLayoutY(55);
         lblEventStartDateTime.getProperties().put("EventStartDateTime" , true);
     }
     private void setupEventEndDateTime(){
-        lblEventEndDateTime = setupLabel(selectedEvent.getEventEndDateTime());
-        lblEventName.setLayoutX(280);
+        lblEventEndDateTime = setupLabel(timeDateConverter(selectedEvent.getEventEndDateTime()));
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.ITALIC, 15);
+        lblEventEndDateTime.setFont(defaultFont );
+        lblEventEndDateTime.setLayoutX(135);
+        lblEventEndDateTime.setLayoutY(55);
         lblEventEndDateTime.getProperties().put("EventEndDateTime" , true);
     }
     private void setupEventNotes(){
         lblEventNotes = setupLabel(selectedEvent.getEventNotes());
-        lblEventName.setLayoutX(410);
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 12);
+        lblEventNotes.setFont(defaultFont );
+        lblEventNotes.setLayoutX(10);
+        lblEventNotes.setLayoutY(135);
         lblEventNotes.getProperties().put("EventNotes" , true);
     }
     private void setupEventLocationGuide(){
         lblEventLocationGuide = setupLabel(selectedEvent.getLocationGuidance());
-        lblEventName.setLayoutX(640);
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 16);
+        lblEventLocationGuide.setFont(defaultFont );
+        lblEventLocationGuide.setLayoutX(10);
+        lblEventLocationGuide.setLayoutY(108);
         lblEventLocationGuide.getProperties().put("EventLocationGuide" , true);
     }
     private void setupEventLocation(){
         lblEventLocation = setupLabel(selectedEvent.getLocation());
-        lblEventName.setLayoutX(870);
+        Font defaultFont = Font.font("Roboto", FontWeight.NORMAL, FontPosture.REGULAR, 18);
+        lblEventLocation.setFont(defaultFont );
+        lblEventLocation.setLayoutX(10);
+        lblEventLocation.setLayoutY(80);
         lblEventLocation.getProperties().put("EventLocation" , true);
     }
-
-
 
     private void handleMousePressed(MouseEvent event) {
         if (event.getSource() instanceof Node) {
@@ -461,6 +498,10 @@ public class EMSTicketDesigner implements Initializable {
             // Set the cursor to indicate that dragging is in progress
             selectedNode.setCursor(Cursor.CLOSED_HAND);
         }
+    }
+    public String timeDateConverter( String timeDate)   { // Format LocalDateTime object to desired format
+        LocalDateTime dateTime = LocalDateTime.parse(timeDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        return dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));   
     }
 
     private void handleMouseDragged(MouseEvent event) { //TODO Stuff can be place, where it not should and cannot all place where it should
@@ -488,7 +529,7 @@ public class EMSTicketDesigner implements Initializable {
             // If dropped into deleteDropRelease, remove the node and clear selections
             if (selectedNode != null) {
                 if (selectedNode instanceof ImageView img) {
-                    try { //We add the IMG to a list, so we can delete if later if we update (Update mode)
+                    try { //We add the IMG to a list, so we can delete it later if we update (Update mode)
                         int id = Integer.parseInt(img.getId());
                         imgListDeleteIfUpdate.add(id);
                     } catch (NumberFormatException ignored) {
@@ -571,6 +612,7 @@ public class EMSTicketDesigner implements Initializable {
     // Apply font style changes to the selected text
     private void applyFontStyleChanges(double fontSize) {
         if (selectedNode != null && selectedNode instanceof Label label) {
+            colorPicker.setValue((Color) label.getTextFill());
             Font font = Font.font(
                     label.getFont().getFamily(),
                     boldCheckBox.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL,
@@ -602,7 +644,7 @@ public class EMSTicketDesigner implements Initializable {
                 txtInputSelectedImage.setText(imageName);
             }
             txtInputSelectedText.setText(null);
-            imageSizeSider.setValue(imageView.getFitWidth());
+            imageSizeSlider.setValue(imageView.getFitWidth());
             imageRotateSlider.setValue(imageView.getRotate());
         }
     }

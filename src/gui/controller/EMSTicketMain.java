@@ -462,7 +462,7 @@ public class EMSTicketMain implements Initializable {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets){
                     currentTicket = tickets;
-                    openPrintWindow();
+                    openPrintWindow(ticketModel);
                 }
             });
             removeUserButton = new Button();
@@ -487,7 +487,9 @@ public class EMSTicketMain implements Initializable {
                     Optional<ButtonType> result = alert.showAndWait();
                     if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
+                            currentTicket = emsTicketMain.getSelectedTicket();
                             currentTicket.setTicketQuantity(currentTicket.getTicketQuantity()-1);
+                            emsTicketMain.getTblEventTickets().refresh();
                             ticketModel.updateTicket(currentTicket);
                             ticketModel.deleteSoldTicketCode(ticketSold);
                             ticketModel.deleteSoldTicket(ticketSold);
@@ -531,7 +533,7 @@ public class EMSTicketMain implements Initializable {
             });
         }
 
-        private void openPrintWindow() {
+        private void openPrintWindow(TicketModel ticketModel) {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Save as PDF");
             dialog.setHeaderText("Enter the number of tickets for: " + currentTicket.getTicketName());
@@ -567,6 +569,9 @@ public class EMSTicketMain implements Initializable {
                     assert ticketToPDF != null;
                     try { //TODO Run on new threads this can be laggy
                         ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea());
+                        currentTicket.setTicketQuantity(Integer.parseInt(currentTicket.getTicketQuantity()+input));
+                        ticketModel.updateTicket(currentTicket); // We update sold quantity
+                        emsTicketMain.getTblEventTickets().refresh();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

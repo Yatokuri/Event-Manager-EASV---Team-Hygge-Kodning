@@ -211,6 +211,7 @@ public class EMSTicketShop implements Initializable {
                     ticketModel.createNewSoldTicketCode(newTicketSold);
                 }
                 emsTicketMain.refreshUserTbl();
+                emsTicketMain.getTblEventTickets().refresh();
                 cancelButton();
             } catch (Exception e) {
                 throw new RuntimeException(e);
