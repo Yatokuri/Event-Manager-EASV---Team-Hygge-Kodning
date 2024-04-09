@@ -535,3 +535,13 @@
     -fx-border-color: derive(-BoxButtonColor, 50%);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 2, 0, 0, 0); /* Shadow effect */
 }
+
+.tooltip {
+    -fx-background-color: derive(-BoxButtonColor, 0%);
+    -fx-background-radius: 1;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12pt;
+    -fx-padding: 2px;
+    -fx-border-color: derive(-ButtonHoverColor, 0%);
+    -fx-border-width: 1px;
+}

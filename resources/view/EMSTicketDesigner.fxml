@@ -10,6 +10,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -113,7 +114,10 @@
                               <Button fx:id="btnAddImage" mnemonicParsing="false" onAction="#btnAddImage" prefWidth="75.0" text="Add Image" />
                               <Button fx:id="btnAddGenerateQR" mnemonicParsing="false" onAction="#btnAddGenerateQR" prefWidth="75.0" text="Add QR" />
                               <Button fx:id="btnAddBarcode" mnemonicParsing="false" onAction="#btnAddBarcode" prefWidth="85.0" text="Add Barcode" />
-                              <Button fx:id="btnAddID" disable="true" mnemonicParsing="false" onAction="#btnAddID" prefWidth="75.0" text="Add ID" />
+                              <Button fx:id="btnAddID" mnemonicParsing="false" onAction="#btnAddID" prefWidth="85.0" text="Hover for ⓘ">
+                                 <tooltip>
+                                    <Tooltip fx:id="toolTipPlaceholder" autoFix="false" consumeAutoHidingEvents="false" hideOnEscape="false" text="Write this in a text field \n %f% = Name \n %l% = Lastname \n %fl% = Fullname" />
+                                 </tooltip></Button>
                            </children>
                         </HBox>
                      </children>
@@ -229,7 +233,7 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button fx:id="btnJSON" mnemonicParsing="false" onAction="#btnJSON" prefWidth="125.0" text="Get Layout">
+                                          <Button fx:id="btnJSON" mnemonicParsing="false" onAction="#btnJSON" prefWidth="125.0" text="**Get Layout**">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>

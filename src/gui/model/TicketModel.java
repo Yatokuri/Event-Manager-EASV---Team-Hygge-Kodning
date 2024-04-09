@@ -66,6 +66,9 @@ public class TicketModel {
     }
 
     //This is for Ticket Code
+    public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {
+        return ticketManager.checkLocalTicketCode(code, ticketID);
+    }
     public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {;
         ticketManager.createNewSoldTicketCode(newTicketSoldCode);
     }
@@ -100,6 +103,6 @@ public class TicketModel {
     public ObservableList<Tickets> getObsTickets() { return ticketToBeViewed; }
 
     // This for global ticket code
-    public boolean checkGlobalTicketCode(TicketSold ticketSold) throws Exception { return ticketManager.checkGlobalTicketCode(ticketSold); }
+    public boolean checkGlobalTicketCode(String code) throws Exception { return ticketManager.checkGlobalTicketCode(code); }
     public String generateNewGlobalTicketCode(TicketSold ticketSold) throws Exception { return ticketManager.generateNewGlobalTicketCode(ticketSold); }
 }

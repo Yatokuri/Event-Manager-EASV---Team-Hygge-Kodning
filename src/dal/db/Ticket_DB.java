@@ -1,6 +1,5 @@
 package dal.db;
 
-import be.Event;
 import be.TicketSold;
 import be.Tickets;
 
@@ -307,7 +306,7 @@ public class Ticket_DB {
         return ticket;
     }
 
-    public boolean checkGlobalTicketCode(TicketSold ticketSoldToFetch) throws Exception {
+    public boolean checkGlobalTicketCode(String code) throws Exception {
         String sqlCheck = "SELECT * FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
         String sqlDelete = "DELETE FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
 
@@ -315,12 +314,12 @@ public class Ticket_DB {
              PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck);
              PreparedStatement stmtDelete = conn.prepareStatement(sqlDelete)) {
 
-            stmtCheck.setInt(1, ticketSoldToFetch.getTransactionID());
+            stmtCheck.setString(1, code);
             ResultSet rs = stmtCheck.executeQuery();
 
             if (rs.next()) {
                 // Record exists, return true
-                stmtDelete.setInt(1, ticketSoldToFetch.getTransactionID());
+                stmtDelete.setString(1, code);
                 stmtDelete.executeUpdate(); // Remove the record from the table
                 return true;
             } else {
@@ -344,5 +343,22 @@ public class Ticket_DB {
             throw new Exception("Error while generating new code", ex);
         }
     }
+
+    public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {
+        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ? AND TicketID = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+
+            stmtCheck.setString(1, code);
+            stmtCheck.setInt(2, ticketID);
+            ResultSet rs = stmtCheck.executeQuery();
+
+            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking code", ex);
+        }
+    }
+
 }
 

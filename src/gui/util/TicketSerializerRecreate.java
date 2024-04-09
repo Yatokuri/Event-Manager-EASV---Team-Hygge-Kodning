@@ -110,6 +110,15 @@ public class TicketSerializerRecreate {
                     text.setWrapText(true);
                     text.setMaxWidth(250); //TODO More Dynamic
                     node = text;
+                    if (text.getText().startsWith("%f%")){ // To insert ticket buyer name direct
+                        text.getProperties().put("isAFName", true);
+                    }
+                    if (text.getText().startsWith("%l%")){ // To insert ticket buyer last name direct
+                        text.getProperties().put("isALName", true);
+                    }
+                    if (text.getText().startsWith("%fl%")){ // To insert ticket buyer full name direct
+                        text.getProperties().put("isAFLName", true);
+                    }
                     break;
                 case "Img":
                 case "BC":

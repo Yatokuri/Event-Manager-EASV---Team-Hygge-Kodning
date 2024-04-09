@@ -25,6 +25,7 @@ public class TicketManager {
         String code = idPart + "." + randomPart;
         ticket_DB.createNewSoldTicketCode(code, newTicketSold);
     }
+    public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {return ticket_DB.checkLocalTicketCode(code, ticketID);}
     public String readNewSoldTicketCode(TicketSold selectedTicket) throws Exception {return ticket_DB.readNewSoldTicketCode(selectedTicket);}
     public void updateCodeOnTicket(TicketSold selectedTicket) throws Exception {ticket_DB.updateNewSoldTicketCode(selectedTicket);}
     public void deleteSoldTicketCode(TicketSold selectedTicket) throws Exception {ticket_DB.deleteSoldTicketCode(selectedTicket);}
@@ -47,7 +48,7 @@ public class TicketManager {
         ticket_DB.deleteTicket(selectedTicket);
     }
     public Tickets createNewTicket(Tickets selectedTicket) throws Exception { return ticket_DB.createNewTicket(selectedTicket); }
-    public boolean checkGlobalTicketCode(TicketSold ticketSoldToCheck) throws Exception {return ticket_DB.checkGlobalTicketCode(ticketSoldToCheck);}
+    public boolean checkGlobalTicketCode(String code) throws Exception {return ticket_DB.checkGlobalTicketCode(code);}
     public String generateNewGlobalTicketCode(TicketSold ticketSoldToGenerate) throws Exception {
             String code = generateCode(ticketSoldToGenerate.getTransactionID());
             ticket_DB.generateNewGlobalTicketCode(generateCode(ticketSoldToGenerate.getTransactionID()));
@@ -71,4 +72,6 @@ public class TicketManager {
         }
         return ticketID + "." + sb;
         }
+
+
 }

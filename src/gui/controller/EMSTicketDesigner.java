@@ -36,6 +36,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -74,9 +75,11 @@ public class EMSTicketDesigner implements Initializable {
     @FXML
     private StackPane profilePicturePane;
     @FXML
-    private Button saveButton, backButton, btnSetupTicketDesign, btnReplaceMissingTicketInfo;
+    private Button saveButton, backButton, btnSetupTicketDesign, btnReplaceMissingTicketInfo, btnAddID;
     @FXML
     private MFXToggleButton toggleButtonType;
+    @FXML
+    private Tooltip toolTipPlaceholder;
     private double xOffset = 0;
     private double yOffset = 0;
     private Label lblEventName, lblEventStartDateTime, lblEventEndDateTime, lblEventNotes, lblEventLocationGuide, lblEventLocation;     // Automatic generated labels
@@ -132,6 +135,15 @@ public class EMSTicketDesigner implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        toolTipPlaceholder.setText("Write these variable in a text-field. \n In the PDF version real data will replace it \n %f% = Name \n %l%  = lastname \n %fl% = Full name\n");
+        toolTipPlaceholder.setHideDelay(Duration.millis(1000000));
+        btnAddID.setOnMouseEntered(event -> {
+            double x = btnAddID.localToScreen(btnAddID.getBoundsInLocal()).getMinX();
+            double y = btnAddID.localToScreen(btnAddID.getBoundsInLocal()).getMaxY();
+            toolTipPlaceholder.show(btnAddID, x, y);
+        });
+        // Hide tooltip when mouse exits
+        btnAddID.setOnMouseExited(event -> toolTipPlaceholder.hide());
         setupDragAndDrop();
         enableTextSelection();
         changeTicketDisplay();
@@ -638,7 +650,7 @@ public class EMSTicketDesigner implements Initializable {
             textRotateSlider.setValue(label.getRotate());
         } else if (node instanceof ImageView imageView) {
             if (imageView.getProperties().containsKey("imageCauseWeUpdate")) { // Use containsKey() to check if the property exists
-                txtInputSelectedImage.setText("IMG.png " + imageView.getId());
+                txtInputSelectedImage.setText("IMG.png ");
             } else {
                 String imageName = getImageNameFromURL(imageView.getImage().getUrl());
                 txtInputSelectedImage.setText(imageName);
@@ -811,7 +823,7 @@ public class EMSTicketDesigner implements Initializable {
             if (node instanceof ImageView imageView) {
                 String newId;
                 if (imageView.getId() != null)  { // Means image is already on DB (Update mode)
-                    break;
+                    continue;
                 }
                 try {
                     String imageUrl = imageView.getImage().getUrl();

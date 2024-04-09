@@ -58,7 +58,7 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private TableColumn<TicketSold, String> colUser;
     @FXML
-    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove, colUsersTicketPrint, colUsersTicketPDF;
+    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove, colUsersTicketPrint, colUsersTicketPDF, colCheckTicket;
     @FXML
     private MFXComboBox<be.Event> comboBoxEventList;
     @FXML
@@ -165,6 +165,7 @@ public class EMSTicketMain implements Initializable {
         colUsersTicketRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colUsersTicketPDF.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colUsersTicketPrint.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
+        colCheckTicket.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         // Custom cell factory for the colUsername column so we can do "● Name"
         colTicketName.setCellFactory(column -> {
             return new TableCell<Tickets, String>() {
@@ -367,7 +368,7 @@ public class EMSTicketMain implements Initializable {
 
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
-        private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton;
+        private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton, checkTicketButton;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
         private final Image deleteIcon = new Image("/Icons/Trash_Icon.png");
@@ -375,6 +376,7 @@ public class EMSTicketMain implements Initializable {
         private final Image printIcon = new Image("Icons/Print_Icon.png");
         private final Image saleIcon = new Image("Icons/Basket_Icon.png");
         private final Image PDFIcon = new Image("Icons/SavePDF_Icon.png");
+        private final Image checkTicketIcon = new Image("Icons/CheckTicket_Icon.png");
         private Tickets currentTicket;
         private TicketSold currentTicketSold;
         private EMSTicketMain emsTicketMain;
@@ -447,6 +449,22 @@ public class EMSTicketMain implements Initializable {
                 if (rowData instanceof Tickets tickets){
                     currentTicket = tickets;
                     openShopWindow();
+                }
+            });
+
+            checkTicketButton = new Button();
+            ImageView checkTicketImage = new ImageView();
+            checkTicketImage.setFitWidth(20);
+            checkTicketImage.setFitHeight(20);
+            checkTicketImage.setImage(checkTicketIcon);
+            checkTicketButton.setGraphic(checkTicketImage);
+            checkTicketButton.setPrefWidth(20);
+            checkTicketButton.setPrefHeight(20);
+            checkTicketButton.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof Tickets tickets){
+                    currentTicket = tickets;
+                    checkTicket(currentTicket, ticketModel);
                 }
             });
 
@@ -533,6 +551,51 @@ public class EMSTicketMain implements Initializable {
             });
         }
 
+        private void checkTicket(Tickets tickets, TicketModel ticketModel) {
+            boolean isLocal = (tickets.getIsILocal() == 1);
+            String type = isLocal ? "Local" : "Global";
+
+            // Create a text input dialog to prompt the user for the code
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Enter " + type + " Ticket Code");
+            dialog.setHeaderText("Enter the code to check for " + type.toLowerCase() + " ticket:");
+            dialog.setContentText("Code:");
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(mainIcon);
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(input -> {
+                boolean codeExists;
+                try {
+                    if (isLocal) {
+                        codeExists = ticketModel.checkLocalTicketCode(input, tickets.getTicketID());
+                    } else {
+                        codeExists = ticketModel.checkGlobalTicketCode(input);
+                    }
+                    // Show the result in an alert dialog
+                    showAlert(type, codeExists);
+                } catch (Exception e) {
+                    displayErrorModel.displayErrorC("Problem with checking code try again!");
+                }
+            });
+        }
+
+        private void showAlert(String type, boolean codeExists) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Code Check Result");
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(mainIcon);
+            // Set the alert content based on the result
+            if (codeExists) {
+                alert.setHeaderText(type + " Code Exists");
+                alert.setContentText("The ticket is valid.");
+            } else {
+                alert.setHeaderText(type + " Code Not Found");
+                alert.setContentText("The ticket is invalid.");
+            }
+            alert.showAndWait();
+        }
+
         private void openPrintWindow(TicketModel ticketModel) {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Save as PDF");
@@ -551,30 +614,25 @@ public class EMSTicketMain implements Initializable {
             result.ifPresent(input -> {
                 // Check if the input is empty or not a valid number
                 if (input.isEmpty() || Integer.parseInt(input) <= 0 || Integer.parseInt(input) > 100) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please enter a valid number of tickets (1 to 100).");
-                    alert.showAndWait();
-                    Stage stage2 = (Stage) alert.getDialogPane().getScene().getWindow();
-                    stage2.getIcons().add(mainIcon);
+                    displayErrorModel.displayErrorC("Please enter a valid number of tickets (1 to 100).");
                 } else {
                     // The user entered a valid number
-                    TicketToPDF ticketToPDF = null;
+                    TicketToPDF ticketToPDF;
                     try {
                         ticketToPDF = new TicketToPDF();
                     } catch (Exception e) {
-                        displayErrorModel.displayErrorC("Try again to print PDF");
-                    }
-                    assert ticketToPDF != null;
-                    try { //TODO Run on new threads this can be laggy
-                        ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea());
-                        currentTicket.setTicketQuantity(Integer.parseInt(currentTicket.getTicketQuantity()+input));
-                        ticketModel.updateTicket(currentTicket); // We update sold quantity
-                        emsTicketMain.getTblEventTickets().refresh();
-                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
+                    Platform.runLater(() -> {  // Execute the task asynchronously
+                        try {
+                            ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea());
+                            currentTicket.setTicketQuantity(currentTicket.getTicketQuantity()+Integer.parseInt(input));
+                            ticketModel.updateTicket(currentTicket); // We update sold quantity
+                            emsTicketMain.getTblEventTickets().refresh();
+                        } catch (Exception e) {
+                            displayErrorModel.displayErrorC("Could not save all ticket(s) to PDF");
+                        }
+                    });
                 }
             });
         }
@@ -633,13 +691,15 @@ public class EMSTicketMain implements Initializable {
 
                 if (currentTableView == emsTicketMain.getTblEventTickets()) {
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
-                        setGraphic(editButton);
+                        setGraphic(checkTicketButton);
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
+                        setGraphic(editButton);
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 4)
                         setGraphic(deleteButton);
                     if (rowData instanceof Tickets tickets) {
-                        if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 1)
+                        if ((getTableView().getColumns().indexOf(getTableColumn()) == 5) && tickets.getIsILocal() == 1)
                             setGraphic(saleButton);
-                        else if ((getTableView().getColumns().indexOf(getTableColumn()) == 4) && tickets.getIsILocal() == 0)
+                        else if ((getTableView().getColumns().indexOf(getTableColumn()) == 5) && tickets.getIsILocal() == 0)
                             setGraphic(printButton);
                     }
                 }

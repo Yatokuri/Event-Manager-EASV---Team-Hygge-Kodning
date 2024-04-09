@@ -12,6 +12,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -39,7 +40,7 @@ public class TicketToPDF {
     private static final int ONE_TIME_TICKET_HEIGHT = 300;
 
     private final DisplayErrorModel displayErrorModel;
-
+    private boolean isLocal;
 
     private final ImageModel systemIMGModel;
     private final TicketModel ticketModel;
@@ -105,7 +106,6 @@ public class TicketToPDF {
         this.ticketArea = ticketArea;
         Tickets currentTicket = ticketModel.getCurrentTicket();
         pageGrids.clear();
-        // Clear any existing content
         ticketArea.getChildren().clear();
         int ticketsPerPage = 0; // Assuming 9 tickets per page
         int pageNumber = 0;
@@ -116,14 +116,15 @@ public class TicketToPDF {
             pageNumber = 1;
             rows = 4;
             cols = 1;
+            isLocal = true;
         }
         else if (currentTicket.getIsILocal() == 0){
-            ticketsPerPage = 9;
+            ticketsPerPage = 16;
             pageNumber = 1;
-            rows = 3;
-            cols = 3;
+            rows = 4;
+            cols = 4;
+            isLocal = false;
         }
-
         for (int i = 0; i < ticketSoldList.size(); i += ticketsPerPage) {
             GridPane pageGrid = new GridPane();   // Create a new page GridPane to store tickets
             pageGrid.setHgap(10);
@@ -223,6 +224,22 @@ public class TicketToPDF {
                 }
                 else if (image != null) {
                     imageView.setImage(image);
+                }
+            }
+            if (node instanceof Label lbl) { // Here auto generated user info on ticket
+                if (lbl.getProperties().containsKey("isAFName")) {
+                    lbl.setText(ticketsold.getFirstName());
+                }
+                if (lbl.getProperties().containsKey("isALName")) {
+                    lbl.setText(ticketsold.getLastName());
+                }
+                if (lbl.getProperties().containsKey("isAFLName")) {
+                    lbl.setText(ticketsold.getFirstName() + " " + ticketsold.getLastName());
+                }
+                if (isLocal) {
+                    lbl.setMaxWidth(EVENT_TICKET_WIDTH);
+                } else {
+                    lbl.setMaxWidth(ONE_TIME_TICKET_HEIGHT);
                 }
             }
         }

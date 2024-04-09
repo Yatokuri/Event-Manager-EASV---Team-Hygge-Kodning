@@ -103,8 +103,9 @@
                                     </Label>
                                     <TableView fx:id="tblEventTickets" styleClass="userListAdmin" VBox.vgrow="ALWAYS">
                                        <columns>
-                                          <TableColumn fx:id="colTicketName" maxWidth="1.7976931348623157E308" minWidth="70.0" prefWidth="322.0" text="Tickets" />
+                                          <TableColumn fx:id="colTicketName" maxWidth="1.7976931348623157E308" minWidth="70.0" prefWidth="300.0" text="Tickets" />
                                           <TableColumn fx:id="colTicketQuantity" editable="false" maxWidth="60.0" minWidth="25.0" prefWidth="60.0" resizable="false" sortable="false" text="Sold" />
+                                          <TableColumn fx:id="colCheckTicket" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                           <TableColumn fx:id="colEdit" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                           <TableColumn fx:id="colRemove" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                           <TableColumn fx:id="colPrintSale" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
