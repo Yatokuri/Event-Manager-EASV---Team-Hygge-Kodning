@@ -356,7 +356,9 @@ public class EMSTicketMain implements Initializable {
     public TableView getTblEventTickets() {
         return tblEventTickets;
     }
-
+    public be.Event getCurrentEvent() {
+        return selectedEvent;
+    }
     public Pane getTicketArea() {
         return ticketArea;
     }
@@ -394,11 +396,12 @@ public class EMSTicketMain implements Initializable {
             deleteButton.setOnAction(event -> {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets) {
-
+                    currentTicket = tickets;
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Confirmation Dialog");
-                    alert.setHeaderText("You will delete ticket " + tickets.getTicketName());
-                    alert.setContentText("Are you ok with this?");
+                    alert.setTitle("Confirmation");
+                    alert.setHeaderText("Delete Ticket");
+                    alert.setContentText("You are about to delete ticket " + tickets.getTicketName() + ". \nThis action cannot be undone.\n\nAre you sure you want to proceed?");
+
                     // Set the icon for the dialog window
                     Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                     stage.getIcons().add(mainIcon);
@@ -406,17 +409,22 @@ public class EMSTicketMain implements Initializable {
                     Optional<ButtonType> result = alert.showAndWait();
                     if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
-                            // ticketModel.deleteAllCodeOnTicket(tickets);
-                            //ticketModel.deleteTicket(tickets);
-                            //eventTicketsModel.deleteTicketsFromEvent(tickets);
-                            //recreateTableview();
-                           // ticketModel.deleteAllCodeOnTicket(tickets);
-                            System.out.println("You want to delete " +  tickets.getTicketName() + "but it deactivated");
+                            if (currentTicket.getIsILocal() == 0) {
+                                GlobalTicketsModel globalTicketsModel = GlobalTicketsModel.getInstance();
+                                globalTicketsModel.deleteGlobalTickets(currentTicket);
+                                emsTicketMain.tblEventTickets.getItems().remove(currentTicket);
+                                return;
+                            }
+                            if (currentTicket.getTicketQuantity() <= 0) {
+                                EventTicketsModel eventTicketsModel = EventTicketsModel.getInstance();
+                                eventTicketsModel.deleteTicketsFromEvent(currentTicket, emsTicketMain.getCurrentEvent());
+                                emsTicketMain.tblEventTickets.getItems().remove(currentTicket);
+                            } else {
+                                displayErrorModel.displayErrorC("You cannot delete a ticket, which has been sold!");
+                            }
                         } catch (Exception e) {
-                            displayErrorModel.displayErrorC("User not deleted try again");
+                            displayErrorModel.displayErrorC("Ticket not deleted try again");
                         }
-                    } else {
-                        return;
                     }
                 }
             });

@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -36,7 +38,8 @@ public class EMSTicketShop implements Initializable {
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     private final Pattern namesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9 *]{2,50}");
 
-
+    private Node[] focusNodes; // To make tab work correct
+    private int currentFocusIndex;
     public DisplayErrorModel displayErrorModel;
     private final ImageModel systemIMGModel;
     private final TicketModel ticketModel;
@@ -61,6 +64,12 @@ public class EMSTicketShop implements Initializable {
         txtInputFName.textProperty().addListener((observable, oldValue, newValue) -> validateFName());
         txtInputLName.textProperty().addListener((observable, oldValue, newValue) -> validateLName());
         txtInputEmail.textProperty().addListener((observable, oldValue, newValue) -> validateEmail());
+        focusNodes = new Node[]{txtInputFName, txtInputLName, txtInputEmail};
+        currentFocusIndex = 0;
+        // Add event filter to handle Tab key press
+        for (Node node : focusNodes) {
+            node.addEventFilter(KeyEvent.KEY_PRESSED, this::handleTabKeyPress);
+        }
     }
 
 
@@ -98,6 +107,14 @@ public class EMSTicketShop implements Initializable {
         progressIndicator.setPrefSize(200, 80);
         loadingBox.setLayoutX(125);
         loadingBox.setLayoutY(12.5);
+    }
+
+    private void handleTabKeyPress(KeyEvent event) {
+        if (event.getCode() == KeyCode.TAB) {
+            event.consume();
+            currentFocusIndex = (currentFocusIndex + 1) % focusNodes.length;
+            focusNodes[currentFocusIndex].requestFocus();
+        }
     }
 
     public void setupTicketView(String json, Pane paneName) {

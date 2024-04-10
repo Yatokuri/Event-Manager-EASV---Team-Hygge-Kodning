@@ -6,6 +6,8 @@ import gui.model.UserModel;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,13 +24,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class EMSController implements Initializable {
-
+    private static final int WAITING_TIME_ERROR = 2000;
     @FXML
     private MFXTextField txtInputUsername;
     @FXML
@@ -134,12 +137,24 @@ public class EMSController implements Initializable {
 
     private User currentUser;
 
-
     public void btnLogin(ActionEvent actionEvent) {
+        PauseTransition pauseTransition = new PauseTransition(Duration.millis(180)); // Adjust the duration as needed
+        pauseTransition.setOnFinished(event -> Platform.runLater(() -> {
+            try {
+                btnLoginSystem(actionEvent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }));
+        pauseTransition.play();
+    }
+
+    public void btnLoginSystem(ActionEvent actionEvent) throws InterruptedException {
         String username = txtInputUsername.getText();
         String password = txtInputPassword.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
+            Thread.sleep(WAITING_TIME_ERROR); // FAKE Loading extra safe
             displayErrorModel.displayErrorC("Wrong username or password");
             return;
         }
@@ -147,11 +162,13 @@ public class EMSController implements Initializable {
         try {
             currentUser = userModel.signIn(username, password);
         } catch (Exception e) {
+            Thread.sleep(WAITING_TIME_ERROR); // FAKE Loading extra safe
             displayErrorModel.displayErrorC("Wrong username or password");
             return;
         }
 
         if (currentUser == null) {
+            Thread.sleep(WAITING_TIME_ERROR); // FAKE Loading extra safe
             displayErrorModel.displayErrorC("Wrong username or password");
             return;
         }
@@ -190,6 +207,7 @@ public class EMSController implements Initializable {
         }
 
         else {
+            Thread.sleep(WAITING_TIME_ERROR); // FAKE Loading extra safe
             displayErrorModel.displayErrorC("Wrong username or password");
         }
     }

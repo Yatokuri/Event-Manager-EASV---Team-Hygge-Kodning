@@ -43,9 +43,7 @@ public class TicketManager {
     public Collection<Tickets> getAllTickets() throws Exception { return ticket_DB.getAllTicket();}
     public Tickets getTicket(int selectedTicket) throws Exception { return ticket_DB.getTicket(selectedTicket);}
     public void updateTicket(Tickets selectedTicket) throws Exception { ticket_DB.updateTicket(selectedTicket); }
-    public void deleteTicket(Tickets selectedTicket) throws Exception {
-        imageManager.deleteSystemIMG(selectedTicket.getTicketID());
-        ticket_DB.deleteTicket(selectedTicket);
+    public void deleteTicket(Tickets selectedTicket) throws Exception {ticket_DB.deleteTicket(selectedTicket);
     }
     public Tickets createNewTicket(Tickets selectedTicket) throws Exception { return ticket_DB.createNewTicket(selectedTicket); }
     public boolean checkGlobalTicketCode(String code) throws Exception {return ticket_DB.checkGlobalTicketCode(code);}

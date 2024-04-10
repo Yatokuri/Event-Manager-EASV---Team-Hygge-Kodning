@@ -102,9 +102,9 @@ public class EMSEventInformation implements Initializable {
 
     public void deleteButton() {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("You will delete event " + eventBeingUpdated.getEventName());
-            alert.setContentText("Are you ok with this?");
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Delete Event");
+            alert.setContentText("You are about to delete event " + eventBeingUpdated.getEventName() + ". \nThis action cannot be undone.\n\nAre you sure you want to proceed?");
             // Set the icon for the dialog window
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
             stage.getIcons().add(mainIcon);

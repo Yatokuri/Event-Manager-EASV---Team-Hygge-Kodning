@@ -50,6 +50,8 @@ public class TicketToPDF {
     private Pane ticketArea;
     List<GridPane> pageGrids = new ArrayList<>();
 
+    HashMap<String, Image> imgList = new HashMap<String, Image>();
+
     public TicketToPDF() throws Exception {
         displayErrorModel = new DisplayErrorModel();
         systemIMGModel = ImageModel.getInstance();
@@ -247,8 +249,13 @@ public class TicketToPDF {
     }
 
     private Image getImageByID(String imageViewId) {
+        if (imgList.get(imageViewId) != null)   {
+            return imgList.get(imageViewId); // Cache IMG so we don't load the same again
+        }
         try {
-            return systemIMGModel.readSystemIMG(Integer.parseInt(imageViewId)).getImage();
+            Image img = systemIMGModel.readSystemIMG(Integer.parseInt(imageViewId)).getImage();
+            imgList.put(imageViewId, img);
+            return img;
         } catch (Exception e) {
             displayErrorModel.displayErrorC("Could not read image on the ticket");
         }

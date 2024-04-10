@@ -724,16 +724,19 @@ public class EMSTicketDesigner implements Initializable {
                 displayErrorModel.displayErrorC("No End Date & Time on Ticket");
                 return;
             }
+            if (!checkForProperty(ticketArea, "isBarcode")) {
+                displayErrorModel.displayErrorC("No Barcode on Ticket");
+                return;
+            }
+            if (!checkForProperty(ticketArea, "isQRCode")) {
+                displayErrorModel.displayErrorC("No QR Code on Ticket");
+                return;
+            }
         }
-        if (!checkForProperty(ticketArea, "isQRCode")) {
-            displayErrorModel.displayErrorC("No QR Code on Ticket");
+        if (!checkForProperty(ticketArea, "isQRCode") || !checkForProperty(ticketArea, "isBarcode")) {
+            displayErrorModel.displayErrorC("Missing Barcode or QR code");
             return;
         }
-        if (!checkForProperty(ticketArea, "isBarcode")) {
-            displayErrorModel.displayErrorC("No Barcode on Ticket");
-            return;
-        }
-
 
         int totalCharacters = getTotalCharactersIMGDB();
         String json = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);

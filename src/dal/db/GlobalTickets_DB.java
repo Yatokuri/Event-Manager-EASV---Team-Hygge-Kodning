@@ -52,7 +52,7 @@ public class GlobalTickets_DB {
     }
 
     public void removeTicketFromGlobal(Tickets tickets) throws Exception {
-        String sql = "DELETE FROM dbo.EventTickets WHERE TicketID = ?";
+        String sql = "DELETE FROM dbo.GlobalTickets WHERE TicketID = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, tickets.getTicketID());
