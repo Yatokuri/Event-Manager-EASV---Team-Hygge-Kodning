@@ -3,9 +3,9 @@ package be;
 public class Tickets {
     private int ticketID;
     private int ticketQuantity;
-    private String ticketName;
+    private final String ticketName;
     private String ticketJSON;
-    private int isILocal;
+    private final int isILocal;
 
     public Tickets(int ticketID, int ticketQuantity, String ticketName, String ticketJSON, int isILocal) {
         this.ticketQuantity = ticketQuantity;

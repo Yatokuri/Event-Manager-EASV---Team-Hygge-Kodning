@@ -2,7 +2,6 @@ package gui.model;
 
 import be.TicketSold;
 import be.Tickets;
-import be.User;
 import bll.TicketManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

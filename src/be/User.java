@@ -3,9 +3,10 @@ package be;
 import javafx.scene.image.Image;
 
 public class User {
-    private String userName, password;
+    private final String userName;
+    private String password;
     private Image profileIMG;
-    private int userAccessLevel;
+    private final int userAccessLevel;
 
     public User(String userName, String password, int userAccessLevel){
         this.userName = userName;

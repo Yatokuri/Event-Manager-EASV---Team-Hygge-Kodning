@@ -23,11 +23,11 @@ public class ImageModel {
 
     public int createSystemIMG(Image image) throws Exception{ return imageManager.createSystemIMG(image);}
 
-    public ImageView readSystemIMG(int IMGID) throws Exception{ return imageManager.readSystemIMG(IMGID);}
+    public ImageView readSystemIMG(int IMGId) throws Exception{ return imageManager.readSystemIMG(IMGId);}
 
-    public void updateSystemIMG(int IMGID, Image image) throws Exception{ imageManager.updateSystemIMG(IMGID, image);}
+    public void updateSystemIMG(int IMGId, Image image) throws Exception{ imageManager.updateSystemIMG(IMGId, image);}
 
-    public void deleteSystemIMG(int IMGID) throws Exception{ imageManager.deleteSystemIMG(IMGID);}
+    public void deleteSystemIMG(int IMGId) throws Exception{ imageManager.deleteSystemIMG(IMGId);}
     public int getNextIDSystemIMG() throws Exception{ return imageManager.getNextIDSystemIMG();}
 
 }

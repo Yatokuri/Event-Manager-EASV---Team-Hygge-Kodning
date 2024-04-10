@@ -14,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -31,7 +30,6 @@ import java.util.regex.Pattern;
 
 public class EMSCoordinatorEventCreator implements Initializable {
 
-    public HBox eventStartDateTimePicker;
     private EMSCoordinator emsCoordinator;
 
     private EventModel eventModel;
@@ -163,9 +161,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             timePicker.setVisible(false);
         });
 
-        btnCancelTimePicker.setOnAction(event -> {
-            timePicker.setVisible(false);
-        });
+        btnCancelTimePicker.setOnAction(event -> timePicker.setVisible(false));
 
 
         // Method to add event filter to hide timePicker when clicking outside of it

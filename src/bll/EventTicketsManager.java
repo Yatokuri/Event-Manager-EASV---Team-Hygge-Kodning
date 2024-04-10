@@ -10,7 +10,7 @@ import java.util.List;
 public class EventTicketsManager {
 
     private final EventTickets_DB eventTickets_DB;
-    private ImageManager imageManager;
+    private final ImageManager imageManager;
 
     public EventTicketsManager() throws Exception {
         eventTickets_DB = new EventTickets_DB();

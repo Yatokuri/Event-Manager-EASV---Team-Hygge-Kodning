@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 public class UserModel {
     private User currentLoggedInUser;
     private final UserManager userManager;
-    private ObservableList<User> usersToBeViewed;
+    private final ObservableList<User> usersToBeViewed;
     private static UserModel instance;
 
     // Private constructor to prevent more than one UserModel

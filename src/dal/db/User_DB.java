@@ -74,11 +74,11 @@ public class User_DB {
     public User createUser(User newUser) throws Exception {
         String sql = "INSERT INTO dbo.Users (Username, Password, userAccessLevel) VALUES (?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, newUser.getUserName());
-            pstmt.setString(2, newUser.getPassword());
-            pstmt.setInt(3, newUser.getUserAccessLevel());
-            pstmt.executeUpdate();
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            pStmt.setString(1, newUser.getUserName());
+            pStmt.setString(2, newUser.getPassword());
+            pStmt.setInt(3, newUser.getUserAccessLevel());
+            pStmt.executeUpdate();
 
             User user = new User(newUser.getUserName(), newUser.getPassword(), newUser.getUserAccessLevel());
 

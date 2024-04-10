@@ -221,14 +221,14 @@ public class Ticket_DB {
     public Tickets createNewTicket(Tickets newTicket) throws Exception {
         String sql = "INSERT INTO dbo.Tickets (TicketQuantity, TicketName, TicketJSON, TicketLocal) VALUES (?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, newTicket.getTicketQuantity());
-            pstmt.setString(2, newTicket.getTicketName());
-            pstmt.setString(3, newTicket.getTicketJSON());
-            pstmt.setInt(4, newTicket.getIsILocal());
-            pstmt.executeUpdate();
+             PreparedStatement pStmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pStmt.setInt(1, newTicket.getTicketQuantity());
+            pStmt.setString(2, newTicket.getTicketName());
+            pStmt.setString(3, newTicket.getTicketJSON());
+            pStmt.setInt(4, newTicket.getIsILocal());
+            pStmt.executeUpdate();
 
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+            try (ResultSet generatedKeys = pStmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     newTicket.setTicketID(generatedKeys.getInt(1));
                 } else {
@@ -291,9 +291,9 @@ public class Ticket_DB {
         Tickets ticket;
         String sql = "SELECT * FROM dbo.Tickets WHERE TicketID = ?";
         try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, ticketToFetch);
-            try (ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            pStmt.setInt(1, ticketToFetch);
+            try (ResultSet rs = pStmt.executeQuery()) {
                 if (rs.next()) {
                     ticket = generateTicket(rs);
                 } else {

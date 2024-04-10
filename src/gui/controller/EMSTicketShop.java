@@ -84,7 +84,7 @@ public class EMSTicketShop implements Initializable {
                 Thread.sleep(500); // FAKE Loading
                 Platform.runLater(() -> setupTicketView(currentTicket.getTicketJSON(), ticketArea));
             } catch (InterruptedException e) {
-                displayErrorModel.displayErrorC("The ticket could not be loadet, You can still sell it!");
+                displayErrorModel.displayErrorC("The ticket could not be loaded, You can still sell it!");
                 Label lbl = new Label(" Ticket could not be shown");
                 lbl.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
                 ticketArea.getChildren().add(lbl);

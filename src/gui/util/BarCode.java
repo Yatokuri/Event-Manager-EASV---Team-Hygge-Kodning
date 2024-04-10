@@ -25,7 +25,7 @@ public class BarCode {
         String barcodeText = String.valueOf(uuid);
 
         Map<EncodeHintType, Object> hints;
-        hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+        hints = new EnumMap<>(EncodeHintType.class);
         hints.put(EncodeHintType.CHARACTER_SET, "");
 
         BitMatrix bitMatrix = new Code128Writer().encode(barcodeText, BarcodeFormat.CODE_128, width, height, hints);

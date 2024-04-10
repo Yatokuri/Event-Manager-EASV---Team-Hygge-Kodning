@@ -1,6 +1,5 @@
 package dal.db;
 
-import be.Event;
 import be.Tickets;
 
 import java.sql.Connection;

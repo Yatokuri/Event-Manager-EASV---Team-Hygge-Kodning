@@ -8,7 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class EventTicketsModel {
-    private EventModel eventModel;
+    private final EventModel eventModel;
 
     private static EventTicketsModel instance;
     private final EventTicketsManager eventTicketsManager;
@@ -34,11 +34,11 @@ public class EventTicketsModel {
         return instance;
     }
 
-    public void eventTickets(be.Event event) throws Exception { // changes the event you are viewing and inserts the relevant ticketss
+    public void eventTickets(be.Event event) throws Exception { // changes the event you are viewing and inserts the relevant tickets
         eventTicketsToBeViewed.clear();
         eventTicketsToBeViewed.addAll(eventTicketsManager.getAllTicketsEvent(event));
     }
-    public boolean addTicketsToEvent(Tickets newtickets, be.Event event) throws Exception { // Sends a request to the database to add a tickets to a event
+    public boolean addTicketsToEvent(Tickets newtickets, be.Event event) throws Exception { // Sends a request to the database to add a tickets to an event
         for (Tickets s : eventTicketsToBeViewed) {
             if (newtickets.getTicketID() == s.getTicketID()) {
                 return false; // Exit the method fast
@@ -53,7 +53,7 @@ public class EventTicketsModel {
         eventTicketsManager.updateTicketsInEvent(tickets, oldtickets, event);
     }
 
-    public void deleteTicketsFromEvent (Tickets tickets, be.Event event) throws Exception { // Sends a request to the database to delete a tickets from a event
+    public void deleteTicketsFromEvent (Tickets tickets, be.Event event) throws Exception { // Sends a request to the database to delete a tickets from an event
         eventTicketsManager.removeImageFromTickets(tickets); // Remove the IMG from db too
         eventTicketsManager.deleteTicketsFromEvent(tickets , event);
         ticketManager.deleteAllCodeOnTicket(tickets);
@@ -68,7 +68,7 @@ public class EventTicketsModel {
             eventTicketsManager.removeImageFromTickets(t);
         }
         eventTicketsManager.deleteAllTicketsFromEvent(event);
-        for (Tickets t : eventTicketsToBeViewed) { // We delete stuff in right order so foreign key don't block it, Try catch make sure it don't stop if nothing can be deleted
+        for (Tickets t : eventTicketsToBeViewed) { // We delete stuff in right order so foreign key don't block it, Try catch makes sure it does not stop if nothing can be deleted
             try {
                 ticketManager.deleteAllCodeOnTicket(t);
             } catch (Exception ignored) {

@@ -3,7 +3,6 @@ package gui.controller;
 import be.Event;
 import gui.model.*;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -21,7 +20,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class EMSAdmin {
 
@@ -300,7 +302,7 @@ public class EMSAdmin {
         }
     }
     @FXML
-    private void openArchivedEvents(ActionEvent actionEvent) {
+    private void openArchivedEvents() {
     }
 
 

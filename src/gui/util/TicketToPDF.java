@@ -2,8 +2,6 @@ package gui.util;
 
 import be.TicketSold;
 import be.Tickets;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import gui.model.DisplayErrorModel;
 import gui.model.ImageModel;
 import gui.model.TicketModel;
@@ -50,7 +48,7 @@ public class TicketToPDF {
     private Pane ticketArea;
     List<GridPane> pageGrids = new ArrayList<>();
 
-    HashMap<String, Image> imgList = new HashMap<String, Image>();
+    HashMap<String, Image> imgList = new HashMap<>();
 
     public TicketToPDF() throws Exception {
         displayErrorModel = new DisplayErrorModel();
@@ -210,8 +208,6 @@ public class TicketToPDF {
                     else {
                         uniqueCode = ticketModel.readNewSoldTicketCode(ticketsold);
                     }
-                    Map<EncodeHintType, ErrorCorrectionLevel> hashmap = new HashMap<>();
-                    hashmap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
                     assert image != null;
                     BufferedImage qrCodeImage = BarCode.generateQRCodeImage(uniqueCode, (int) image.getWidth(), (int) image.getHeight());
                     Image QRfxImage = SwingFXUtils.toFXImage(qrCodeImage, null);

@@ -11,7 +11,7 @@ public class GlobalTicketManager {
 
     private final GlobalTickets_DB globalTicketsDB;
 
-    private ImageManager imageManager;
+    private final ImageManager imageManager;
 
     public GlobalTicketManager() throws Exception {
         globalTicketsDB = new GlobalTickets_DB();

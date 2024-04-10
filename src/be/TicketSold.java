@@ -1,7 +1,7 @@
 package be;
 
 public class TicketSold {
-    private String firstName, lastName, email;
+    private final String firstName, lastName, email;
     private int ticketID, transactionID;
 
     public TicketSold(String firstName, String lastName, String email, int ticketID, int transactionID){
@@ -16,24 +16,12 @@ public class TicketSold {
         return firstName;
     }
 
-    private void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
     }
 
-    private void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    private void setEmail(String email) {
-        this.email = email;
     }
 
     public int getTicketID() {

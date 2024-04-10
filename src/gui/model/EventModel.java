@@ -1,7 +1,6 @@
 package gui.model;
 
 import be.Event;
-import bll.ArchivedEventManager;
 import bll.EventManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
