@@ -28,6 +28,7 @@ public class GlobalTicketsModel {
     }
 
     public void addGlobalTickets(Tickets newtickets) throws Exception { // Sends a request to the database to add a tickets to an event
+        ticketManager.createNewTicket(newtickets);
         globalTicketManager.addTicketToGlobal(newtickets);
         globalTicketsToBeViewed.add(newtickets); // update list // Adds the new tickets to the event observable list
     }

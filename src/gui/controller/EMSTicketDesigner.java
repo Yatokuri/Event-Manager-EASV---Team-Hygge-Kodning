@@ -607,8 +607,8 @@ public class EMSTicketDesigner implements Initializable {
     }
     @FXML //Get the selected rotate and set it
     private void applyTextRotateChanges(double rotateValue) {
-        if (selectedNode != null) {
-            selectedNode.setRotate(rotateValue);
+            if (selectedNode instanceof Label lbl) {
+                lbl.setRotate(rotateValue);
         }
     }
 
@@ -702,7 +702,7 @@ public class EMSTicketDesigner implements Initializable {
             displayErrorModel.displayErrorC("Missing Design in Ticket");
             return;
         }
-        if (isItLocalTicket == 1){
+        if (isItLocalTicket == 1 && !Objects.equals(type, "update")){ //Temp way so you still can update ticket
 
             if (!ticketArea.getChildren().contains(lblEventName)){
                 displayErrorModel.displayErrorC("Missing Event Name on Ticket");
@@ -737,7 +737,7 @@ public class EMSTicketDesigner implements Initializable {
                 return;
             }
         }
-        if (!checkForProperty(ticketArea, "isQRCode") || !checkForProperty(ticketArea, "isBarcode")) {
+        if (!checkForProperty(ticketArea, "isQRCode") && !checkForProperty(ticketArea, "isBarcode")) {
             displayErrorModel.displayErrorC("Missing Barcode or QR code");
             return;
         }
@@ -830,9 +830,10 @@ public class EMSTicketDesigner implements Initializable {
                     backButton.setText("Back");
                     backButton();
                 }
+            else {
                 eventTicketsModel.addTicketsToEvent(newTicket, selectedEvent);
                 backButton.setText("Back");
-                backButton();
+                backButton(); }
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Could not save image and set ID");
             } finally {

@@ -24,10 +24,15 @@ public class TicketSerializerRecreate {
                 jsonObject.put("ty", "Lbl");
             } else if (node instanceof ImageView imageView) {
                 Image image = imageView.getImage();
-                if (image != null && image.getUrl() != null && image.getUrl().contains("QR")) {
+                // Assume `imageView` is the ImageView instance you're checking
+                Boolean isQRCode = (Boolean) imageView.getProperties().get("isQRCode");
+                Boolean isBarcode = (Boolean) imageView.getProperties().get("isBarcode");
+
+                System.out.println(isQRCode + " . " + isBarcode);
+
+                if (Boolean.TRUE.equals(isQRCode)) {
                     jsonObject.put("ty", "QR");
-                }
-                else if (image != null && image.getUrl() != null && image.getUrl().contains("Barcode")) {
+                } else if (Boolean.TRUE.equals(isBarcode)) {
                     jsonObject.put("ty", "BC");
                 }
                 else {
