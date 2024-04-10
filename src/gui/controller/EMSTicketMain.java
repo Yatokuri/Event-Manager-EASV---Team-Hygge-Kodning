@@ -77,7 +77,7 @@ public class EMSTicketMain implements Initializable {
     private Stage emsCoordinatorStage;
     private Tickets selectedTicket;
     private boolean menuButtonVisible = false;
-
+    private final Image mainIcon = new Image("Icons/mainIcon.png");
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private ArchivedEventModel archivedEventModel;
 
@@ -350,6 +350,71 @@ public class EMSTicketMain implements Initializable {
         ticketModel.ticketsUser(selectedTicket);
         tblEventTicketsUsers.setItems(ticketModel.getObservableSoldTickets());
     }
+
+    @FXML
+    private void checkTicketButton() {
+        checkTicket(null, ticketModel);
+    }
+
+
+    private void checkTicket(Tickets tickets, TicketModel ticketModel) {
+        String type;
+        boolean isLocal;
+        if (tickets == null)    {
+            isLocal = false;
+            type = "All types of";
+        } else {
+            isLocal = (tickets.getIsILocal() == 1);
+            type = isLocal ? "Local" : "Global";
+        }
+
+        // Create a text input dialog to prompt the user for the code
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Enter " + type + " Ticket Code");
+        dialog.setHeaderText("Enter the code to check for " + type.toLowerCase() + " ticket:");
+        dialog.setContentText("Code:");
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(mainIcon);
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(input -> {
+            boolean codeExists;
+            try {
+                if (tickets == null) {
+                    codeExists = ticketModel.checkGlobalTicketCode(input) ||
+                            ticketModel.checkLocalTicketAllCode(input);
+
+                } else if (isLocal) {
+                    codeExists = ticketModel.checkLocalTicketCode(input, tickets.getTicketID());
+                } else {
+                    codeExists = ticketModel.checkGlobalTicketCode(input);
+                }
+                // Show the result in an alert dialog
+                showAlert(input, codeExists);
+            } catch (Exception e) {
+                displayErrorModel.displayErrorC("Problem with checking code try again!");
+            }
+        });
+
+
+    }
+
+    private void showAlert(String code, boolean codeExists) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Code Check Result");
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(mainIcon);
+        // Set the alert content based on the result
+        if (codeExists) {
+            alert.setHeaderText(code + "  Exists");
+            alert.setContentText("The ticket is valid.");
+        } else {
+            alert.setHeaderText(code + "  Not Found");
+            alert.setContentText("The ticket is invalid.");
+        }
+        alert.showAndWait();
+    }
+
     public TableView getTblEventTicketsUsers() {
         return tblEventTicketsUsers;
     }
@@ -367,7 +432,6 @@ public class EMSTicketMain implements Initializable {
         if (selectedTicket == null) {return null;}
         return selectedTicket;
     }
-
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
         private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton, checkTicketButton;
@@ -472,7 +536,7 @@ public class EMSTicketMain implements Initializable {
                 S rowData = getTableView().getItems().get(getIndex());
                 if (rowData instanceof Tickets tickets){
                     currentTicket = tickets;
-                    checkTicket(currentTicket, ticketModel);
+                    emsTicketMain.checkTicket(currentTicket, ticketModel);
                 }
             });
 
@@ -557,51 +621,6 @@ public class EMSTicketMain implements Initializable {
                     }
                 }
             });
-        }
-
-        private void checkTicket(Tickets tickets, TicketModel ticketModel) {
-            boolean isLocal = (tickets.getIsILocal() == 1);
-            String type = isLocal ? "Local" : "Global";
-
-            // Create a text input dialog to prompt the user for the code
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Enter " + type + " Ticket Code");
-            dialog.setHeaderText("Enter the code to check for " + type.toLowerCase() + " ticket:");
-            dialog.setContentText("Code:");
-            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(mainIcon);
-
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(input -> {
-                boolean codeExists;
-                try {
-                    if (isLocal) {
-                        codeExists = ticketModel.checkLocalTicketCode(input, tickets.getTicketID());
-                    } else {
-                        codeExists = ticketModel.checkGlobalTicketCode(input);
-                    }
-                    // Show the result in an alert dialog
-                    showAlert(type, codeExists);
-                } catch (Exception e) {
-                    displayErrorModel.displayErrorC("Problem with checking code try again!");
-                }
-            });
-        }
-
-        private void showAlert(String type, boolean codeExists) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Code Check Result");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(mainIcon);
-            // Set the alert content based on the result
-            if (codeExists) {
-                alert.setHeaderText(type + " Code Exists");
-                alert.setContentText("The ticket is valid.");
-            } else {
-                alert.setHeaderText(type + " Code Not Found");
-                alert.setContentText("The ticket is invalid.");
-            }
-            alert.showAndWait();
         }
 
         private void openPrintWindow(TicketModel ticketModel) {

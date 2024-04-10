@@ -159,6 +159,12 @@
             </VBox>
             <HBox alignment="TOP_RIGHT" spacing="15.0">
                <children>
+                  <Button fx:id="checkTicketButton" mnemonicParsing="false" onAction="#checkTicketButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Check Tickets">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Region HBox.hgrow="ALWAYS" />
                   <Button fx:id="createTicketButton" mnemonicParsing="false" onAction="#createTicketButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Create Ticket">
                      <font>
                         <Font size="16.0" />
@@ -171,7 +177,7 @@
                   </Button>
                </children>
                <VBox.margin>
-                  <Insets bottom="10.0" right="10.0" top="40.0" />
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="40.0" />
                </VBox.margin>
             </HBox>
          </children>

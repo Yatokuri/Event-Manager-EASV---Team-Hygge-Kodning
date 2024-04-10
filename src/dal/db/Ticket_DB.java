@@ -360,5 +360,20 @@ public class Ticket_DB {
         }
     }
 
+    public boolean checkLocalTicketAllCode(String code) throws Exception {
+        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+
+            stmtCheck.setString(1, code);
+            ResultSet rs = stmtCheck.executeQuery();
+
+            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking code", ex);
+        }
+    }
+
 }
 

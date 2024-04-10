@@ -68,6 +68,9 @@ public class TicketModel {
     public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {
         return ticketManager.checkLocalTicketCode(code, ticketID);
     }
+    public boolean checkLocalTicketAllCode(String code) throws Exception {
+        return ticketManager.checkLocalTicketAllCode(code);
+    }
     public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {;
         ticketManager.createNewSoldTicketCode(newTicketSoldCode);
     }

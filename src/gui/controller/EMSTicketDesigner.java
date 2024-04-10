@@ -135,7 +135,7 @@ public class EMSTicketDesigner implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        toolTipPlaceholder.setText("Write these variable in a text-field. \n In the PDF version real data will replace it \n %f% = Name \n %l%  = lastname \n %fl% = Full name\n");
+        toolTipPlaceholder.setText("Write these variable in a text-field. \n In the PDF version real data will replace it \n %f% = Name \n %l%  = Lastname \n %fl% = Full name\n");
         toolTipPlaceholder.setHideDelay(Duration.millis(1000000));
         btnAddID.setOnMouseEntered(event -> {
             double x = btnAddID.localToScreen(btnAddID.getBoundsInLocal()).getMinX();
@@ -167,7 +167,7 @@ public class EMSTicketDesigner implements Initializable {
             double fontSize = newValue.doubleValue();
             // Calculate padding dynamically based on font size so remove gap
             if (selectedNode instanceof Label label) {
-                label.setPadding(new Insets(-0.37 * fontSize, 0, -0.35 * fontSize, 0));
+                label.setPadding(new Insets(-0.36 * fontSize, 0, -0.36 * fontSize, 0));
             }
             applyFontStyleChanges(newValue.doubleValue());
         });
@@ -176,7 +176,7 @@ public class EMSTicketDesigner implements Initializable {
             String formattedRotateValue = String.format(Locale.US, "%.2f", newValue.doubleValue());
             applyImageSizeChanges(Double.parseDouble(formattedRotateValue));
         });
-        addSliderListener(textRotateSlider.valueProperty(), this::applyRotateChanges);
+        addSliderListener(textRotateSlider.valueProperty(), this::applyTextRotateChanges);
         addSliderListener(imageRotateSlider.valueProperty(), this::applyImageRotateChanges);
         currentTicket = ticketModel.getCurrentTicket();
         if (Objects.equals(type, "update"))   { // Mean we want look at a Ticket
@@ -283,7 +283,7 @@ public class EMSTicketDesigner implements Initializable {
         ImageIO.write(barcodeImage, "png", outputFile);
 
         Image image = new Image(outputFile.toURI().toString());
-        setupNewImage(image, "Barcode");
+        setupNewImage(image, "BC");
     }
     @FXML
     private void btnAddID() {
@@ -456,7 +456,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventName.setFont(defaultFont );
         lblEventName.setLayoutX(10);
         lblEventName.setLayoutY(0);
-        lblEventName.setTextFill(Color.web("#108cf1")); // #FFFF00 represents yellow color in hexadecimal
+        lblEventName.setTextFill(Color.web("#108cf1")); // #FFFF00 represents blue color in hexadecimal
         lblEventName.getProperties().put("EventName" , true);
     }
 
@@ -606,7 +606,7 @@ public class EMSTicketDesigner implements Initializable {
         }
     }
     @FXML //Get the selected rotate and set it
-    private void applyRotateChanges(double rotateValue) {
+    private void applyTextRotateChanges(double rotateValue) {
         if (selectedNode != null) {
             selectedNode.setRotate(rotateValue);
         }
@@ -695,6 +695,9 @@ public class EMSTicketDesigner implements Initializable {
         if (ticketName.isEmpty()) {
             displayErrorModel.displayErrorC("Missing Intern Name");
             return;
+            /*} else if (checkNodesOutsideTicketArea()) {
+            displayErrorModel.displayErrorC("Oops! It looks like some of your text or images extend beyond the ticket boundaries.\n Please ensure all content stays within the ticket area to avoid cropping or printing issues.");
+            return; */
         } else if (ticketArea.getChildren().isEmpty()) {
             displayErrorModel.displayErrorC("Missing Design in Ticket");
             return;

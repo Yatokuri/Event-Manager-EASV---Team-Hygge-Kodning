@@ -233,7 +233,7 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button fx:id="btnJSON" mnemonicParsing="false" onAction="#btnJSON" prefWidth="125.0" text="**Get Layout**">
+                                          <Button fx:id="btnJSON" mnemonicParsing="false" onAction="#btnJSON" prefWidth="125.0" text="**Get Layout**" visible="false">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>

@@ -26,6 +26,7 @@ public class TicketManager {
         ticket_DB.createNewSoldTicketCode(code, newTicketSold);
     }
     public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {return ticket_DB.checkLocalTicketCode(code, ticketID);}
+    public boolean checkLocalTicketAllCode(String code) throws Exception {return ticket_DB.checkLocalTicketAllCode(code);}
     public String readNewSoldTicketCode(TicketSold selectedTicket) throws Exception {return ticket_DB.readNewSoldTicketCode(selectedTicket);}
     public void updateCodeOnTicket(TicketSold selectedTicket) throws Exception {ticket_DB.updateNewSoldTicketCode(selectedTicket);}
     public void deleteSoldTicketCode(TicketSold selectedTicket) throws Exception {ticket_DB.deleteSoldTicketCode(selectedTicket);}
