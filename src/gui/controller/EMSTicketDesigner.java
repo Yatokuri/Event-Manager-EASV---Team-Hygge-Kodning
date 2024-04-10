@@ -430,13 +430,13 @@ public class EMSTicketDesigner implements Initializable {
         if (!selectedEvent.getEventStartDateTime().isEmpty() && (!checkForProperty(ticketArea, "EventStartDateTime")))    {
             setupEventStartDateTime();
         }
-        if (!selectedEvent.getEventEndDateTime().isEmpty() && (!checkForProperty(ticketArea, "EventEndDateTime")))    {
+        if (!Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime()) && (!checkForProperty(ticketArea, "EventEndDateTime")))    {
             setupEventEndDateTime();
         }
         if (!selectedEvent.getEventNotes().isEmpty() && (!checkForProperty(ticketArea, "EventNotes")))    {
             setupEventNotes();
         }
-        if (!selectedEvent.getLocationGuidance().isEmpty() && (!checkForProperty(ticketArea, "EventLocationGuide")))    {
+        if (selectedEvent.getLocationGuidance() != null && (!checkForProperty(ticketArea, "EventLocationGuide")))    {
             setupEventLocationGuide();
         }
         if (!selectedEvent.getLocation().isEmpty() && (!checkForProperty(ticketArea, "EventLocation")))    {
@@ -700,28 +700,29 @@ public class EMSTicketDesigner implements Initializable {
             return;
         }
         if (isItLocalTicket == 1){
-            if (lblEventName.getText().isEmpty() && lblEventName.getText() == null){
-                displayErrorModel.displayErrorC("No EventName on Ticket");
+
+            if (!ticketArea.getChildren().contains(lblEventName)){
+                displayErrorModel.displayErrorC("Missing Event Name on Ticket");
                 return;
             }
-            if (lblEventLocation.getText().isEmpty() && lblEventLocation.getText() == null){
-                displayErrorModel.displayErrorC("No Event Location of Ticket");
+            if (!ticketArea.getChildren().contains(lblEventLocation)){
+                displayErrorModel.displayErrorC("Missing Event Location of Ticket");
                 return;
             }
-            if (lblEventNotes.getText().isEmpty() && lblEventNotes.getText() == null){
-                displayErrorModel.displayErrorC("No Event Notes on Ticket");
+            if (!ticketArea.getChildren().contains(lblEventNotes)){
+                displayErrorModel.displayErrorC("Missing Event Notes on Ticket");
                 return;
             }
-            if (selectedEvent.getLocationGuidance() != null && lblEventLocationGuide.getText().isEmpty()){
-                displayErrorModel.displayErrorC("No Location Guidance on Ticket");
+            if (!ticketArea.getChildren().contains(lblEventLocationGuide) && selectedEvent.getLocationGuidance() != null){
+                displayErrorModel.displayErrorC("Missing Location Guidance on Ticket");
                 return;
             }
-            if (lblEventStartDateTime.getText().isEmpty() && lblEventStartDateTime.getText() == null){
-                displayErrorModel.displayErrorC("No Start Date & Time on Ticket");
+            if (!ticketArea.getChildren().contains(lblEventStartDateTime)){
+                displayErrorModel.displayErrorC("Missing Start Date & Time on Ticket");
                 return;
             }
-            if (selectedEvent.getEventEndDateTime() != null && lblEventEndDateTime.getText().isEmpty()){
-                displayErrorModel.displayErrorC("No End Date & Time on Ticket");
+            if (!ticketArea.getChildren().contains(lblEventEndDateTime) && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime())){
+                displayErrorModel.displayErrorC("Missing End Date & Time on Ticket");
                 return;
             }
             if (!checkForProperty(ticketArea, "isBarcode")) {

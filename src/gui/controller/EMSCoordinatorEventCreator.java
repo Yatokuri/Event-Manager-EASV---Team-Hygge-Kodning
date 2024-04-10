@@ -61,7 +61,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
     private String type;
     private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,50}");
     private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,80}");
-    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\s*\n*]{3,300}");
+    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.0-9\s*\n*]{3,300}");
     private final Pattern dateTimePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1}");
 
 
@@ -271,7 +271,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText()))
             eventStartDate = eventStartDatePicker.getEditor().getText();
         else{
-            displayErrorModel.displayErrorC("Missing Event start Date");
+            displayErrorModel.displayErrorC("Missing Event start Date & Time");
             return;
         }
         String eventEndDate;
@@ -321,15 +321,11 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 displayErrorModel.displayErrorC("Missing Event Start Date & Time");
                 return;
             }
-            if (eventEndDatePicker.getEditor().getText().isEmpty()) {
+            if (eventEndDatePicker.getEditor().getText().isEmpty() || eventEndDatePicker.getEditor().getText() == null) {
                 eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
             }
-            if (!eventEndDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventEndDatePicker.getEditor().getText())) //
+            if (!eventEndDatePicker.getEditor().getText().isEmpty() && eventEndDatePicker.getEditor().getText() != null && Pattern.matches(String.valueOf(dateTimePattern), eventEndDatePicker.getEditor().getText())) //
                 eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
-            else {
-                displayErrorModel.displayErrorC("Missing Event End Date & Time");
-                return;
-            }
             if (!locationTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventLocationPattern), locationTextField.getText()))
                 eventBeingUpdated.setLocation(locationTextField.getText());
             else {
@@ -344,8 +340,6 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 return;
             }
             eventBeingUpdated.setEventID(eventBeingUpdated.getEventID());
-
-            System.out.println(eventBeingUpdated.getEventStartDateTime() + " :_: " + eventBeingUpdated.getEventEndDateTime());
 
             try {
                 eventModel.updateEvent(eventBeingUpdated);

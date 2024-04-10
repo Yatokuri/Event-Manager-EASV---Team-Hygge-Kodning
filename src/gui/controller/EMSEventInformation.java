@@ -17,6 +17,7 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -67,9 +68,11 @@ public class EMSEventInformation implements Initializable {
     public void setupEventInformation() {
         eventNameLabel.setText(eventBeingUpdated.getEventName());
         eventStartTimeLabel.setText(eventBeingUpdated.getEventStartDateTime());
-        if (eventBeingUpdated.getEventEndDateTime() != null && !eventBeingUpdated.getEventEndDateTime().isEmpty()){
+        if (eventBeingUpdated.getEventEndDateTime() != null && !eventBeingUpdated.getEventEndDateTime().isEmpty() && !Objects.equals(eventBeingUpdated.getEventEndDateTime(), eventBeingUpdated.getEventStartDateTime())){
             eventEndTimeLabel.setText(eventBeingUpdated.getEventEndDateTime());
         }
+        else
+            eventEndTimeLabel.setText(null);
         eventLocationLabel.setText(eventBeingUpdated.getLocation());
         eventNotesTextArea.setWrapText(true);
         eventNotesTextArea.setText(eventBeingUpdated.getEventNotes());
