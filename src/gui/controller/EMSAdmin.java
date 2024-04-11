@@ -54,6 +54,8 @@ public class EMSAdmin {
     private ArchivedEventModel archivedEventModel;
     @FXML
     private MenuButton menuButtonLoggedInUser;
+    @FXML
+    private ImageView backgroundIMGBlur;
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -95,6 +97,11 @@ public class EMSAdmin {
         }
         setupProfilePicture(); // We set up the Profile
         setupUpEventSpace(anchorPane.getWidth());
+
+        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
+        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
+
     }
 
     public void setupUpEventSpace(double newValue) {
