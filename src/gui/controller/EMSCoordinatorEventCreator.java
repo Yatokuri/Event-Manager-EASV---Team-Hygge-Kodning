@@ -265,21 +265,12 @@ public class EMSCoordinatorEventCreator implements Initializable {
         }
         String eventStartDate;
         if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText())){
-            StringBuilder strBuild = new StringBuilder();
             eventStartDate = eventStartDatePicker.getEditor().getText();
-
-            strBuild.append(eventStartDate.substring(6,10));
-            strBuild.append("-");
-            strBuild.append(eventStartDate.substring(3, 5));
-            strBuild.append("-");
-            strBuild.append(eventStartDate.substring(0, 2));
-            strBuild.append(" ");
-            strBuild.append(eventStartDate.substring(11));
-            strBuild.append(":00.0");
-            System.out.println("Original event start date : " + eventStartDate);
-            System.out.println("String built start date : " + strBuild);
-            eventStartDate = strBuild.toString();
-            System.out.println("Rebuilt event start date : " + eventStartDate);
+            // Define input and output format
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            LocalDateTime dateTime = LocalDateTime.parse(eventStartDate, inputFormatter);
+            eventStartDate = dateTime.format(outputFormatter);
         }
         else{
             displayErrorModel.displayErrorC("Missing Event start Date & Time");

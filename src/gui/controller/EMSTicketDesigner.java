@@ -206,8 +206,10 @@ public class EMSTicketDesigner implements Initializable {
         txtInputTicketName.setDisable(true);
         toggleButtonType.setSelected(currentTicket.getIsILocal() != 1);
         toggleButtonType.setDisable(true);
-        btnReplaceMissingTicketInfo.setDisable(true);
-        btnSetupTicketDesign.setDisable(true);
+        if (currentTicket.getIsILocal() == 0) {
+            btnReplaceMissingTicketInfo.setDisable(true);
+            btnSetupTicketDesign.setDisable(true);
+        }
         isItLocalTicket = currentTicket.getIsILocal();
         changeTicketDisplay();
     }
@@ -424,22 +426,22 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     public void btnReplaceMissingTicketInfo() {
-        if (!selectedEvent.getEventName().isEmpty() && (!checkForProperty(ticketArea, "EventName")))    {
+        if (!selectedEvent.getEventName().isEmpty() && (!checkForProperty(ticketArea, "isEventName")))    {
             setupEventName();
         }
-        if (!selectedEvent.getEventStartDateTime().isEmpty() && (!checkForProperty(ticketArea, "EventStartDateTime")))    {
+        if (!selectedEvent.getEventStartDateTime().isEmpty() && (!checkForProperty(ticketArea, "isEventStartDateTime")))    {
             setupEventStartDateTime();
         }
-        if (!Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime()) && (!checkForProperty(ticketArea, "EventEndDateTime")))    {
+        if (!Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime()) && (!checkForProperty(ticketArea, "isEventEndDateTime")))    {
             setupEventEndDateTime();
         }
-        if (!selectedEvent.getEventNotes().isEmpty() && (!checkForProperty(ticketArea, "EventNotes")))    {
+        if (!selectedEvent.getEventNotes().isEmpty() && (!checkForProperty(ticketArea, "isEventNotes")))    {
             setupEventNotes();
         }
-        if (selectedEvent.getLocationGuidance() != null && (!checkForProperty(ticketArea, "EventLocationGuide")))    {
+        if (selectedEvent.getLocationGuidance() != null && (!checkForProperty(ticketArea, "isEventLocationGuide")))    {
             setupEventLocationGuide();
         }
-        if (!selectedEvent.getLocation().isEmpty() && (!checkForProperty(ticketArea, "EventLocation")))    {
+        if (!selectedEvent.getLocation().isEmpty() && (!checkForProperty(ticketArea, "isEventLocation")))    {
             setupEventLocation();
         }
     }
@@ -457,7 +459,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventName.setLayoutX(10);
         lblEventName.setLayoutY(0);
         lblEventName.setTextFill(Color.web("#108cf1")); // #FFFF00 represents blue color in hexadecimal
-        lblEventName.getProperties().put("EventName" , true);
+        lblEventName.getProperties().put("isEventName" , true);
     }
 
     private void setupEventStartDateTime(){
@@ -466,7 +468,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventStartDateTime.setFont(defaultFont );
         lblEventStartDateTime.setLayoutX(10);
         lblEventStartDateTime.setLayoutY(55);
-        lblEventStartDateTime.getProperties().put("EventStartDateTime" , true);
+        lblEventStartDateTime.getProperties().put("isEventStartDateTime" , true);
     }
     private void setupEventEndDateTime(){
         lblEventEndDateTime = setupLabel(timeDateConverter(selectedEvent.getEventEndDateTime()));
@@ -474,7 +476,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventEndDateTime.setFont(defaultFont );
         lblEventEndDateTime.setLayoutX(135);
         lblEventEndDateTime.setLayoutY(55);
-        lblEventEndDateTime.getProperties().put("EventEndDateTime" , true);
+        lblEventEndDateTime.getProperties().put("isEventEndDateTime" , true);
     }
     private void setupEventNotes(){
         lblEventNotes = setupLabel(selectedEvent.getEventNotes());
@@ -482,7 +484,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventNotes.setFont(defaultFont );
         lblEventNotes.setLayoutX(10);
         lblEventNotes.setLayoutY(135);
-        lblEventNotes.getProperties().put("EventNotes" , true);
+        lblEventNotes.getProperties().put("isEventNotes" , true);
     }
     private void setupEventLocationGuide(){
         lblEventLocationGuide = setupLabel(selectedEvent.getLocationGuidance());
@@ -490,7 +492,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventLocationGuide.setFont(defaultFont );
         lblEventLocationGuide.setLayoutX(10);
         lblEventLocationGuide.setLayoutY(108);
-        lblEventLocationGuide.getProperties().put("EventLocationGuide" , true);
+        lblEventLocationGuide.getProperties().put("isEventLocationGuide" , true);
     }
     private void setupEventLocation(){
         lblEventLocation = setupLabel(selectedEvent.getLocation());
@@ -498,7 +500,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventLocation.setFont(defaultFont );
         lblEventLocation.setLayoutX(10);
         lblEventLocation.setLayoutY(80);
-        lblEventLocation.getProperties().put("EventLocation" , true);
+        lblEventLocation.getProperties().put("isEventLocation" , true);
     }
 
     private void handleMousePressed(MouseEvent event) {
@@ -702,29 +704,29 @@ public class EMSTicketDesigner implements Initializable {
             displayErrorModel.displayErrorC("Missing Design in Ticket");
             return;
         }
-        if (isItLocalTicket == 1 && !Objects.equals(type, "update")){ //Temp way so you still can update ticket
+        if (isItLocalTicket == 1) {
 
-            if (!ticketArea.getChildren().contains(lblEventName)){
+            if (!checkForProperty(ticketArea, "isEventName")) {
                 displayErrorModel.displayErrorC("Missing Event Name on Ticket");
                 return;
             }
-            if (!ticketArea.getChildren().contains(lblEventLocation)){
+            if (!checkForProperty(ticketArea, "isEventLocation")) {
                 displayErrorModel.displayErrorC("Missing Event Location of Ticket");
                 return;
             }
-            if (!ticketArea.getChildren().contains(lblEventNotes)){
+            if (!checkForProperty(ticketArea, "isEventNotes")) {
                 displayErrorModel.displayErrorC("Missing Event Notes on Ticket");
                 return;
             }
-            if (!ticketArea.getChildren().contains(lblEventLocationGuide) && selectedEvent.getLocationGuidance() != null){
+            if (!checkForProperty(ticketArea, "isEventLocationGuide") && selectedEvent.getLocationGuidance() != null){
                 displayErrorModel.displayErrorC("Missing Location Guidance on Ticket");
                 return;
             }
-            if (!ticketArea.getChildren().contains(lblEventStartDateTime)){
+            if (!checkForProperty(ticketArea, "isEventStartDateTime")) {
                 displayErrorModel.displayErrorC("Missing Start Date & Time on Ticket");
                 return;
             }
-            if (!ticketArea.getChildren().contains(lblEventEndDateTime) && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime())){
+            if (!checkForProperty(ticketArea, "isEventEndDateTime") && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime())){
                 displayErrorModel.displayErrorC("Missing End Date & Time on Ticket");
                 return;
             }

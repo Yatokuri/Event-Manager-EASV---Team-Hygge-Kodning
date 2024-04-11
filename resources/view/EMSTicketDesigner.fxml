@@ -82,12 +82,12 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="Event">
+                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibilityCombo" text="This Event">
                            <HBox.margin>
                               <Insets right="-15.0" />
                            </HBox.margin>
                         </Button>
-                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="One Time" />
+                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="All Events" />
                      </children>
                   </HBox>
                </children>
@@ -205,7 +205,7 @@
                                           </VBox>
                                        </children>
                                        <VBox.margin>
-                                          <Insets top="34.0" />
+                                          <Insets top="28.0" />
                                        </VBox.margin>
                                     </HBox>
                                  </children>

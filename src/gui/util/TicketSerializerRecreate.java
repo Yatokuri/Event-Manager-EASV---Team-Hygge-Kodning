@@ -20,8 +20,35 @@ public class TicketSerializerRecreate {
         JSONArray jsonArray = new JSONArray();
         for (javafx.scene.Node node : ticketArea.getChildren()) {
             JSONObject jsonObject = new JSONObject();
-            if (node instanceof Label) { // We make custom type to save space
-                jsonObject.put("ty", "Lbl");
+            if (node instanceof Label lbl) { // We make custom type to save space
+                Boolean isEventName = (Boolean) lbl.getProperties().get("isEventName");
+                Boolean isEventStartDateTime = (Boolean) lbl.getProperties().get("isEventStartDateTime");
+                Boolean isEventEndDateTime = (Boolean) lbl.getProperties().get("isEventEndDateTime");
+                Boolean isEventNotes = (Boolean) lbl.getProperties().get("isEventNotes");
+                Boolean isEventLocationGuide = (Boolean) lbl.getProperties().get("isEventLocationGuide");
+                Boolean isEventLocation = (Boolean) lbl.getProperties().get("isEventLocation");
+
+                if (Boolean.TRUE.equals(isEventName)) {
+                    jsonObject.put("ty", "ET");
+                }
+                else if (Boolean.TRUE.equals(isEventStartDateTime)) {
+                    jsonObject.put("ty", "ES");
+                }
+                else if (Boolean.TRUE.equals(isEventEndDateTime)) {
+                    jsonObject.put("ty", "EE");
+                }
+                else if (Boolean.TRUE.equals(isEventNotes)) {
+                    jsonObject.put("ty", "EN");
+                }
+                else if (Boolean.TRUE.equals(isEventLocationGuide)) {
+                    jsonObject.put("ty", "EG");
+                }
+                else if (Boolean.TRUE.equals(isEventLocation)) {
+                    jsonObject.put("ty", "EL");
+                }
+                else {
+                    jsonObject.put("ty", "Lbl");
+                }
             } else if (node instanceof ImageView imageView) {
                 Image image = imageView.getImage();
                 // Assume `imageView` is the ImageView instance you're checking
@@ -95,12 +122,12 @@ public class TicketSerializerRecreate {
             javafx.scene.Node node;
             switch (type) {
 
-                case "Lbl":
+                case "Lbl", "ET", "ES", "EE", "EN", "EG", "EL":
                     Label text = new Label();
                     text.setText(jsonObject.optString("t", ""));
                     Color color = Color.web(jsonObject.optString("c", "#000000")); // Default to black if not specified
                     text.setFont(Font.font(
-                            jsonObject.optString("fF", "Arial"),
+                            jsonObject.optString("fF", "System"),
                             jsonObject.optString("fB", "f").equals("t") ? FontWeight.BOLD : FontWeight.NORMAL,
                             jsonObject.optString("fI", "f").equals("t") ? FontPosture.ITALIC : FontPosture.REGULAR,
                             jsonObject.optDouble("fS", 12)
@@ -108,6 +135,26 @@ public class TicketSerializerRecreate {
                     if (jsonObject.optString("fU", "f").equals("t")) {
                         text.setUnderline(true);
                     }
+
+                    if (type.equals("ET"))   {
+                        text.getProperties().put("isEventName", true);
+                    }
+                    if (type.equals("ES"))   {
+                        text.getProperties().put("isEventStartDateTime", true);
+                    }
+                    if (type.equals("EE"))   {
+                        text.getProperties().put("isEventEndDateTime", true);
+                    }
+                    if (type.equals("EN"))   {
+                        text.getProperties().put("isEventNotes", true);
+                    }
+                    if (type.equals("EG"))   {
+                        text.getProperties().put("isEventLocationGuide", true);
+                    }
+                    if (type.equals("EL"))   {
+                        text.getProperties().put("isEventLocation", true);
+                    }
+
                     text.setTextFill(color);
                     text.setRotate(jsonObject.optDouble("r", 0));
                     text.setWrapText(true);
@@ -123,9 +170,7 @@ public class TicketSerializerRecreate {
                         text.getProperties().put("isAFLName", true);
                     }
                     break;
-                case "Img":
-                case "BC":
-                case "QR":
+                case "Img", "BC", "QR":
                     ImageView imageView = new ImageView();
                     double fitWidth = jsonObject.optDouble("fW", 100); // Default width if not specified
                     double fitHeight = jsonObject.optDouble("fH", 100); // Default height if not specified

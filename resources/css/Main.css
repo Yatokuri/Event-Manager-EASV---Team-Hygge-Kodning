@@ -25,6 +25,18 @@
     -fx-text-fill: white;
 }
 
+.buttonInvisibilityCombo {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+}
+
+.buttonInvisibilityCombo:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+}
+
 .buttonInvisibility:hover {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -545,4 +557,18 @@
     -fx-padding: 2px;
     -fx-border-color: derive(-ButtonHoverColor, 0%);
     -fx-border-width: 1px;
+}
+
+.text-field:Invalid{
+    -fx-border-color: #010c1e;
+    -fx-border-width: 2px;
+    -fx-effect: innershadow( three-pass-box, rgb(255,0,0), 2, 5, 0, 0);
+    -fx-border-radius: 4px;
+}
+
+.text-field:Valid{
+    -fx-border-color: #02bb02;
+    -fx-border-width: 1px;
+    -fx-effect: null;
+    -fx-border-radius: 4px;
 }
