@@ -27,16 +27,12 @@
     -fx-text-fill: white;
 }
 
-.buttonInvisibilityCombo {
+.buttonInvisibilityAdmin {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-text-fill: black;
-}
-
-.buttonInvisibilityCombo:hover {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: black;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, black, 2, 1, 0.3, 0); /* Apply a black drop shadow with a radius of 4 pixels */
+    -fx-inner-shadow: dropshadow(gaussian, black, 2, 0.3, 1, 0); /* Apply an inner shadow with the same radius */
 }
 
 .buttonInvisibility:hover {
@@ -479,6 +475,9 @@
     -mfx-ripple-color: -mfx-main;
     -mfx-ripple-opacity: 0.4;
 }
+.ticketDesignerToggle.mfx-toggle-button .label {
+    -fx-effect: null;
+}
 
 /* Here we control the custom TimePicker */
 .timePicker {
@@ -600,4 +599,22 @@
 /* Make the year and month easy to see */
 .date-picker-popup > .month-year-pane .label {
     -fx-text-fill: black;
+}
+
+
+.ticketDesigner .check-box  {
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, black, 1, 1, 0.2, 0); /* Apply a black drop shadow with a radius of 4 pixels */
+    -fx-inner-shadow: dropshadow(gaussian, black, 1, 0.2, 1, 0); /* Apply an inner shadow with the same radius */
+}
+
+.ticketDesigner .label  {
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, black, 1, 1, 0.2, 0); /* Apply a black drop shadow with a radius of 4 pixels */
+    -fx-inner-shadow: dropshadow(gaussian, black, 1, 1, 0.2, 0); /* Apply an inner shadow with the same radius */
+}
+
+.ticketDesigner .color-picker .label {
+    -fx-text-fill: black;
+    -fx-effect: null;
 }

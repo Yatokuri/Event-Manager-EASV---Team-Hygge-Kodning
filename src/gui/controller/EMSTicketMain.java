@@ -305,7 +305,18 @@ public class EMSTicketMain implements Initializable {
     }
 
     @FXML
-    private void openArchivedEvents(ActionEvent actionEvent) {
+    private void openArchivedEvents() throws Exception {
+        if (currentUser.getUserAccessLevel() == 1) { //Not admin
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
+            Stage currentStage = (Stage) profilePicture.getScene().getWindow();
+            Parent root = loader.load();
+            currentStage.setTitle("Event Manager System Coordinator");
+            EMSCoordinator controller = loader.getController();
+            controller.openArchivedEvents();
+            controller.setUserModel(userModel);
+            controller.startupProgram();
+            currentStage.setScene(new Scene(root));
+        }
     }
 
     public void openOptions() {

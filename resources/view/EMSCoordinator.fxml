@@ -53,7 +53,7 @@
                   </VBox>
                         <MenuButton fx:id="menuButtonLoggedInUser" mnemonicParsing="false" text="User" textFill="WHITE">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
+                                <MenuItem fx:id="menuArchivedEvents" mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
                                 <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Settings" />
                                 <MenuItem mnemonicParsing="false" onAction="#logoutUser" text="Logout" />
                             </items>

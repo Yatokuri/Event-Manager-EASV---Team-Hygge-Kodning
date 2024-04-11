@@ -24,6 +24,11 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketDesigner">
    <children>
+      <ImageView fx:id="backgroundIMGBlur" fitHeight="680.0" fitWidth="1300.0" layoutX="20.0" layoutY="114.0" pickOnBounds="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="95.0">
+         <image>
+            <Image url="@../icons/LoginBackground3.png" />
+         </image>
+      </ImageView>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox prefHeight="100.0" prefWidth="573.0">
@@ -67,11 +72,11 @@
             </HBox>
          </children>
       </HBox>
-      <VBox fx:id="backgroundColor" layoutY="94.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
+      <VBox layoutY="94.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
          <children>
             <HBox>
                <children>
-                  <Label fx:id="lblEventTitle" prefHeight="73.0" text="\%EventName%">
+                  <Label fx:id="lblEventTitle" prefHeight="73.0" text="\%EventName%" textFill="WHITE">
                      <font>
                         <Font size="50.0" />
                      </font>
@@ -82,12 +87,12 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibilityCombo" text="This Event">
+                        <Button mnemonicParsing="false" onAction="#btnToggleButtonType" styleClass="buttonInvisibility" text="This Event" textFill="WHITE">
                            <HBox.margin>
                               <Insets right="-15.0" />
                            </HBox.margin>
                         </Button>
-                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="All Events">
+                        <MFXToggleButton fx:id="toggleButtonType" onAction="#toggleButtonType" styleClass="ticketDesignerToggle" text="All Events" textFill="WHITE">
                            <tooltip>
                               <Tooltip text="(Single use ticket)" />
                            </tooltip></MFXToggleButton>
@@ -107,7 +112,7 @@
                <VBox.margin>
                   <Insets bottom="15.0" />
                </VBox.margin></HBox>
-            <VBox alignment="CENTER" spacing="18.0">
+            <VBox alignment="CENTER" spacing="18.0" styleClass="ticketDesigner">
                <children>
                   <HBox alignment="CENTER">
                      <children>
@@ -283,7 +288,10 @@
                            <children>
                               <HBox>
                                  <children>
-                                    <Label text="Give the Ticket an internal name" />
+                                    <Label text="Give the Ticket an internal name">
+                                       <HBox.margin>
+                                          <Insets left="3.0" />
+                                       </HBox.margin></Label>
                                     <ImageView fitHeight="15.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@../icons/requiredInfoIcon.png" />

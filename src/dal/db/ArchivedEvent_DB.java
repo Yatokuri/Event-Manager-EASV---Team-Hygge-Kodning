@@ -70,8 +70,7 @@ public class ArchivedEvent_DB {
     }
 
     public void deleteArchivedEvent(be.Event eventToDelete) throws Exception {
-        String sql = "DELETE FROM dbo.ArchivedEvents WHERE EventID = ?";
-
+        String sql = "DELETE FROM dbo.ArchivedEvents WHERE ArchivedEventID = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, eventToDelete.getEventID());

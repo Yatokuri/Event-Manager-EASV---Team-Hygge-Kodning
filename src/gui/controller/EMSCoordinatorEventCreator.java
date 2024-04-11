@@ -345,6 +345,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 eventBeingUpdated.setEventNotes(eventNotes);
                 eventModel.updateEvent(eventBeingUpdated);
             }
+            emsCoordinator.setIsItArchivedEvent(false);
             emsCoordinator.startupProgram(); // Refresh UI
             cancelButton();
         } catch (Exception e) {

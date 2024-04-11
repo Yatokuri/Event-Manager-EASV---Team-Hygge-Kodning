@@ -33,7 +33,7 @@ public class EMSEventInformation implements Initializable {
     private EventTicketsModel eventTicketsModel;
     public be.Event eventBeingUpdated;
     public Scene emsCoordinatorScene;
-
+    private boolean isItArchivedEvent = false;
     public EMSEventInformation(){
         displayErrorModel = new DisplayErrorModel();
     }
@@ -43,6 +43,7 @@ public class EMSEventInformation implements Initializable {
     }
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) { this.emsCoordinator = emsCoordinator; }
     public void setEMSCoordinatorScene(Scene emsCoordinatorScene) { this.emsCoordinatorScene = emsCoordinatorScene; }
+    public void setIsItArchivedEvent(boolean isItArchivedEvent) {this.isItArchivedEvent = isItArchivedEvent; }
     public void setEMSAdmin(EMSAdmin emsAdmin) { this.emsAdmin = emsAdmin; }
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     @Override
@@ -51,13 +52,15 @@ public class EMSEventInformation implements Initializable {
     }
 
     public void startupProgram() throws Exception { // This setup program
+        archivedEventModel = ArchivedEventModel.getInstance();
+        eventTicketsModel = EventTicketsModel.getInstance();
         if (emsCoordinator != null) {
             eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
-            eventTicketsModel = EventTicketsModel.getInstance();
-            archivedEventModel = ArchivedEventModel.getInstance();
         }
-        if (emsAdmin != null)   { //Admin cannot update so we remove the button
+        if (emsAdmin != null)   {
             eventBeingUpdated = emsAdmin.getEventBeingUpdated();
+        } //Admin cannot update, so we remove the button or if is archivedEvent
+        if (isItArchivedEvent || emsAdmin != null)  {
             updateButton.setManaged(false);
             updateButton.setVisible(false);
             ticketButton.setManaged(false);
@@ -116,9 +119,14 @@ public class EMSEventInformation implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    archivedEventModel.archiveEvent(eventBeingUpdated);
-                    eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
-                    eventModel.deleteEvent(eventBeingUpdated);
+                    if (isItArchivedEvent)  {
+                        archivedEventModel.deleteEvent(eventBeingUpdated);
+                    }
+                    else {
+                        archivedEventModel.archiveEvent(eventBeingUpdated);
+                        eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
+                        eventModel.deleteEvent(eventBeingUpdated);
+                    }
                     emsCoordinator.startupProgram(); // Refresh UI
                 } catch (Exception e) {
                     displayErrorModel.displayErrorC("Unable to delete event");

@@ -53,7 +53,7 @@
                   </VBox>
                   <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="Admin" textFill="WHITE">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
+                        <MenuItem fx:id="menuArchivedEvents" mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
                         <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Settings" />
                         <MenuItem mnemonicParsing="false" onAction="#logoutUser" text="Logout" />
                      </items>
@@ -87,7 +87,7 @@
                      </content>
                   </ScrollPane>
                </children></HBox>
-            <Button fx:id="btnCRUDCoordinators" mnemonicParsing="false" onAction="#btnCRUDCoordinators" styleClass="buttonInvisibility" text="Change coordinators +/-" textFill="WHITE">
+            <Button fx:id="btnCRUDCoordinators" mnemonicParsing="false" onAction="#btnCRUDCoordinators" styleClass="buttonInvisibilityAdmin" text="Change coordinators +/-" textFill="WHITE">
                <font>
                   <Font size="50.0" />
                </font>

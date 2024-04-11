@@ -80,6 +80,8 @@ public class EMSTicketDesigner implements Initializable {
     private MFXToggleButton toggleButtonType;
     @FXML
     private Tooltip toolTipPlaceholder;
+    @FXML
+    private ImageView backgroundIMGBlur;
     private double xOffset = 0;
     private double yOffset = 0;
     private Label lblEventName, lblEventStartDateTime, lblEventEndDateTime, lblEventNotes, lblEventLocationGuide, lblEventLocation;     // Automatic generated labels
@@ -182,6 +184,9 @@ public class EMSTicketDesigner implements Initializable {
         if (Objects.equals(type, "update"))   { // Mean we want look at a Ticket
             setupUpdateVersion();
         }
+        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
+        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
     }
 
     private void deleteKeyPress()   {
@@ -924,7 +929,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML
-    private void backButton() {
+    private void backButton() throws Exception {
         // Bring the emsCoordinatorStage to front
         if (Objects.equals(backButton.getText(), "Cancel")) {
             cancelledNewTicket = true; // So other method in class know it cancel time
@@ -992,8 +997,18 @@ public class EMSTicketDesigner implements Initializable {
 
 
     @FXML
-    private void openArchivedEvents() {
-        //TODO Make a display for archived events so the coordinators can get inspired by past events
+    private void openArchivedEvents() throws Exception {
+        if (currentUser.getUserAccessLevel() == 1) { //Not admin
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
+            Stage currentStage = (Stage) profilePicture.getScene().getWindow();
+            Parent root = loader.load();
+            currentStage.setTitle("Event Manager System Coordinator");
+            EMSCoordinator controller = loader.getController();
+            controller.openArchivedEvents();
+            controller.setUserModel(userModel);
+            controller.startupProgram();
+            currentStage.setScene(new Scene(root));
+        }
     }
 
     public void openOptions() {

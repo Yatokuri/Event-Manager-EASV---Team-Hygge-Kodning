@@ -29,6 +29,7 @@ public class ArchivedEventModel {
     }
 
     public ObservableList<Event> getArchivedEventsToBeViewed() throws Exception {
+        archivedEventsToBeViewed.clear();
         archivedEventsToBeViewed.addAll(archivedEventManager.getAllArchivedEvents());
         return archivedEventsToBeViewed;
     }

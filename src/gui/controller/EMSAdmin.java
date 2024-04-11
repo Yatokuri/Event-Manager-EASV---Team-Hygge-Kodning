@@ -37,6 +37,8 @@ public class EMSAdmin {
     private AnchorPane anchorPane;
     @FXML
     private StackPane profilePicturePane;
+    @FXML
+    private MenuItem menuArchivedEvents;
     private static EMSAdmin instance;
     private final DisplayErrorModel displayErrorModel;
     private EventModel eventModel;
@@ -54,8 +56,10 @@ public class EMSAdmin {
     private ArchivedEventModel archivedEventModel;
     @FXML
     private MenuButton menuButtonLoggedInUser;
+    private boolean isItArchivedEvent = false;
     @FXML
     private ImageView backgroundIMGBlur;
+
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -79,7 +83,11 @@ public class EMSAdmin {
     }
     public void startupProgram() { // This setup op the program
         menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
-        setupEvents();  // Setup dynamic event
+        if (Boolean.TRUE.equals(isItArchivedEvent)) {
+            setupEvents(archivedEventModel.getObsArchivedEvents());
+        } else { // This block will execute if isItArchivedEvent is FALSE or NULL
+            setupEvents(eventModel.getObsEvents());
+        }
         anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             setupUpEventSpace(newValue.doubleValue());
         });
@@ -152,9 +160,8 @@ public class EMSAdmin {
         profilePicture.setScaleY(0.61);
     }
 
-    private void setupEvents()  {
+    private void setupEvents(List<Event> events)  {
         tilePane.getChildren().clear();
-        List<Event> events = eventModel.getObsEvents();
         events.sort(Comparator.comparing(Event::getEventStartDateTime)); // Sort events by start date
 
         //We create all the event dynamic
@@ -199,10 +206,15 @@ public class EMSAdmin {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    archivedEventModel.archiveEvent(event);
-                    eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
-                    eventModel.deleteEvent(event);
-                    setupEvents();
+                    if (isItArchivedEvent)  {
+                        archivedEventModel.deleteEvent(eventBeingUpdated);
+                    }
+                    else {
+                        archivedEventModel.archiveEvent(event);
+                        eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
+                        eventModel.deleteEvent(event);
+                        setupEvents(eventModel.getObsEvents());
+                    }
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
                     setupUpEventSpace(anchorPane.getWidth());
                 } catch (Exception ex) {
@@ -273,6 +285,7 @@ public class EMSAdmin {
             EMSEventInformation.initModality(Modality.APPLICATION_MODAL);
             EMSEventInformation controller = loader.getController();
             EMSEventInformation.setResizable(false);
+            controller.setIsItArchivedEvent(isItArchivedEvent);
             controller.setEventModel(eventModel);
             controller.setEMSAdmin(this);
             controller.startupProgram();
@@ -309,9 +322,19 @@ public class EMSAdmin {
         }
     }
     @FXML
-    private void openArchivedEvents() {
+    public void openArchivedEvents() throws Exception {
+        if (isItArchivedEvent)  {
+            isItArchivedEvent = false;
+            setupEvents(eventModel.getObsEvents());
+            menuArchivedEvents.setText("Archived Events");
+        }
+        else {
+            isItArchivedEvent = true;
+            setupEvents(archivedEventModel.getArchivedEventsToBeViewed());
+            menuArchivedEvents.setText("Active Events");
+        }
+        setupUpEventSpace(anchorPane.getWidth());
     }
-
 
     public void openOptions() {
         try {
