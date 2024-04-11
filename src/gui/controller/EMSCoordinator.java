@@ -53,10 +53,12 @@ public class EMSCoordinator {
 
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
-    private static final Image plusIcon = new Image ("/Icons/plus.png");
+    private static final Image plusIcon = new Image ("/Icons/Plus_Icon.png");
     private final Image mainIcon = new Image("Icons/mainIcon.png");
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private boolean menuButtonVisible = false;
+    @FXML
+    private ImageView backgroundIMGBlur;
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
@@ -102,6 +104,11 @@ public class EMSCoordinator {
         }
         setupProfilePicture(); // We set up the Profile
         setupUpEventSpace(anchorPane.getWidth());
+
+        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
+        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
+
     }
 
     public void setupUpEventSpace(double newValue) {

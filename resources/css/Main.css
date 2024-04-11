@@ -22,7 +22,7 @@
 .buttonInvisibility {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-text-fill: black;
+    -fx-text-fill: white;
 }
 
 .buttonInvisibility:hover {
@@ -202,6 +202,7 @@
 
 #btnCRUDCoordinators {
     -fx-background-color: transparent;
+    -fx-text-fill: WHITE;
 }
 /*Here we set all the CSS for the Admin user management window*/
 /* Remove all borders and styling from the TableView */
