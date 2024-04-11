@@ -20,6 +20,11 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSTicketMain">
    <children>
+      <ImageView fx:id="backgroundIMGBlur" fitHeight="626.0" fitWidth="1080.0" layoutX="10.0" layoutY="104.0" pickOnBounds="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="95.0">
+         <image>
+            <Image url="@../icons/LoginBackground3.png" />
+         </image>
+      </ImageView>
       <Pane fx:id="ticketArea" prefHeight="200.0" prefWidth="200.0" AnchorPane.topAnchor="-2000.0" />
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -64,11 +69,11 @@
             </HBox>
          </children>
       </HBox>
-      <VBox fx:id="backgroundColor" layoutY="94.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
+      <VBox fx:id="backgroundColor1" layoutY="94.0" stylesheets="@../css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
          <children>
             <HBox>
                <children>
-                  <Label fx:id="lblEventTitle" prefHeight="73.0" text="\%EventName%">
+                  <Label fx:id="lblEventTitle" prefHeight="73.0" text="\%EventName%" textFill="WHITE">
                      <font>
                         <Font size="50.0" />
                      </font>
@@ -96,7 +101,7 @@
                            <children>
                               <VBox HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Label fx:id="lblEventTitle1" minHeight="75.0" prefHeight="75.0" text="List over tickets in event" VBox.vgrow="ALWAYS">
+                                    <Label fx:id="lblEventTitle1" minHeight="75.0" prefHeight="75.0" text="List over tickets in event" textFill="WHITE" VBox.vgrow="ALWAYS">
                                        <font>
                                           <Font size="29.0" />
                                        </font>
@@ -126,7 +131,7 @@
                            <children>
                               <VBox HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Label fx:id="lblEventTitle11" minHeight="75.0" prefHeight="75.0" text="Selected ticket sales history" VBox.vgrow="ALWAYS">
+                                    <Label fx:id="lblEventTitle11" minHeight="75.0" prefHeight="75.0" text="Selected ticket sales history" textFill="WHITE" VBox.vgrow="ALWAYS">
                                        <font>
                                           <Font size="29.0" />
                                        </font>

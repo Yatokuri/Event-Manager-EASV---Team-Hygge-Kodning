@@ -80,7 +80,7 @@
                   <MFXPasswordField fx:id="txtInputPassword" hideCharacter="•" minHeight="30.0" prefWidth="300.0" />
                   <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button fx:id="btnConfirmNewUser" mnemonicParsing="false" onAction="#btnConfirmNewUser" text="Confirm" />
+                        <Button fx:id="btnConfirmNewUser" mnemonicParsing="false" styleClass="confirmButton" onAction="#btnConfirmNewUser" text="Confirm" />
                         <Region />
                         <Button fx:id="btnCancelNewUser" mnemonicParsing="false" onAction="#btnCancelNewUser" text="Cancel" />
                      </children>
@@ -113,7 +113,7 @@
                   <MFXPasswordField fx:id="txtInputNewPasswordConfirm" hideCharacter="•" minHeight="30.0" prefWidth="300.0" />
                   <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button fx:id="btnConfirmNewPassword" mnemonicParsing="false" onAction="#btnConfirmNewPassword" text="Confirm" />
+                        <Button fx:id="btnConfirmNewPassword" mnemonicParsing="false" styleClass="confirmButton" onAction="#btnConfirmNewPassword" text="Confirm" />
                         <Region />
                         <Button fx:id="btnCancelNewPassword" mnemonicParsing="false" onAction="#btnCancelNewPassword" text="Cancel" />
                      </children>

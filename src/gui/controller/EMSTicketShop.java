@@ -61,9 +61,9 @@ public class EMSTicketShop implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txtInputFName.textProperty().addListener((observable, oldValue, newValue) -> validateFName());
-        txtInputLName.textProperty().addListener((observable, oldValue, newValue) -> validateLName());
-        txtInputEmail.textProperty().addListener((observable, oldValue, newValue) -> validateEmail());
+        txtInputFName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputFName, namesPattern));
+        txtInputLName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputLName, namesPattern));
+        txtInputEmail.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputEmail, emailPattern));
         focusNodes = new Node[]{txtInputFName, txtInputLName, txtInputEmail};
         currentFocusIndex = 0;
         // Add event filter to handle Tab key press
@@ -155,43 +155,17 @@ public class EMSTicketShop implements Initializable {
         return null;
     }
 
-    public void validateFName(){
-        if (!txtInputFName.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(namesPattern),txtInputFName.getText())){
-                txtInputFName.setStyle("-fx-border-color: green;");
-            }
-            else {
-                txtInputFName.setStyle("-fx-border-color: red;");
-            }
+    public void validateTextField(TextField textField, Pattern pattern) {
+        if (!textField.getText().isEmpty() && pattern.matcher(textField.getText()).matches()) {
+            textField.getStyleClass().removeAll("textFieldInvalid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldValid");
+        } else if (textField.getText().isEmpty()) {
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldInvalid");
+            textField.getStyleClass().add("textFieldNormal");
+        } else {
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldInvalid");
         }
-        else
-            txtInputFName.setStyle("-fx-border-color: null");
-    }
-
-    public void validateLName(){
-        if (!txtInputLName.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(namesPattern),txtInputLName.getText())){
-                txtInputLName.setStyle("-fx-border-color: green;");
-            }
-            else {
-                txtInputLName.setStyle("-fx-border-color: red;");
-            }
-        }
-        else
-            txtInputLName.setStyle("-fx-border-color: null");
-    }
-
-    public void validateEmail(){
-        if (!txtInputEmail.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(emailPattern),txtInputEmail.getText())){
-                txtInputEmail.setStyle("-fx-border-color: green;");
-            }
-            else {
-                txtInputEmail.setStyle("-fx-border-color: red;");
-            }
-        }
-        else
-            txtInputEmail.setStyle("-fx-border-color: null");
     }
 
     public void validateInputFields() {
@@ -202,14 +176,17 @@ public class EMSTicketShop implements Initializable {
 
     private boolean validateField(TextField field, Pattern pattern) {
         String fieldValue = field.getText();
-        if (!fieldValue.isEmpty() && Pattern.matches(String.valueOf(pattern), fieldValue)) {
-            field.setStyle("-fx-border-color: green;");
+        if (!fieldValue.isEmpty() && pattern.matcher(fieldValue).matches()) {
+            field.getStyleClass().removeAll("textFieldInvalid");
+            field.getStyleClass().add("textFieldValid");
             return true;
         } else {
-            field.setStyle("-fx-border-color: red;");
+            field.getStyleClass().removeAll("textFieldValid");
+            field.getStyleClass().add("textFieldInvalid");
             return false;
         }
     }
+
 
     @FXML
     private void confirmButton() {

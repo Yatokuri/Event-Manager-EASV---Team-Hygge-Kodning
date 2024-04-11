@@ -63,6 +63,8 @@ public class EMSTicketMain implements Initializable {
     private MFXComboBox<be.Event> comboBoxEventList;
     @FXML
     private Pane ticketArea;
+    @FXML
+    private ImageView backgroundIMGBlur;
     private EMSCoordinator emsCoordinator;
     public Scene ticketMainStage;
     private EventModel eventModel;
@@ -122,6 +124,9 @@ public class EMSTicketMain implements Initializable {
                 emsCoordinator.setEventBeingUpdated(selectedEvent);
             }
         });
+        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
+        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
     }
 
     public void recreateTableview() {

@@ -112,7 +112,7 @@ public class EMSTicketDesigner implements Initializable {
     private static final int EVENT_TICKET_HEIGHT = 250;
     private static final int ONE_TIME_TICKET_WIDTH = 200;
     private static final int ONE_TIME_TICKET_HEIGHT = 300;
-
+    private final Pattern internNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\\s*]{3,30}");
     public void setEMSTicketMainStage(Stage emsTicketMainStage) {
         this.emsTicketMainStage = emsTicketMainStage;
     }
@@ -142,12 +142,12 @@ public class EMSTicketDesigner implements Initializable {
             double y = btnAddID.localToScreen(btnAddID.getBoundsInLocal()).getMaxY();
             toolTipPlaceholder.show(btnAddID, x, y);
         });
-        // Hide tooltip when mouse exits
+        // Hide tooltip when mouse exits1
         btnAddID.setOnMouseExited(event -> toolTipPlaceholder.hide());
         setupDragAndDrop();
         enableTextSelection();
         changeTicketDisplay();
-        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTicketName());
+        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputTicketName,internNamePattern));
         Platform.runLater(() -> imageRotateSlider.getScene().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.DELETE) {   // Check if the pressed key is the Delete key
                 deleteKeyPress();
@@ -241,18 +241,17 @@ public class EMSTicketDesigner implements Initializable {
             imageView.setRotate(newSize); // Set the rotation of the image
         }
     }
-
-    public void validateTicketName(){
-        if (!txtInputTicketName.getText().isEmpty()){
-            if (Pattern.matches("[a-zæøåA-ZÆØÅ0-9\s*]{3,30}",txtInputTicketName.getText())){
-                txtInputTicketName.setStyle("-fx-border-color: green;");
-            }
-            else {
-                txtInputTicketName.setStyle("-fx-border-color: red;");
-            }
+    public void validateTextField(TextField textField, Pattern pattern) {
+        if (!textField.getText().isEmpty() && pattern.matcher(textField.getText()).matches()) {
+            textField.getStyleClass().removeAll("textFieldInvalid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldValid");
+        } else if (textField.getText().isEmpty()) {
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldInvalid");
+            textField.getStyleClass().add("textFieldNormal");
+        } else {
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldInvalid");
         }
-        else
-            txtInputTicketName.setStyle("-fx-border-color: null");
     }
 
     @FXML

@@ -19,7 +19,7 @@
     <children>
       <ImageView fx:id="backgroundIMGBlur" fitHeight="630.0" fitWidth="1081.0" pickOnBounds="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="95.0">
          <image>
-            <Image url="@../Icons/LoginBackground%203.png" />
+            <Image url="@../icons/LoginBackground3.png" />
          </image>
       </ImageView>
         <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

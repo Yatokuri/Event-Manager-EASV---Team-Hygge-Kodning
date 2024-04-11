@@ -186,7 +186,7 @@
       </VBox>
       <HBox layoutX="300.0" layoutY="589.0" prefHeight="36.0" prefWidth="289.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="11.0">
          <children>
-            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Confirm">
+            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="confirmButton" stylesheets="@../css/Main.css" text="Confirm">
                <font>
                   <Font size="16.0" />
                </font>
@@ -218,7 +218,7 @@
             </HBox>
             <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnConfirmTimePicker" mnemonicParsing="false" prefWidth="60.0" text="Confirm" />
+                  <Button fx:id="btnConfirmTimePicker" styleClass="confirmButton" mnemonicParsing="false" prefWidth="60.0" text="Confirm" />
                   <Button fx:id="btnCancelTimePicker" mnemonicParsing="false" prefWidth="60.0" text="Cancel" />
                </children>
                <VBox.margin>

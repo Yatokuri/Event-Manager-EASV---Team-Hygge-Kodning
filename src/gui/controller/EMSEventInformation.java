@@ -89,6 +89,7 @@ public class EMSEventInformation implements Initializable {
             EMSTicketMain controller = loader.getController();
             controller.setEMSCoordinator(emsCoordinator);
             controller.startupProgram();
+            EMSTicketMain.setMaximized(true);
             EMSTicketMain.setScene(new Scene(root)); // Set the scene in the existing stage
             EMSTicketMain.show();
             // Close emsCoordinator and event information windows

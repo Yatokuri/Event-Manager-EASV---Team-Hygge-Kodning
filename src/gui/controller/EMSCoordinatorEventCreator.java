@@ -3,6 +3,7 @@ package gui.controller;
 import gui.model.ArchivedEventModel;
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
+import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -81,11 +82,11 @@ public class EMSCoordinatorEventCreator implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupSlider();
-        eventNameTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventName());
-        locationTextField.textProperty().addListener((observable, oldValue, newValue) -> validateEventLocation());
-        eventNotesTextArea.textProperty().addListener((observable, oldValue, newValue) -> validateEventNotes());
-        eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateEventStartDate());
-        eventEndDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateEventEndDate());
+        eventNameTextField.textProperty().addListener((observable, oldValue, newValue) -> validateTextFields(eventNameTextField, eventNamePattern));
+        locationTextField.textProperty().addListener((observable, oldValue, newValue) -> validateTextFields(locationTextField, eventLocationPattern));
+        eventNotesTextArea.textProperty().addListener((observable, oldValue, newValue) -> validateTextAreas(eventNotesTextArea, eventNotesPattern));
+        eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateTextFields(eventStartDatePicker.getEditor(), dateTimePattern));
+        eventEndDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateTextFields(eventEndDatePicker.getEditor(), dateTimePattern));
         eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.matches("\\d{2}-\\d{2}-\\d{4}")) {  // Check if the new value matches the desired format (yyyy-MM-dd)
                 showTimePicker("Start");
@@ -247,180 +248,142 @@ public class EMSCoordinatorEventCreator implements Initializable {
 
     public void updateEventSetup(){
         eventNameTextField.setText(eventBeingUpdated.getEventName());
-        eventStartDatePicker.getEditor().setText(eventBeingUpdated.getEventStartDateTime());
-        eventEndDatePicker.getEditor().setText(eventBeingUpdated.getEventEndDateTime());
+        eventStartDatePicker.getEditor().setText(timeDateConverter(eventBeingUpdated.getEventStartDateTime()));
+        eventEndDatePicker.getEditor().setText(timeDateConverter(eventBeingUpdated.getEventEndDateTime()));
         locationTextField.setText(eventBeingUpdated.getLocation());
         locationGuidanceTextField.setText(eventBeingUpdated.getLocationGuidance());
         eventNotesTextArea.setText(eventBeingUpdated.getEventNotes());
     }
 
-    private void createNewEvent(){
 
-        String eventName;
-        if (!eventNameTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventNamePattern), eventNameTextField.getText()))
-            eventName = eventNameTextField.getText();
-        else {
-            displayErrorModel.displayErrorC("Missing Event Name");
+    public String timeDateConverter( String timeDate)   { // Format LocalDateTime object to desired format
+        LocalDateTime dateTime = LocalDateTime.parse(timeDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        return dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+    }
+
+    private String validateTextField(TextField textField, Pattern pattern, String fieldName) {
+        String fieldValue = textField.getText().trim();
+        if (!fieldValue.isEmpty() && pattern.matcher(fieldValue).matches()) {
+            return fieldValue;
+        } else {
+            missingFields.append("\n- ").append(fieldName);
+            return null;
+        }
+    }
+
+    private String validateTextArea(TextArea textarea, Pattern pattern) {
+        String fieldValue = textarea.getText().trim();
+        if (!fieldValue.isEmpty() && pattern.matcher(fieldValue).matches()) {
+            return fieldValue;
+        } else {
+            missingFields.append("\n- ").append("Event Notes");
+            return null;
+        }
+    }
+
+    private String validateDateTimeField(DatePicker datePicker, Pattern pattern, String fieldName, DateTimeFormatter inputFormatter, DateTimeFormatter outputFormatter) {
+        String fieldValue = datePicker.getEditor().getText().trim();
+        if (!fieldValue.isEmpty() && pattern.matcher(fieldValue).matches()) {
+            LocalDateTime dateTime = LocalDateTime.parse(fieldValue, inputFormatter);
+            return dateTime.format(outputFormatter);
+        } else {
+            if (fieldValue.isEmpty() && !pattern.matcher(fieldValue).matches() && datePicker == eventStartDatePicker) {
+                missingFields.append("\n- ").append(fieldName);
+                return null;
+            }
+            if (!pattern.matcher(fieldValue).matches() && datePicker == eventStartDatePicker)   {
+                missingFields.append("\n- ").append(fieldName);
+                missingFields.append(" (Syntax Error)");
+                return null;
+            }
+            if (!pattern.matcher(fieldValue).matches() && !eventEndDatePicker.getEditor().getText().isEmpty())   {
+                missingFields.append("\n- ").append(fieldName);
+                missingFields.append(" (Syntax Error)");
+                return null;
+            }
+            if (datePicker == eventEndDatePicker)   { // EndDate is not Required, so it will not be added to the list only when text inside is broke
+                return null;
+            }
+            missingFields.append("\n- ").append(fieldName);
+            return null;
+        }
+    }
+
+    StringBuilder missingFields = new StringBuilder();
+    private void createOrUpdateEvent(boolean isNewEvent) {
+        missingFields.delete(0, missingFields.length()); // We clear to get new fresh errors - // Here we check every field and add error message if required
+        String eventName = validateTextField(eventNameTextField, eventNamePattern, "Event Name");
+        String eventStartDate = validateDateTimeField(eventStartDatePicker, dateTimePattern, "Event Start Date & Time", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        String eventEndDate = validateDateTimeField(eventEndDatePicker, dateTimePattern, "Event End Date & Time", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        String location = validateTextField(locationTextField, eventLocationPattern, "Location");
+        String locationGuidance = locationGuidanceTextField.getText().trim();
+        String eventNotes = validateTextArea(eventNotesTextArea, eventNotesPattern);
+
+        if (!missingFields.isEmpty()) {
+            displayErrorModel.displayErrorCT("Please fill in the following fields: " + missingFields, "Missing Fields");
             return;
         }
-        String eventStartDate;
-        if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText())){
-            eventStartDate = eventStartDatePicker.getEditor().getText();
-            // Define input and output format
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-            LocalDateTime dateTime = LocalDateTime.parse(eventStartDate, inputFormatter);
-            eventStartDate = dateTime.format(outputFormatter);
-        }
-        else{
-            displayErrorModel.displayErrorC("Missing Event start Date & Time");
+
+        if (eventStartDate != null && !eventStartDate.isEmpty() && eventEndDate != null && !eventEndDate.isEmpty() && missingFields.isEmpty()) {
+        LocalDateTime startDateTime = LocalDateTime.parse(eventStartDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        LocalDateTime endDateTime = LocalDateTime.parse(eventEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        if (endDateTime.isBefore(startDateTime)) {
+            displayErrorModel.displayErrorC("End date must be after start date");
             return;
         }
-        String eventEndDate;
-        if (eventEndDatePicker.getEditor().getText().isEmpty() || !eventEndDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventEndDatePicker.getEditor().getText()))
-            eventEndDate = eventStartDatePicker.getEditor().getText();
-        else {
-            displayErrorModel.displayErrorC("Missing Event End Date & Time");
-            return;
-        }
-        String location;
-        if (!locationTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventLocationPattern), locationTextField.getText()))
-            location = locationTextField.getText();
-        else {
-            displayErrorModel.displayErrorC("Location for Event Missing");
-            return;
-        }
-        String locationGuidance = null;
-        if (!locationGuidanceTextField.getText().isEmpty())
-            locationGuidance = locationGuidanceTextField.getText();
-        String eventNotes;
-        if (!eventNotesTextArea.getText().isEmpty() && Pattern.matches(String.valueOf(eventNotesPattern), eventNotesTextArea.getText()))
-            eventNotes = eventNotesTextArea.getText();
-        else {
-            displayErrorModel.displayErrorC("Missing notes for Event");
-            return;
-        }
-        be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1);
-        try {
-            eventModel.createNewEvent(event);
+    }
+        try {  // Create event object
+            if (isNewEvent) {
+                be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1);
+                eventModel.createNewEvent(event);
+            } else { // Perform update action
+                eventBeingUpdated.setEventName(eventName);
+                eventBeingUpdated.setEventStartDateTime(eventStartDate);
+                eventBeingUpdated.setEventEndDateTime(eventEndDate);
+                eventBeingUpdated.setLocation(location);
+                eventBeingUpdated.setLocationGuidance(locationGuidance);
+                eventBeingUpdated.setEventNotes(eventNotes);
+                eventModel.updateEvent(eventBeingUpdated);
+            }
+            emsCoordinator.startupProgram(); // Refresh UI
             cancelButton();
         } catch (Exception e) {
-            displayErrorModel.displayErrorC("Failed to create event");
+            displayErrorModel.displayErrorC(isNewEvent ? "Failed to create event" : "Event could not be updated");
         }
     }
 
-    private void updateEvent(){
-        if (eventBeingUpdated != null){
-            if (!eventNameTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventNamePattern), eventNameTextField.getText()))
-                eventBeingUpdated.setEventName(eventNameTextField.getText());
-            else {
-                displayErrorModel.displayErrorC("Missing Event Name");
-                return;
-            }
-            if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText()))
-                eventBeingUpdated.setEventStartDateTime(eventStartDatePicker.getEditor().getText());
-            else {
-                displayErrorModel.displayErrorC("Missing Event Start Date & Time");
-                return;
-            }
-            if (eventEndDatePicker.getEditor().getText().isEmpty() || eventEndDatePicker.getEditor().getText() == null) {
-                eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
-            }
-            if (!eventEndDatePicker.getEditor().getText().isEmpty() && eventEndDatePicker.getEditor().getText() != null && Pattern.matches(String.valueOf(dateTimePattern), eventEndDatePicker.getEditor().getText())) //
-                eventBeingUpdated.setEventEndDateTime(eventEndDatePicker.getEditor().getText());
-            if (!locationTextField.getText().isEmpty() && Pattern.matches(String.valueOf(eventLocationPattern), locationTextField.getText()))
-                eventBeingUpdated.setLocation(locationTextField.getText());
-            else {
-                displayErrorModel.displayErrorC("Missing Event Location");
-                return;
-            }
-            eventBeingUpdated.setLocationGuidance(locationGuidanceTextField.getText());
-            if (!eventNotesTextArea.getText().isEmpty() && Pattern.matches(String.valueOf(eventNotesPattern), eventNotesTextArea.getText()))
-                eventBeingUpdated.setEventNotes(eventNotesTextArea.getText());
-            else {
-                displayErrorModel.displayErrorC("Missing Event Notes");
-                return;
-            }
-            eventBeingUpdated.setEventID(eventBeingUpdated.getEventID());
-
-            try {
-                eventModel.updateEvent(eventBeingUpdated);
-                emsCoordinator.startupProgram(); // Refresh UI
-                cancelButton();
-            } catch (Exception e) {
-                displayErrorModel.displayErrorC("Event could not be updated");
-            }
-        }
-    }
-
-    public void validateEventName(){
-        if (!eventNameTextField.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(eventNamePattern),eventNameTextField.getText())){
-                eventNameTextField.setStyle("-fx-border-color: green;");
-            }
-            else {
-                eventNameTextField.setStyle("-fx-border-color: red;");
-            }
-        }
-        else
-            eventNameTextField.setStyle("-fx-border-color: null");
-    }
-
-    public void validateEventLocation(){
-        if (!locationTextField.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(eventLocationPattern),locationTextField.getText())){
-                locationTextField.setStyle("-fx-border-color: green;");
-            }
-            else {
-                locationTextField.setStyle("-fx-border-color: red;");
-            }
-        }
-        else
-            locationTextField.setStyle("-fx-border-color: null");
-    }
-
-    public void validateEventNotes(){
-        if (!eventNotesTextArea.getText().isEmpty()){
-            if (Pattern.matches(String.valueOf(eventNotesPattern),eventNotesTextArea.getText())){
-                eventNotesTextArea.setStyle("-fx-border-color: green;");
-            }
-            else {
-                eventNotesTextArea.setStyle("-fx-border-color: red;");
-            }
-        }
-        else
-            eventNotesTextArea.setStyle("-fx-border-color: null");
-    }
-    public void validateEventStartDate() {
-        if (!eventStartDatePicker.getEditor().getText().isEmpty()) {
-            if (Pattern.matches(dateTimePattern.pattern(), eventStartDatePicker.getEditor().getText())) {
-                eventStartDatePicker.setStyle("-fx-border-color: green;");
-            } else {
-                eventStartDatePicker.setStyle("-fx-border-color: red;");
-            }
+    public void validateTextFields(TextField textField, Pattern pattern) {
+        if (!textField.getText().isEmpty() && pattern.matcher(textField.getText()).matches()) {
+            textField.getStyleClass().removeAll("textFieldInvalid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldValid");
+        } else if (textField.getText().isEmpty()) {
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldInvalid");
+            textField.getStyleClass().add("textFieldNormal");
         } else {
-            eventStartDatePicker.setStyle(null); // Reset border color
+            textField.getStyleClass().removeAll("textFieldValid", "textFieldNormal");
+            textField.getStyleClass().add("textFieldInvalid");
+        }
+    }
+    public void validateTextAreas(TextArea txtArea, Pattern pattern) {
+        if (!txtArea.getText().isEmpty() && pattern.matcher(txtArea.getText()).matches()) {
+            txtArea.getStyleClass().removeAll("textFieldInvalid", "textFieldNormal");
+            txtArea.getStyleClass().add("textFieldValid");
+        } else if (txtArea.getText().isEmpty()) {
+            txtArea.getStyleClass().removeAll("textFieldValid", "textFieldInvalid");
+            txtArea.getStyleClass().add("textFieldNormal");
+        } else {
+            txtArea.getStyleClass().removeAll("textFieldValid", "textFieldNormal");
+            txtArea.getStyleClass().add("textFieldInvalid");
         }
     }
 
-    public void validateEventEndDate() {
-        if (!eventEndDatePicker.getEditor().getText().isEmpty()) {
-            if (Pattern.matches(dateTimePattern.pattern(), eventEndDatePicker.getEditor().getText())) {
-                eventEndDatePicker.setStyle("-fx-border-color: green;");
-            } else {
-                eventEndDatePicker.setStyle("-fx-border-color: red;");
-            }
-        } else {
-            eventEndDatePicker.setStyle(null); // Reset border color
-        }
-    }
     @FXML
     private void confirmButton() {
         if (Objects.equals(createUpdateEventLabel.getText(), "Update")){
-            updateEvent();
+            createOrUpdateEvent(false);
         }
         if (Objects.equals(createUpdateEventLabel.getText(), "Create")){
-            createNewEvent();
+            createOrUpdateEvent(true);
         }
     }
 

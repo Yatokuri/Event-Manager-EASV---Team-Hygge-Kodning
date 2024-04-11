@@ -161,7 +161,7 @@
             </VBox>
             <HBox alignment="TOP_RIGHT" spacing="15.0">
                <children>
-                  <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Confirm">
+                  <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="confirmButton" stylesheets="@../css/Main.css" text="Confirm">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

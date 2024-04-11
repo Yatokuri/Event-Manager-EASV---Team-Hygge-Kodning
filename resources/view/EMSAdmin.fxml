@@ -15,11 +15,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="617.0" prefWidth="1080.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdmin">
+<AnchorPane fx:id="anchorPane" prefHeight="617.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdmin">
    <children>
       <ImageView fx:id="backgroundIMGBlur" fitHeight="626.0" fitWidth="1080.0" layoutY="94.0" pickOnBounds="true" AnchorPane.topAnchor="95.0">
          <image>
-            <Image url="@../Icons/LoginBackground%203.png" />
+            <Image url="@../icons/LoginBackground3.png" />
          </image>
       </ImageView>
       <HBox fx:id="navBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

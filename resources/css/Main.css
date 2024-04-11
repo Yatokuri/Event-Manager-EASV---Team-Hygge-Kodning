@@ -3,6 +3,8 @@
     -BackgroundColor: #E4E4E4;
     -BoxButtonColor: #464646;
     -ButtonHoverColor: #4d4848;
+    -ConfirmColor: #008000;
+    -ConfirmHoverColor: #018f01;
 }
 
 .button {
@@ -40,7 +42,7 @@
 .buttonInvisibility:hover {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-text-fill: black;
+    -fx-text-fill: #f6eeee;
 }
 
 .button .mfx-ripple-generator {
@@ -559,16 +561,43 @@
     -fx-border-width: 1px;
 }
 
-.text-field:Invalid{
+.textFieldInvalid{
     -fx-border-color: #010c1e;
     -fx-border-width: 2px;
     -fx-effect: innershadow( three-pass-box, rgb(255,0,0), 2, 5, 0, 0);
     -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-insets: -1px;
 }
 
-.text-field:Valid{
+.textFieldValid{
     -fx-border-color: #02bb02;
-    -fx-border-width: 1px;
+    -fx-border-width: 2px;
     -fx-effect: null;
     -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-insets: -1px;
+}
+
+.textFieldNormal {
+    -fx-border-color: transparent;
+    -fx-border-width: 2px;
+    -fx-effect: null;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-insets: -1px;
+}
+
+
+
+.confirmButton.button {
+    -fx-background-color: derive(-ConfirmColor, 0%);
+}
+.confirmButton.button:hover {
+    -fx-background-color: derive(-ConfirmHoverColor, 0%);
+}
+
+/* Make the year and month easy to see */
+.date-picker-popup > .month-year-pane .label {
+    -fx-text-fill: black;
 }
