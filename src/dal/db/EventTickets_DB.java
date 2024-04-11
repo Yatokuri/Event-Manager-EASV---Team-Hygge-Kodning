@@ -13,11 +13,9 @@ import java.util.List;
 public class EventTickets_DB {
 
     private final myDBConnector myDBConnector;
-    private final Ticket_DB ticket_DB;
 
     public EventTickets_DB() throws Exception {
         myDBConnector = new myDBConnector();
-        ticket_DB = new Ticket_DB();
     }
 
     public List<Tickets> getAllTicketsForEvent(Event event) throws Exception {
@@ -32,7 +30,6 @@ public class EventTickets_DB {
                 allTicketsForEvent.add(ticket);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not get tickets for event from database", ex);
         }
         return allTicketsForEvent;
@@ -47,7 +44,6 @@ public class EventTickets_DB {
             stmt.setInt(2, ticket.getTicketID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not add ticket to event", ex);
         }
     }
@@ -60,7 +56,6 @@ public class EventTickets_DB {
             stmt.setInt(2, ticket.getTicketID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not remove ticket from event", ex);
         }
     }
@@ -76,7 +71,6 @@ public class EventTickets_DB {
             stmt.setInt(3, event.getEventID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not update ticket", ex);
         }
     }
@@ -88,7 +82,6 @@ public class EventTickets_DB {
             stmt.setInt(1, event.getEventID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not delete all ticket from event", ex);
         }
     }

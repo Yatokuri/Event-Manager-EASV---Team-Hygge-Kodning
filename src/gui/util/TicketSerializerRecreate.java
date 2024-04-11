@@ -28,8 +28,6 @@ public class TicketSerializerRecreate {
                 Boolean isQRCode = (Boolean) imageView.getProperties().get("isQRCode");
                 Boolean isBarcode = (Boolean) imageView.getProperties().get("isBarcode");
 
-                System.out.println(isQRCode + " . " + isBarcode);
-
                 if (Boolean.TRUE.equals(isQRCode)) {
                     jsonObject.put("ty", "QR");
                 } else if (Boolean.TRUE.equals(isBarcode)) {

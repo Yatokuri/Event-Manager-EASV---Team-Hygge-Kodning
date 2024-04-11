@@ -184,7 +184,7 @@
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="89.0" layoutY="601.0" prefWidth="312.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="89.0" AnchorPane.rightAnchor="199.0">
+      <HBox layoutX="300.0" layoutY="589.0" prefHeight="36.0" prefWidth="289.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="11.0">
          <children>
             <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Confirm">
                <font>

@@ -60,7 +60,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
     private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,50}");
     private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,80}");
     private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.0-9\s*\n*]{3,300}");
-    private final Pattern dateTimePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1}");
+    private final Pattern dateTimePattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}");
 
 
     public void setEventModel(EventModel eventModel) {
@@ -87,12 +87,12 @@ public class EMSCoordinatorEventCreator implements Initializable {
         eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateEventStartDate());
         eventEndDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> validateEventEndDate());
         eventStartDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.matches("\\d{4}-\\d{2}-\\d{2}")) {  // Check if the new value matches the desired format (yyyy-MM-dd)
+            if (newValue.matches("\\d{2}-\\d{2}-\\d{4}")) {  // Check if the new value matches the desired format (yyyy-MM-dd)
                 showTimePicker("Start");
             }
         });
         eventEndDatePicker.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.matches("\\d{4}-\\d{2}-\\d{2}")) {  // Check if the new value matches the desired format (yyyy-MM-dd)
+            if (newValue.matches("\\d{2}-\\d{2}-\\d{4}")) {  // Check if the new value matches the desired format (yyyy-MM-dd)
                 showTimePicker("End");
             }
         });
@@ -147,7 +147,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             LocalDateTime selectedDateTime = LocalDateTime.of(currentDate, LocalTime.of(hour, minute));
 
             // Format the LocalDateTime object into the desired format
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
             String formattedDateTime = selectedDateTime.format(formatter);
 
             // Set the formatted datetime string to the eventStartDatePicker field
@@ -216,7 +216,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         }
 
         eventStartDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            final DateTimeFormatter startDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
             @Override
             public String toString(LocalDate date){
@@ -230,7 +230,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             }
         });
         eventEndDatePicker.setConverter(new StringConverter<>(){
-            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            final DateTimeFormatter endDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
             @Override
             public String toString(LocalDate date){
@@ -264,8 +264,23 @@ public class EMSCoordinatorEventCreator implements Initializable {
             return;
         }
         String eventStartDate;
-        if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText()))
+        if (!eventStartDatePicker.getEditor().getText().isEmpty() && Pattern.matches(String.valueOf(dateTimePattern), eventStartDatePicker.getEditor().getText())){
+            StringBuilder strBuild = new StringBuilder();
             eventStartDate = eventStartDatePicker.getEditor().getText();
+
+            strBuild.append(eventStartDate.substring(6,10));
+            strBuild.append("-");
+            strBuild.append(eventStartDate.substring(3, 5));
+            strBuild.append("-");
+            strBuild.append(eventStartDate.substring(0, 2));
+            strBuild.append(" ");
+            strBuild.append(eventStartDate.substring(11));
+            strBuild.append(":00.0");
+            System.out.println("Original event start date : " + eventStartDate);
+            System.out.println("String built start date : " + strBuild);
+            eventStartDate = strBuild.toString();
+            System.out.println("Rebuilt event start date : " + eventStartDate);
+        }
         else{
             displayErrorModel.displayErrorC("Missing Event start Date & Time");
             return;

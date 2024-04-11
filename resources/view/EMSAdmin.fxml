@@ -49,7 +49,7 @@
                   <MenuButton fx:id="menuButtonLoggedInUser" contentDisplay="RIGHT" mnemonicParsing="false" text="Admin" textFill="WHITE">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#openArchivedEvents" text="Archived Events" />
-                        <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Options" />
+                        <MenuItem mnemonicParsing="false" onAction="#openOptions" text="Settings" />
                         <MenuItem mnemonicParsing="false" onAction="#logoutUser" text="Logout" />
                      </items>
                      <font>
