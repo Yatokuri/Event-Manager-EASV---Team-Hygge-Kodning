@@ -4,7 +4,6 @@ import be.TicketSold;
 import be.Tickets;
 import be.User;
 import gui.model.DisplayErrorModel;
-import gui.model.ImageModel;
 import gui.model.TicketModel;
 import gui.util.TicketToPDF;
 import javafx.application.Platform;
@@ -20,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -41,7 +42,6 @@ public class EMSTicketPrinter implements Initializable {
     private Button printAllTickets, printTickets;
 
     private final DisplayErrorModel displayErrorModel;
-    private final ImageModel systemIMGModel;
     private final TicketModel ticketModel;
     private final TicketToPDF ticketToPDF;
     private Tickets currentTicket;
@@ -50,7 +50,6 @@ public class EMSTicketPrinter implements Initializable {
     public EMSTicketPrinter() throws Exception {
         displayErrorModel = new DisplayErrorModel();
         ticketToPDF = new TicketToPDF();
-        systemIMGModel = ImageModel.getInstance();
         ticketModel = TicketModel.getInstance();
     }
 
@@ -132,16 +131,13 @@ public class EMSTicketPrinter implements Initializable {
         private final Button UsersAddToPrintButton;
         private Button UsersRemoveFromPrintButton = null;
         private final Button RemoveFromPrintButton;
-        private final DisplayErrorModel displayErrorModel;
-        private final Image mainIcon = new Image("Icons/mainIcon.png");
         private final Image AddIcon = new Image("/Icons/Plus_Icon.png");
         private final Image RemoveIcon = new Image("Icons/Subtract_Icon.png");
 
         private TicketSold currentTicketSold;
         private final EMSTicketPrinter emsTicketPrinter;
-
+        private static final List<TicketSold> printedTransactionIDs = new ArrayList<>(); // List to store transaction IDs of printed items
         public ButtonCell(TicketModel ticketModel, EMSTicketPrinter emsTicketPrinter) {
-            this.displayErrorModel = new DisplayErrorModel();
             this.emsTicketPrinter = emsTicketPrinter;
 
             UsersAddToPrintButton = new Button();
@@ -158,6 +154,7 @@ public class EMSTicketPrinter implements Initializable {
                     currentTicketSold = ticketsSold;
                     if (!emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().add(ticketsSold);
+                        printedTransactionIDs.add(ticketsSold);
                         setGraphic(UsersRemoveFromPrintButton);
                     }
                 }
@@ -177,6 +174,7 @@ public class EMSTicketPrinter implements Initializable {
                     currentTicketSold = ticketsSold;
                     if (emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().remove(ticketsSold);
+                        printedTransactionIDs.remove(ticketsSold);
                         setGraphic(UsersAddToPrintButton);
                     }
                 }
@@ -193,9 +191,10 @@ public class EMSTicketPrinter implements Initializable {
                     currentTicketSold = ticketsSold;
                     if (emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().remove(ticketsSold);
+                        printedTransactionIDs.remove(ticketsSold);
+                        emsTicketPrinter.getTBLTicketSold().refresh();
                     }
                 }
-
             });
         }
         @Override
@@ -209,13 +208,12 @@ public class EMSTicketPrinter implements Initializable {
 
                 if (currentTableView == emsTicketPrinter.getTBLTicketSold()) {
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 1) {
-                        if (getGraphic() == UsersRemoveFromPrintButton) {
-                            setGraphic(UsersRemoveFromPrintButton);
-                        } // This way the graphic stay identical
-                        else {
+                        if (!printedTransactionIDs.contains(((TicketSold) rowData))) {
                             setGraphic(UsersAddToPrintButton);
-                }
-            }
+                        } else {
+                            setGraphic(UsersRemoveFromPrintButton);
+                        }
+                    }
                 } else if (currentTableView == emsTicketPrinter.getTBLTicketPrint()) {
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 1)
                         setGraphic(RemoveFromPrintButton);
