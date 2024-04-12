@@ -676,7 +676,7 @@ public class EMSTicketMain implements Initializable {
                     try {
                         TicketToPDF ticketToPDF = new TicketToPDF();
                         ticketModel.setCurrentTicket((Tickets) emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
-                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), true);
+                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), false);
                     } catch (Exception e) {
                         displayErrorModel.displayErrorC("Try to save as PDF again");
                     }
