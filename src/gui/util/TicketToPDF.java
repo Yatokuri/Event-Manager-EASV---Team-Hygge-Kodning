@@ -28,7 +28,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TicketToPDF {
 
@@ -42,7 +47,10 @@ public class TicketToPDF {
 
     private final ImageModel systemIMGModel;
     private final TicketModel ticketModel;
-
+    private static TicketSold currentSoldTicket;
+    private static Tickets currentTicket;
+    private static be.Event currentSoldTicketEvent;
+    private static boolean shouldWeSendEmail = false;
 
     @FXML
     private Pane ticketArea;
@@ -56,9 +64,9 @@ public class TicketToPDF {
         ticketModel = TicketModel.getInstance();
     }
 
-    public static void printTickets(GridPane pageGrid, int pageNumber) throws IOException {
+    public static void printTickets(GridPane pageGrid, int pageNumber) throws Exception {
+        File outputFile = null;
         // Create a PDF document
-
         try (PDDocument doc = new PDDocument()) {
             // Create a new page
             PDPage page = new PDPage(PDRectangle.A4);
@@ -75,36 +83,84 @@ public class TicketToPDF {
                 contentStream.drawImage(pdImage, 0, 0, PDRectangle.A4.getWidth(), PDRectangle.A4.getHeight());
             }
             // Save the PDF document
-            File outputFile = getOutputFile(pageNumber);
+            outputFile = getOutputFile(pageNumber);
             doc.save(outputFile);
         }
-        // Close the document
+
+
+
+        if (shouldWeSendEmail) { // Prepare the subject and message
+            String subject = "Here's your ticket!";
+            String message = "Dear " + currentSoldTicket.getFirstName() + ",\n\n"
+                    + "We are thrilled to inform you that your ticket purchase for our upcoming event has been successfully processed!\n\n"
+                    + "Event Details:" + "\n";
+            if (!currentSoldTicketEvent.getEventName().isEmpty())  {
+                message += "Event Name: " + currentSoldTicketEvent.getEventName() + "\n";
+            }
+            if (!currentSoldTicketEvent.getEventStartDateTime().isEmpty())  {
+                message += "Date: " + timeDateConverter(currentSoldTicketEvent.getEventStartDateTime());
+            }
+            if (!currentSoldTicketEvent.getEventEndDateTime().isEmpty())  {
+                message += " - " + timeDateConverter(currentSoldTicketEvent.getEventEndDateTime()) + "\n";
+            }
+            else {
+                message += "\n";
+            }
+            message += "\nPlease find attached your ticket(s) for the event. Make sure to keep them safe and handy for entry.\n\n"
+                    + "We look forward to seeing you at the event and hope you have a fantastic time!\n\n"
+                    + "Best regards,\n"
+                    + "EASV";
+
+            MailSender.sendEmailWithAttachments(currentSoldTicket.getEmail(), subject, message, getOutputFile(1));
+
+            if (outputFile.exists()) {
+               outputFile.delete();
+            }
+
+        }
     }
 
+    public static String timeDateConverter(String timeDate)   { // Format LocalDateTime object to desired format
+        LocalDateTime dateTime = LocalDateTime.parse(timeDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        return dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+    }
+
+
     private static File getOutputFile(int pageNumber) {
+        String fileName;
+        if (shouldWeSendEmail) {
+            fileName = currentSoldTicket.getFirstName() + " " + currentSoldTicket.getLastName() + " " + currentTicket.getTicketName() + ".pdf";
+        } else {
+            fileName = "Ticket_Page_" + pageNumber + ".pdf";
+        }
         Path downloadFolder = Paths.get(System.getProperty("user.home"), "Downloads");
-        File outputFile = new File(downloadFolder.toFile(), "Ticket_Page_" + pageNumber + ".pdf");
-        if (!downloadFolder.toFile().exists()) {
+        File outputFile = new File(downloadFolder.toFile(), fileName);
+        if (!outputFile.getParentFile().exists()) {
             // If the Downloads folder doesn't exist, save the file in the project folder
-            outputFile = new File("Ticket_Page_" + pageNumber + ".pdf");
+            outputFile = new File(fileName);
         }
         return outputFile;
     }
-    public void makeGlobalTicketToPDF(Tickets currentTicket, int result, Pane ticketArea) throws Exception {
+    public void makeGlobalTicketToPDF(Tickets currentTicket, int result, Pane ticketArea, Boolean shouldWeSendEmail) throws Exception {
+        System.out.println(shouldWeSendEmail);
         ticketModel.setCurrentTicket(currentTicket);
         TicketSold NewTicketSold = new TicketSold("Global", "Global" , "Global", currentTicket.getTicketID(), -10);
         List<TicketSold> ticketCopies = new ArrayList<>(Collections.nCopies(result, NewTicketSold));
-        makeTicketsToPDF(ticketCopies, ticketArea);
+        makeTicketsToPDF(ticketCopies, ticketArea, shouldWeSendEmail);
     }
 
-    public void makeTicketToPDF(TicketSold ticketSold, Pane ticketArea) throws Exception {
+    public void makeTicketToPDF(TicketSold ticketSold, Pane ticketArea, be.Event currentEvent, Boolean shouldWeSendEmail) throws Exception {
+        currentSoldTicketEvent = currentEvent;
+        currentSoldTicket = ticketSold; // So we can print it later
+        TicketToPDF.shouldWeSendEmail = shouldWeSendEmail;
         List<TicketSold> singleTicketList = new ArrayList<>();
         singleTicketList.add(ticketSold);
-        makeTicketsToPDF(singleTicketList, ticketArea);
+        makeTicketsToPDF(singleTicketList, ticketArea, shouldWeSendEmail);
     }
-    public void makeTicketsToPDF(List<TicketSold> ticketSoldList,  Pane ticketArea) throws Exception {
+    public void makeTicketsToPDF(List<TicketSold> ticketSoldList,  Pane ticketArea,Boolean shouldWeSendEmail) throws Exception {
+        TicketToPDF.shouldWeSendEmail = shouldWeSendEmail;
         this.ticketArea = ticketArea;
-        Tickets currentTicket = ticketModel.getCurrentTicket();
+        currentTicket = ticketModel.getCurrentTicket();
         pageGrids.clear();
         ticketArea.getChildren().clear();
         int ticketsPerPage = 0; // Assuming 9 tickets per page
@@ -163,7 +219,7 @@ public class TicketToPDF {
             Platform.runLater(() -> {
                 try {
                     printTickets(pageGrid, finalPageNumber);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });

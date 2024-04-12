@@ -149,7 +149,6 @@ public class EMSTicketDesigner implements Initializable {
         setupDragAndDrop();
         enableTextSelection();
         changeTicketDisplay();
-        txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputTicketName,internNamePattern));
         Platform.runLater(() -> imageRotateSlider.getScene().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.DELETE) {   // Check if the pressed key is the Delete key
                 deleteKeyPress();
@@ -163,6 +162,9 @@ public class EMSTicketDesigner implements Initializable {
         menuButtonLoggedInUser.setText(currentUser.getUserName());
         if (currentUser.getProfileIMG() != null)   { //If user have a picture set it
             setProfilePicture(currentUser.getProfileIMG());
+        }
+        if (!Objects.equals(type, "update"))   { // If user update no reason to validate Intern Name
+            txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputTicketName,internNamePattern));
         }
         // Add a Listener to the 4 sliders their update size and rotation on text and image
         textfontSizeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -687,7 +689,6 @@ public class EMSTicketDesigner implements Initializable {
 
     // This method get us the Image from the database and inset it to the Ticket
     private Image getImageByID(String imageViewId) {
-        System.out.println("Get IMG from DB " + imageViewId);
         try {
            return systemIMGModel.readSystemIMG(Integer.parseInt(imageViewId)).getImage();
         } catch (Exception e) {

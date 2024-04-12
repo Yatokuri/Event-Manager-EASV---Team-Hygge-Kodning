@@ -85,7 +85,7 @@ public class EMSTicketPrinter implements Initializable {
         disableButtons(true);
         Platform.runLater(() -> {  // Execute the task asynchronously
             try {
-                ticketToPDF.makeTicketsToPDF(tblTicketPrint.getItems(), ticketArea);
+                ticketToPDF.makeTicketsToPDF(tblTicketPrint.getItems(), ticketArea, false);
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Problems with creating the PDF");
             } finally {
@@ -99,7 +99,7 @@ public class EMSTicketPrinter implements Initializable {
         disableButtons(true);
         Platform.runLater(() -> {  // Execute the task asynchronously
             try {
-                ticketToPDF.makeTicketsToPDF(ticketModel.getObservableSoldTickets(), ticketArea);
+                ticketToPDF.makeTicketsToPDF(ticketModel.getObservableSoldTickets(), ticketArea,false);
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Could not save all tickets to PDF");
             } finally {
@@ -158,10 +158,7 @@ public class EMSTicketPrinter implements Initializable {
                     currentTicketSold = ticketsSold;
                     if (!emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().add(ticketsSold);
-
                         setGraphic(UsersRemoveFromPrintButton);
-                    } else {
-                        System.out.println("Ticket already exists in the print list.");
                     }
                 }
             });
@@ -181,8 +178,6 @@ public class EMSTicketPrinter implements Initializable {
                     if (emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().remove(ticketsSold);
                         setGraphic(UsersAddToPrintButton);
-                    } else {
-                        System.out.println("Ticket does not exist in the print list.");
                     }
                 }
 
@@ -198,14 +193,11 @@ public class EMSTicketPrinter implements Initializable {
                     currentTicketSold = ticketsSold;
                     if (emsTicketPrinter.getTBLTicketPrint().getItems().contains(ticketsSold)) {
                         emsTicketPrinter.getTBLTicketPrint().getItems().remove(ticketsSold);
-                    } else {
-                        System.out.println("Ticket does not exist in the print list.");
                     }
                 }
 
             });
         }
-
         @Override
         protected void updateItem(Void item, boolean empty) {
             super.updateItem(item, empty);

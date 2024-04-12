@@ -141,6 +141,7 @@
                                           <TableColumn fx:id="colUser" maxWidth="1.7976931348623157E308" minWidth="70.0" prefWidth="350.0" text="Users" />
                                           <TableColumn fx:id="colUsersTicketRemove" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                           <TableColumn fx:id="colUsersTicketPDF" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
+                                          <TableColumn fx:id="colUsersTicketEmail" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                           <TableColumn fx:id="colUsersTicketPrint" editable="false" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
                                        </columns>
                                        <padding>

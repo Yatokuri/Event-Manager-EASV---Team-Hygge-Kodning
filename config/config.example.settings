@@ -2,3 +2,5 @@ Server=
 Database=
 User=
 Password=
+EmailName=
+EmailPassword=

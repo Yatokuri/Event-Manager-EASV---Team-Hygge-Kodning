@@ -4,6 +4,7 @@ import be.TicketSold;
 import be.Tickets;
 import be.User;
 import gui.model.*;
+import gui.util.MailSender;
 import gui.util.TicketToPDF;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import javafx.application.Platform;
@@ -58,7 +59,7 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private TableColumn<TicketSold, String> colUser;
     @FXML
-    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove, colUsersTicketPrint, colUsersTicketPDF, colCheckTicket;
+    private TableColumn<User, Void> colEdit, colRemove, colPrintSale, colUsersTicketRemove, colUsersTicketPrint, colUsersTicketPDF, colCheckTicket, colUsersTicketEmail;
     @FXML
     private MFXComboBox<be.Event> comboBoxEventList;
     @FXML
@@ -171,6 +172,7 @@ public class EMSTicketMain implements Initializable {
         colUsersTicketPDF.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colUsersTicketPrint.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colCheckTicket.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
+        colUsersTicketEmail.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         // Custom cell factory for the colUsername column so we can do "● Name"
         colTicketName.setCellFactory(column -> {
             return new TableCell<Tickets, String>() {
@@ -226,6 +228,7 @@ public class EMSTicketMain implements Initializable {
         ticketModel.setCurrentTicket(tickets);
         openCUTicket("update");
     }
+    public be.Event getSelectedEvent() {return selectedEvent; }
 
     @FXML
     private void createTicketButton() {
@@ -450,7 +453,7 @@ public class EMSTicketMain implements Initializable {
     }
     // Custom cell class for the button in the table column to remove user etc
     private static class ButtonCell<S> extends TableCell<S, Void> {
-        private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton, checkTicketButton;
+        private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton, checkTicketButton, emailButtonUser;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
         private final Image deleteIcon = new Image("/Icons/Trash_Icon.png");
@@ -458,6 +461,7 @@ public class EMSTicketMain implements Initializable {
         private final Image printIcon = new Image("Icons/Print_Icon.png");
         private final Image saleIcon = new Image("Icons/Basket_Icon.png");
         private final Image PDFIcon = new Image("Icons/SavePDF_Icon.png");
+        private final Image MailIcon = new Image("Icons/MailSend_Icon.png");
         private final Image checkTicketIcon = new Image("Icons/CheckTicket_Icon.png");
         private Tickets currentTicket;
         private TicketSold currentTicketSold;
@@ -617,6 +621,46 @@ public class EMSTicketMain implements Initializable {
                     openLocalPrintWindow();
                 }
             });
+
+            emailButtonUser = new Button();
+            ImageView emailUserImage = new ImageView();
+            emailUserImage.setFitWidth(20);
+            emailUserImage.setFitHeight(20);
+            emailUserImage.setImage(MailIcon); // You need to define the removeUserIcon image
+            emailButtonUser.setGraphic(emailUserImage);
+            emailButtonUser.setPrefWidth(20);
+            emailButtonUser.setPrefHeight(20);
+            emailButtonUser.setOnAction(event -> {
+                S rowData = getTableView().getItems().get(getIndex());
+                if (rowData instanceof TicketSold ticketSold){
+                    currentTicketSold = ticketSold;
+                    if (!MailSender.testConnection())    {
+                        displayErrorModel.displayErrorCT("""
+                                Dear User,
+
+                                We regret to inform you that our email system is unable to send statements due to potential internet restrictions.
+                                It appears that your current internet connection is blocking our email service.
+
+                                To resolve this issue and ensure timely receipt of your statements, please try the following steps:
+                                1. Check your internet connection and ensure that it is stable.
+                                2. Verify if any firewall or security settings are blocking outgoing email traffic.
+                                3. Contact your internet service provider for assistance in unblocking our email service.
+                                4. Your IT department have block the system we used, contact them.
+                   
+                                We apologize for any inconvenience caused and appreciate your understand.""", "Warning: Your Internet May Be Blocking Email System");
+                        return;
+                    }
+
+                    try {
+                        TicketToPDF ticketToPDF = new TicketToPDF();
+                        ticketModel.setCurrentTicket((Tickets) emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
+                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), true);
+                    } catch (Exception e) {
+                        displayErrorModel.displayErrorC("Could not send the email try again");
+                    }
+                }
+            });
+
             tickettoPDFUserButton = new Button();
             ImageView pdfUserImage = new ImageView();
             pdfUserImage.setFitWidth(20);
@@ -631,7 +675,8 @@ public class EMSTicketMain implements Initializable {
                     currentTicketSold = ticketSold;
                     try {
                         TicketToPDF ticketToPDF = new TicketToPDF();
-                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea());
+                        ticketModel.setCurrentTicket((Tickets) emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
+                        ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), true);
                     } catch (Exception e) {
                         displayErrorModel.displayErrorC("Try to save as PDF again");
                     }
@@ -668,7 +713,7 @@ public class EMSTicketMain implements Initializable {
                     }
                     Platform.runLater(() -> {  // Execute the task asynchronously
                         try {
-                            ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea());
+                            ticketToPDF.makeGlobalTicketToPDF(currentTicket, Integer.parseInt(input), emsTicketMain.getTicketArea(), false);
                             currentTicket.setTicketQuantity(currentTicket.getTicketQuantity()+Integer.parseInt(input));
                             ticketModel.updateTicket(currentTicket); // We update sold quantity
                             emsTicketMain.getTblEventTickets().refresh();
@@ -752,6 +797,8 @@ public class EMSTicketMain implements Initializable {
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 2)
                         setGraphic(tickettoPDFUserButton);
                     if (getTableView().getColumns().indexOf(getTableColumn()) == 3)
+                        setGraphic(emailButtonUser);
+                    if (getTableView().getColumns().indexOf(getTableColumn()) == 4)
                         setGraphic(printButtonUser);
                 }
             }
