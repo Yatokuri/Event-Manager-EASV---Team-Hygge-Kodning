@@ -10,7 +10,6 @@ import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +34,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
@@ -97,7 +95,7 @@ public class EMSTicketDesigner implements Initializable {
 
     private be.Event selectedEvent;
     private User currentUser;
-    private Stage emsTicketMainStage;
+    private Scene emsTicketMainStage;
     private boolean menuButtonVisible = false;
     private boolean cancelledNewTicket = false;
     private int isItLocalTicket = 1;
@@ -109,13 +107,13 @@ public class EMSTicketDesigner implements Initializable {
     private final Image picturePlaceholder = new Image ("/Icons/LoginBackground.png");
     private ArchivedEventModel archivedEventModel;
     private Node selectedNode;  // Global variable to store the selected Node
-
+    Tickets newTicket;
     private static final int EVENT_TICKET_WIDTH = 900;
     private static final int EVENT_TICKET_HEIGHT = 250;
     private static final int ONE_TIME_TICKET_WIDTH = 200;
     private static final int ONE_TIME_TICKET_HEIGHT = 300;
     private final Pattern internNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ0-9\\s*]{3,30}");
-    public void setEMSTicketMainStage(Stage emsTicketMainStage) {
+    public void setEMSTicketMainStage(Scene emsTicketMainStage) {
         this.emsTicketMainStage = emsTicketMainStage;
     }
 
@@ -149,7 +147,7 @@ public class EMSTicketDesigner implements Initializable {
         setupDragAndDrop();
         enableTextSelection();
         changeTicketDisplay();
-        Platform.runLater(() -> imageRotateSlider.getScene().setOnKeyPressed(event -> {
+        Platform.runLater(() -> toolTipPlaceholder.getScene().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.DELETE) {   // Check if the pressed key is the Delete key
                 deleteKeyPress();
             }
@@ -827,7 +825,7 @@ public class EMSTicketDesigner implements Initializable {
                     backButton();
                     return;
                 }
-                Tickets newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
+                newTicket = new Tickets(0, 0, ticketName, jsonUpdated, isItLocalTicket);
 
                 if (isItLocalTicket == 1)   {
                     ticketModel.createNewTicket(newTicket);
@@ -950,11 +948,11 @@ public class EMSTicketDesigner implements Initializable {
             }
             return;
         }
-        emsTicketMainStage.show();
-        emsCoordinator.startupProgram();
-        emsTicketMain.recreateTableview();
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
-        Event.fireEvent(parent, new WindowEvent(parent, WindowEvent.WINDOW_CLOSE_REQUEST));
+        if (newTicket != null)  { // If there is a new ticket add it
+            emsTicketMain.addNewTicket(newTicket);
+        }
+        parent.setScene(emsTicketMainStage);
     }
 
 //*******************PROFILE*DROPDOWN*MENU************************************

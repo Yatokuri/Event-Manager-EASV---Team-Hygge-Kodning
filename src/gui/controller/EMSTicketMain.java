@@ -1,5 +1,6 @@
 package gui.controller;
 
+import be.Event;
 import be.TicketSold;
 import be.Tickets;
 import be.User;
@@ -10,8 +11,8 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -29,7 +30,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -77,15 +77,19 @@ public class EMSTicketMain implements Initializable {
 
     private be.Event selectedEvent;
     private User currentUser;
-    private Stage emsCoordinatorStage;
+    private Scene emsCoordinatorStage, emsTicketStage;
     private Tickets selectedTicket;
     private boolean menuButtonVisible = false;
     private final Image mainIcon = new Image("Icons/mainIcon.png");
     private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private ArchivedEventModel archivedEventModel;
+    private ObservableList<Tickets> combinedListTicketTBL;
+    private ObservableList<be.Event> eventsListComboBox;
 
-    public void setEMSCoordinatorStage(Stage emsCoordinatorStage) {
-        this.emsCoordinatorStage = emsCoordinatorStage;
+    public void setEMSCoordinatorStage(Scene emsCoordinatorStage) {this.emsCoordinatorStage = emsCoordinatorStage;
+    }
+    public void setEMSTicketMain(Scene emsTicketStage) {
+        this.emsTicketStage = emsTicketStage;
     }
     public void setEMSCoordinator(EMSCoordinator emsCoordinator) {
         this.emsCoordinator = emsCoordinator;
@@ -111,9 +115,30 @@ public class EMSTicketMain implements Initializable {
         if (currentUser.getProfileIMG() != null)   { //If user have a picture set it
             setProfilePicture(currentUser.getProfileIMG());
         }
-        Platform.runLater(this::setupTableview);
-        comboBoxEventList.setItems(eventModel.getObsEvents());
-        comboBoxEventList.getSelectionModel().selectItem(selectedEvent);
+        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
+        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
+        comboBoxEventList.setText(String.valueOf(selectedEvent));
+        tblEventTickets.setPlaceholder(new Label("Loading data..."));
+        tblEventTicketsUsers.setPlaceholder(new Label("Loading data..."));
+        setupTableview();
+        setupComboBox();
+
+        tblEventTickets.setRowFactory(tv -> {
+            TableRow<Tickets> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+                    Tickets rowData = row.getItem();
+                    if (rowData != null) {
+                        setupTblEventTicketsUsers(rowData);
+                    }
+                }
+            });
+            return row;
+        });
+    }
+    public void setupComboBox() {
+      //  comboBoxEventList.getSelectionModel().selectItem(selectedEvent);
         comboBoxEventList.setOnAction((ActionEvent event) -> {
             be.Event selectedEventFromCombo = comboBoxEventList.getSelectionModel().getSelectedItem();
             if (selectedEventFromCombo != null) {
@@ -125,46 +150,49 @@ public class EMSTicketMain implements Initializable {
                 emsCoordinator.setEventBeingUpdated(selectedEvent);
             }
         });
-        // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
-        backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
-        backgroundIMGBlur.fitHeightProperty().bind(anchorPane.heightProperty());
+    }
+
+    public void addNewTicket(Tickets newTicket) {
+        tblEventTickets.getItems().add(newTicket);
+        tblEventTickets.sort();
+        recreateTableview();
     }
 
     public void recreateTableview() {
-        try {
-            eventTicketsModel.eventTickets(selectedEvent);
-            ObservableList<Tickets> combinedList = FXCollections.observableArrayList();
-            combinedList.addAll(eventTicketsModel.getObservableEventsTickets());
-            combinedList.addAll(globalTicketsModel.getObservableGlobalTickets());
-            tblEventTickets.setItems(combinedList);
-            tblEventTickets.setRowFactory(tv -> {
-                TableRow<Tickets> row = new TableRow<>();
-                row.setOnMouseClicked(event -> {
-                    if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
-                        Tickets rowData = row.getItem();
-                        if (rowData != null) {
-                            setupTblEventTicketsUsers(rowData);
-                        }
-                    }
+        Task<Void> loadDataTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // Load the ticket data
+                eventTicketsModel.eventTickets(selectedEvent);
+                ObservableList<Tickets> eventTickets = eventTicketsModel.getObservableEventsTickets();
+                ObservableList<Tickets> globalTickets = globalTicketsModel.getObservableGlobalTickets();
+                ObservableList<Event> eventsList = eventModel.getObsEvents();
+
+                // Update the UI on the JavaFX Application Thread
+                Platform.runLater(() -> {
+                    combinedListTicketTBL = FXCollections.observableArrayList();
+                    combinedListTicketTBL.addAll(eventTickets);
+                    combinedListTicketTBL.addAll(globalTickets);
+                    eventsListComboBox = FXCollections.observableArrayList();
+                    eventsListComboBox.addAll(eventsList);
+                    tblEventTickets.setItems(combinedListTicketTBL);
+                    comboBoxEventList.setItems(eventsListComboBox);
+                    tblEventTickets.setPlaceholder(new Label("No ticket found"));
+                    tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
                 });
-                return row;
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                return null;
+            }
+        };
+
+        // Start the task in a new thread
+        Thread loadDataThread = new Thread(loadDataTask);
+        loadDataThread.start();
     }
 
     public void setupTableview() {
-        recreateTableview();
         colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
         colUser.setCellValueFactory(new PropertyValueFactory<>("CustomUserInfo"));;
-        tblEventTickets.setPlaceholder(new Label("No ticket found"));
-        tblEventTicketsUsers.setPlaceholder(new Label("No ticket selected"));
-        colTicketName.setOnEditCommit(event -> {
-            String ticketName = event.getNewValue(); // Get the new ticket name
-            System.out.println("Clicked ticket name: " + ticketName); // Print the clicked ticket name
-        });
         colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
         colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
@@ -248,12 +276,10 @@ public class EMSTicketMain implements Initializable {
             controller.setEMSTicketMain(this);
             controller.setType(type);
             controller.startupProgram();
-            EMSTicketDesigner.setScene(new Scene(root)); // Set the scene in the existing stage
-            EMSTicketDesigner.show();
-            // Close emsCoordinator and event information windows
-            Stage ticketMainStage = (Stage) profilePicture.getScene().getWindow();
-            ticketMainStage.close();
-            controller.setEMSTicketMainStage(ticketMainStage); // Pass the emsCoordinator stage
+            Scene scene = new Scene(root);
+            Stage parent = (Stage) lblEventTitle.getScene().getWindow();
+            parent.setScene(scene);
+            controller.setEMSTicketMainStage(emsTicketStage); // Pass the emsCoordinator stage
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to open Ticket Window");
             alert.showAndWait();
@@ -263,11 +289,9 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private void backButton() {
         // Bring the emsCoordinatorStage to front
-        emsCoordinatorStage.show(); //1
-        emsCoordinator.startupProgram();
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
-        Event.fireEvent(parent, new WindowEvent(parent, WindowEvent.WINDOW_CLOSE_REQUEST));
-
+        emsCoordinator.startupProgram();
+        parent.setScene(emsCoordinatorStage);
     }
 //*******************PROFILE*DROPDOWN*MENU************************************
     public void profilePicture() { // Profile IMG also control dropdown

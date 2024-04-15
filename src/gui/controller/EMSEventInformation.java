@@ -4,6 +4,8 @@ import gui.model.ArchivedEventModel;
 import gui.model.DisplayErrorModel;
 import gui.model.EventModel;
 import gui.model.EventTicketsModel;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,6 +36,8 @@ public class EMSEventInformation implements Initializable {
     public be.Event eventBeingUpdated;
     public Scene emsCoordinatorScene;
     private boolean isItArchivedEvent = false;
+    private Parent emsTicketMainRoot;
+    private FXMLLoader emsTicketMainLoader;
     public EMSEventInformation(){
         displayErrorModel = new DisplayErrorModel();
     }
@@ -67,7 +71,28 @@ public class EMSEventInformation implements Initializable {
             ticketButton.setVisible(false);
         }
         setupEventInformation();
+
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                emsTicketMainLoader = new FXMLLoader(getClass().getResource("/view/EMSTicketMain.fxml"));
+                emsTicketMainRoot = emsTicketMainLoader.load();
+                Platform.runLater(() -> {
+                    try {
+                        EMSTicketMain controller = emsTicketMainLoader.getController();
+                        controller.setEMSCoordinator(emsCoordinator);
+                        controller.startupProgram();
+                        controller.setEMSCoordinatorStage(emsCoordinatorScene);
+                    } catch (Exception ignored) {
+                    }
+                });
+                return null;
+            }
+        };
+
+        new Thread(task).start();
     }
+
     public void setupEventInformation() {
         eventNameLabel.setText(eventBeingUpdated.getEventName());
         eventStartTimeLabel.setText(eventBeingUpdated.getEventStartDateTime());
@@ -82,30 +107,16 @@ public class EMSEventInformation implements Initializable {
     }
 
     public void ticketButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSTicketMain.fxml"));
-            Parent root = loader.load();
-            Stage EMSTicketMain = new Stage();
-            EMSTicketMain.setTitle("Ticket Manager System");
-            EMSTicketMain.getIcons().add(new Image("/icons/mainIcon.png"));
-            EMSTicketMain.setMaximized(false);
-            EMSTicketMain controller = loader.getController();
-            controller.setEMSCoordinator(emsCoordinator);
-            controller.startupProgram();
-            EMSTicketMain.setMaximized(true);
-            EMSTicketMain.setScene(new Scene(root)); // Set the scene in the existing stage
-            EMSTicketMain.show();
-            // Close emsCoordinator and event information windows
-            Stage emsCoordinatorStage = (Stage) emsCoordinatorScene.getWindow();
-            emsCoordinatorStage.close();
+            Stage emsCoordinatorStages = (Stage) emsCoordinatorScene.getWindow();
+            Scene scene = new Scene(emsTicketMainRoot);
             Stage eventInformationStage = (Stage) eventNameLabel.getScene().getWindow();
             eventInformationStage.close();
-            controller.setEMSCoordinatorStage(emsCoordinatorStage); // Pass the emsCoordinator stage
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to open Ticket Window");
-            alert.showAndWait();
-        }
+            emsCoordinatorStages.setScene(scene);
+            EMSTicketMain controller = emsTicketMainLoader.getController();
+            controller.setEMSTicketMain(emsTicketMainRoot.getScene());
+            controller.recreateTableview();
     }
+
 
     public void deleteButton() {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

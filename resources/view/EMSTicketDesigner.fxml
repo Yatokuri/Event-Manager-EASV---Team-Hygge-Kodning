@@ -315,7 +315,7 @@
                   <Insets left="15.0" right="15.0" />
                </VBox.margin>
             </VBox>
-            <HBox alignment="TOP_RIGHT" spacing="10.0">
+            <HBox alignment="TOP_RIGHT" spacing="15.0">
                <children>
                   <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Save Ticket">
                      <font>
