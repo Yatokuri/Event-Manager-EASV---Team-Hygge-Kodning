@@ -4,6 +4,7 @@ import gui.model.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -24,7 +25,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EMSEventInformation implements Initializable {
-    public ImageView imageview;
+    @FXML
+    private ImageView imageView;
     public Label eventNameLabel, eventStartTimeLabel, eventEndTimeLabel, eventLocationLabel, eventLocationGuideLabel;
     public TextArea eventNotesTextArea;
     public Button deleteButton, updateButton, backButton, ticketButton;
@@ -117,8 +119,8 @@ public class EMSEventInformation implements Initializable {
 
         if (eventBeingUpdated.getImageID() != 0)  {
             try {
-                if (imageview != null)
-                    imageview.setImage(imagemodel.readSystemIMG(eventBeingUpdated.getImageID()).getImage());
+                if (imageView != null)
+                    imageView.setImage(imagemodel.readSystemIMG(eventBeingUpdated.getImageID()).getImage());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
