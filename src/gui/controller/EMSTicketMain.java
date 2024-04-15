@@ -758,7 +758,7 @@ public class EMSTicketMain implements Initializable {
                 EMSTicketShop.getIcons().add(new Image("/icons/mainIcon.png"));
                 EMSTicketShop.initModality(Modality.APPLICATION_MODAL);
                 EMSTicketShop controller = loader.getController();
-                EMSTicketShop.setResizable(true);
+                EMSTicketShop.setResizable(false);
                 controller.setCurrentTicket(currentTicket);
                 controller.setEMSTicketMain(emsTicketMain);
                 controller.startupProgram();

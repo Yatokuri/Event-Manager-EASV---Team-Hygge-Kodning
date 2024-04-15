@@ -20,6 +20,17 @@
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
+.buttonInvisibilityWhite {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #000000;
+}
+
+.buttonInvisibilityWhite:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #000000;
+}
 
 .buttonInvisibility {
     -fx-background-color: transparent;
@@ -172,6 +183,11 @@
 .createUpdateEvent .label{
     -fx-text-fill: white;
 }
+
+.createUpdateEventIMGGuide.label{
+    -fx-text-fill: black;
+}
+
 #eventAnchorPane{
     -fx-background-color: derive(-BackgroundColor, 0%);
 }
@@ -389,6 +405,11 @@
 .dynamicEvent .title {
     -fx-font-size: 20px;
     -fx-font-weight: bold; /* Make text bold */
+}
+
+.image-box {
+    -fx-background-color: rgba(0, 0, 0, 0.6); /* Black color with 70% opacity */
+    -fx-padding: 4px; /* Adjust padding as needed */
 }
 
 .dynamicEvent .scroll-pane .viewport {

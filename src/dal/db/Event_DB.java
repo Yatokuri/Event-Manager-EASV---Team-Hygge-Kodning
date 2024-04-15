@@ -37,7 +37,7 @@ public class Event_DB {
     }
 
     public be.Event createEvent(be.Event event) throws Exception {
-        String sql = "INSERT INTO dbo.Events (EventName, EventStart, EventEnd, Location, LocationGuidance, EventNotes) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dbo.Events (EventName, EventStart, EventEnd, Location, LocationGuidance, EventNotes, ImageID, ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -49,6 +49,7 @@ public class Event_DB {
             stmt.setString(4, event.getLocation());
             stmt.setString(5, event.getLocationGuidance());
             stmt.setString(6, event.getEventNotes());
+            stmt.setInt(7, event.getImageID());
             // Run the specified SQL statement
             stmt.executeUpdate();
             // Get the generated ID from the DB
@@ -59,7 +60,7 @@ public class Event_DB {
             }
 
             // Create Movie object and send up the layers
-            Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id);
+            Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id, event.getImageID());
             allEvents.add(newEvent);
             return newEvent;
         }
@@ -71,7 +72,7 @@ public class Event_DB {
     }
 
     public void updateEvent(be.Event event) throws Exception {
-        String sql = "UPDATE dbo.Events SET EventName = ?, EventStart = ?, EventEnd = ?, Location = ?, LocationGuidance = ?, EventNotes = ? WHERE EventID = ?";
+        String sql = "UPDATE dbo.Events SET EventName = ?, EventStart = ?, EventEnd = ?, Location = ?, LocationGuidance = ?, EventNotes = ?, ImageID = ? WHERE EventID = ?";
 
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, event.getEventName());
@@ -80,7 +81,8 @@ public class Event_DB {
             stmt.setString(4, event.getLocation());
             stmt.setString(5, event.getLocationGuidance());
             stmt.setString(6, event.getEventNotes());
-            stmt.setInt(7, event.getEventID());
+            stmt.setInt(7, event.getImageID());
+            stmt.setInt(8, event.getEventID());
             stmt.executeUpdate();
         }
         catch (SQLException ex){
@@ -109,7 +111,8 @@ public class Event_DB {
         String location = rs.getString("Location");
         String locationGuidance = rs.getString("LocationGuidance");
         String eventNotes = rs.getString("EventNotes");
+        int imageID = rs.getInt("ImageID");
         int eventID = rs.getInt("EventID");
-        return new Event(eventName, eventStart, eventEnd, location, locationGuidance, eventNotes, eventID);
+        return new Event(eventName, eventStart, eventEnd, location, locationGuidance, eventNotes, eventID, imageID);
     }
 }

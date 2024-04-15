@@ -47,6 +47,7 @@ public class EMSCoordinator {
     private UserModel userModel;
     private EventTicketsModel eventTicketsModel;
     private ArchivedEventModel archivedEventModel;
+    private ImageModel systemIMGModel;
     private boolean isItArchivedEvent = false;
     private static Event eventBeingUpdated;
     private HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
@@ -76,6 +77,7 @@ public class EMSCoordinator {
             ticketModel = TicketModel.getInstance();
             archivedEventModel = ArchivedEventModel.getInstance();
             eventTicketsModel = EventTicketsModel.getInstance();
+            systemIMGModel = ImageModel.getInstance();
         } catch (Exception e) {
             displayErrorModel.displayError(e);
         }
@@ -192,6 +194,19 @@ public class EMSCoordinator {
     private StackPane createEventBox(Event event) {
         StackPane eventBox = new StackPane();
         VBox vBoxEntireEvent = new VBox();
+        if (event.getImageID() != 0) {
+            try { /// Retrieve the ImageView from the systemIMGModel
+                ImageView imageView = systemIMGModel.readSystemIMG(event.getImageID());
+                // Set the ImageView as the background of vBoxEntireEvent
+                vBoxEntireEvent.setBackground(new Background(new BackgroundImage(
+                        imageView.getImage(),
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        BackgroundSize.DEFAULT)));
+            } catch (Exception ignored) {
+            }
+        }
         HBox hBoxButton = new HBox();
         VBox vBoxLabels = new VBox();
         eventBox.setMinSize(300, 300);
@@ -275,6 +290,15 @@ public class EMSCoordinator {
         button.getStyleClass().add("buttonDynamicEvent");
         button.getStyleClass().add("eventBox");
 
+        if (event.getImageID() != 0) { //Special CSS if there is an Image
+            eventBox.getStyleClass().add("image-box");
+            lblTitle.getStyleClass().add("image-box");
+            lblLocation.getStyleClass().add("image-box");
+            lblDatetime.getStyleClass().add("image-box");
+            button.getStyleClass().add("image-box");
+            button.getStyleClass().add("image-box");
+            txtDesc.getStyleClass().add("image-box");
+        }
         return eventBox;
     }
 

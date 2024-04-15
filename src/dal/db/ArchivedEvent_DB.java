@@ -58,7 +58,7 @@ public class ArchivedEvent_DB {
             }
 
             // Create Movie object and send up the layers
-            Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id);
+            Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id , 0);
             allArchivedEvents.add(newEvent);
             return newEvent;
         }
@@ -90,7 +90,7 @@ public class ArchivedEvent_DB {
         String archivedLocationGuidance = rs.getString("ArchivedLocationGuidance");
         String archivedEventNotes = rs.getString("ArchivedEventNotes");
         int archivedEventID = rs.getInt("ArchivedEventID");
-        return new Event(archivedEventName, archivedEventStart, archivedEventEnd, archivedLocation, archivedLocationGuidance, archivedEventNotes, archivedEventID);
+        return new Event(archivedEventName, archivedEventStart, archivedEventEnd, archivedLocation, archivedLocationGuidance, archivedEventNotes, archivedEventID, 0);
     }
 
 }

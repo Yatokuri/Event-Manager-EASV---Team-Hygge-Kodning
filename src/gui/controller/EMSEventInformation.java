@@ -1,9 +1,6 @@
 package gui.controller;
 
-import gui.model.ArchivedEventModel;
-import gui.model.DisplayErrorModel;
-import gui.model.EventModel;
-import gui.model.EventTicketsModel;
+import gui.model.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
@@ -13,18 +10,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EMSEventInformation implements Initializable {
-    public Label eventNameLabel, eventStartTimeLabel, eventEndTimeLabel, eventLocationLabel;
+    public ImageView imageview;
+    public Label eventNameLabel, eventStartTimeLabel, eventEndTimeLabel, eventLocationLabel, eventLocationGuideLabel;
     public TextArea eventNotesTextArea;
     public Button deleteButton, updateButton, backButton, ticketButton;
     public EMSCoordinator emsCoordinator;
@@ -33,6 +34,7 @@ public class EMSEventInformation implements Initializable {
     public EventModel eventModel;
     public ArchivedEventModel archivedEventModel;
     private EventTicketsModel eventTicketsModel;
+    private ImageModel imagemodel;
     public be.Event eventBeingUpdated;
     public Scene emsCoordinatorScene;
     private boolean isItArchivedEvent = false;
@@ -58,6 +60,7 @@ public class EMSEventInformation implements Initializable {
     public void startupProgram() throws Exception { // This setup program
         archivedEventModel = ArchivedEventModel.getInstance();
         eventTicketsModel = EventTicketsModel.getInstance();
+        imagemodel = ImageModel.getInstance();
         if (emsCoordinator != null) {
             eventBeingUpdated = emsCoordinator.getEventBeingUpdated();
         }
@@ -95,15 +98,36 @@ public class EMSEventInformation implements Initializable {
 
     public void setupEventInformation() {
         eventNameLabel.setText(eventBeingUpdated.getEventName());
-        eventStartTimeLabel.setText(eventBeingUpdated.getEventStartDateTime());
+        eventStartTimeLabel.setText(timeDateConverter(eventBeingUpdated.getEventStartDateTime()));
         if (eventBeingUpdated.getEventEndDateTime() != null && !eventBeingUpdated.getEventEndDateTime().isEmpty() && !Objects.equals(eventBeingUpdated.getEventEndDateTime(), eventBeingUpdated.getEventStartDateTime())){
-            eventEndTimeLabel.setText(eventBeingUpdated.getEventEndDateTime());
+            eventEndTimeLabel.setText(timeDateConverter(eventBeingUpdated.getEventEndDateTime()));
         }
         else
             eventEndTimeLabel.setText(null);
         eventLocationLabel.setText(eventBeingUpdated.getLocation());
         eventNotesTextArea.setWrapText(true);
         eventNotesTextArea.setText(eventBeingUpdated.getEventNotes());
+
+        if (eventBeingUpdated.getLocationGuidance() != null && !eventBeingUpdated.getLocationGuidance().isEmpty()) {
+            eventLocationGuideLabel.setText(eventBeingUpdated.getLocationGuidance());
+        }
+        else {
+            eventLocationGuideLabel.setText(null);
+        }
+
+        if (eventBeingUpdated.getImageID() != 0)  {
+            try {
+                if (imageview != null)
+                    imageview.setImage(imagemodel.readSystemIMG(eventBeingUpdated.getImageID()).getImage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public String timeDateConverter( String timeDate)   { // Format LocalDateTime object to desired format
+        LocalDateTime dateTime = LocalDateTime.parse(timeDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        return dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
     }
 
     public void ticketButton() {

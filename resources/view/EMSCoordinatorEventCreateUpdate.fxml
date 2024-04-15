@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -11,10 +12,11 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="eventAnchorPane" prefHeight="650.0" prefWidth="600.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinatorEventCreator">
+<AnchorPane fx:id="eventAnchorPane" prefHeight="650.0" prefWidth="600.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSCoordinatorEventCreator">
    <children>
       <HBox fx:id="navBar" prefHeight="69.0" prefWidth="671.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -28,6 +30,61 @@
             </Label>
          </children>
       </HBox>
+      <VBox fx:id="eventCreateUpdateBackgroundVboxIMG" layoutX="30.0" layoutY="105.0" prefHeight="482.0" prefWidth="560.0" styleClass="createUpdateEvent" visible="false" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="95.0">
+         <children>
+            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox fx:id="mainSection" styleClass="settingSection">
+                     <children>
+                        <VBox fx:id="settingSectionNewIMGLeft" maxWidth="148.0" prefWidth="155.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="118.0" styleClass="createUpdateEventIMGGuide" text="Guide" VBox.vgrow="ALWAYS">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label prefHeight="38.0" prefWidth="145.0" styleClass="createUpdateEventIMGGuide" text="Left click for moving around with the rectangle" wrapText="true" />
+                              <Label prefHeight="38.0" prefWidth="145.0" styleClass="createUpdateEventIMGGuide" text="Right click on the rectangle for resize the rectangle" wrapText="true" />
+                           </children>
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <HBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Pane fx:id="imagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                       <children>
+                                          <ImageView fx:id="eventImage" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                                             <viewport>
+                                                <Rectangle2D />
+                                             </viewport>
+                                             <image>
+                                                <Image url="@../icons/User_Icon.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </VBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets top="5.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
       <VBox fx:id="eventCreateUpdateBackgroundVbox" layoutX="20.0" layoutY="95.0" prefHeight="482.0" prefWidth="560.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="73.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="95.0">
          <children>
             <HBox prefHeight="100.0" prefWidth="200.0">
@@ -184,8 +241,18 @@
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="300.0" layoutY="589.0" prefHeight="36.0" prefWidth="289.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="11.0">
+      <HBox alignment="CENTER" layoutX="300.0" layoutY="589.0" spacing="25.0" styleClass="createUpdateEvent" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="11.0">
          <children>
+            <Button fx:id="imageButton" mnemonicParsing="false" onAction="#imageButton" prefHeight="25.0" prefWidth="120.0" stylesheets="@../css/Main.css" text="Image">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnDeleteImage" mnemonicParsing="false" onAction="#btnDeleteImage" prefHeight="25.0" prefWidth="120.0" stylesheets="@../css/Main.css" text="Reset IMG" visible="false">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
             <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButton" prefHeight="25.0" prefWidth="120.0" styleClass="confirmButton" stylesheets="@../css/Main.css" text="Confirm">
                <font>
                   <Font size="16.0" />
@@ -193,7 +260,7 @@
             </Button>
             <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButton" prefHeight="25.0" prefWidth="120.0" styleClass="createUpdateEvent" stylesheets="@../css/Main.css" text="Cancel">
                <HBox.margin>
-                  <Insets left="25.0" />
+                  <Insets />
                </HBox.margin>
                <font>
                   <Font size="16.0" />
@@ -218,7 +285,7 @@
             </HBox>
             <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnConfirmTimePicker" styleClass="confirmButton" mnemonicParsing="false" prefWidth="60.0" text="Confirm" />
+                  <Button fx:id="btnConfirmTimePicker" mnemonicParsing="false" prefWidth="60.0" styleClass="confirmButton" text="Confirm" />
                   <Button fx:id="btnCancelTimePicker" mnemonicParsing="false" prefWidth="60.0" text="Cancel" />
                </children>
                <VBox.margin>

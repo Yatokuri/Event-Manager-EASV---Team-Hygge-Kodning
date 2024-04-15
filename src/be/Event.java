@@ -2,9 +2,9 @@ package be;
 
 public class Event {
     private String eventName, location, locationGuidance, eventNotes, eventStartDateTime, eventEndDateTime;
-    private int eventID;
+    private int eventID, imageID;
 
-    public Event(String eventName, String eventStartDateTime, String eventEndDateTime, String location, String locationGuidance, String eventNotes, int eventID){
+    public Event(String eventName, String eventStartDateTime, String eventEndDateTime, String location, String locationGuidance, String eventNotes, int eventID, int imageID){
         this.eventName = eventName;
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
@@ -12,6 +12,7 @@ public class Event {
         this.locationGuidance = locationGuidance;
         this.eventNotes = eventNotes;
         this.eventID = eventID;
+        this.imageID = imageID;
     }
 
 
@@ -69,6 +70,14 @@ public class Event {
 
     public void setEventID(int eventID) {
         this.eventID = eventID;
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
     }
 
     @Override
