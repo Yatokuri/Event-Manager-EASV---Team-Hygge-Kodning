@@ -669,9 +669,9 @@ public class EMSTicketMain implements Initializable {
                                 1. Check your internet connection and ensure that it is stable.
                                 2. Verify if any firewall or security settings are blocking outgoing email traffic.
                                 3. Contact your internet service provider for assistance in unblocking our email service.
-                                4. Your IT department have block the system we used, contact them.
+                                4. Your IT department has blocked the system we used, contact them.
                    
-                                We apologize for any inconvenience caused and appreciate your understand.""", "Warning: Your Internet May Be Blocking Email System");
+                                We apologize for any inconvenience caused and appreciate your understanding.""", "Warning: Your Internet May Be Blocking Email System");
                         return;
                     }
 

@@ -409,7 +409,9 @@
 
 .image-box {
     -fx-background-color: rgba(0, 0, 0, 0.6); /* Black color with 70% opacity */
+    -fx-background-radius: 5;
     -fx-padding: 4px; /* Adjust padding as needed */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 2, 0, 0, 0); /* Shadow effect */
 }
 
 .dynamicEvent .scroll-pane .viewport {

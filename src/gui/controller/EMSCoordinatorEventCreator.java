@@ -691,8 +691,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 double heightRatio = imageView.getFitHeight() / referenceHeight;
 
                 // Adjust the position of the rectangle to stay within the bounds of the imageView
-                newX = Math.max(-(imageView.getFitWidth()/2)+25, Math.min(newX, (imageView.getFitWidth()/(1.5 * widthRatio) - rectangle.getWidth())-25));
-                newY = Math.max(-(imageView.getFitHeight()/2)+25, Math.min(newY, (imageView.getFitHeight()/(1.5 * heightRatio) - rectangle.getHeight())-25));
+                newX = Math.max(-(imageView.getFitWidth()/2)+25, Math.min(newX, (imageView.getFitWidth()/(1.5*widthRatio) - rectangle.getWidth())));
+                newY = Math.max(-(imageView.getFitHeight()/2)+25, Math.min(newY, (imageView.getFitHeight()/(1.5*heightRatio) - rectangle.getHeight())));
 
 
                 // Update rectangle position

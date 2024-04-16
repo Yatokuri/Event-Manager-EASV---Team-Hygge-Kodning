@@ -195,6 +195,7 @@ public class EMSAdmin {
         HBox hBoxButton = new HBox();
         VBox vBoxLabels = new VBox();
         eventBox.setMinSize(300, 300);
+        eventBox.setMaxSize(300, 300);
 
         eventBox.setOnMouseClicked(eventMouse -> {
             if (!(eventMouse.getTarget() instanceof Button)) {
