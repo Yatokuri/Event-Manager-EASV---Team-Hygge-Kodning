@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ancherPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSController">
+<AnchorPane fx:id="anchorPane" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSController">
     <children>
         <ImageView fx:id="backgroundIMGLogin" fitHeight="720.0" fitWidth="1080.0" pickOnBounds="true" />
         <HBox fx:id="signInBox" layoutX="280.0" layoutY="160.0" prefHeight="400.0" prefWidth="500.0" />

@@ -2,7 +2,6 @@ package gui.util;
 
 
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -50,7 +49,6 @@ public class TicketSerializerRecreate {
                     jsonObject.put("ty", "Lbl");
                 }
             } else if (node instanceof ImageView imageView) {
-                Image image = imageView.getImage();
                 // Assume `imageView` is the ImageView instance you're checking
                 Boolean isQRCode = (Boolean) imageView.getProperties().get("isQRCode");
                 Boolean isBarcode = (Boolean) imageView.getProperties().get("isBarcode");

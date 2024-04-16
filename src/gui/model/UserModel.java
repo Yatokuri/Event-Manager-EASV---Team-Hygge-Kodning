@@ -9,7 +9,7 @@ public class UserModel {
     private User currentLoggedInUser;
     private final UserManager userManager;
     private final ObservableList<User> usersToBeViewed;
-    private static UserModel instance;
+    private static volatile UserModel instance;
 
     // Private constructor to prevent more than one UserModel
     private UserModel() throws Exception {
@@ -28,10 +28,9 @@ public class UserModel {
 
     public User signIn(String username, String password) throws Exception { return userManager.checkLogin(username, password); }
 
-    public User createNewUser(User user) throws Exception {
+    public void createNewUser(User user) throws Exception {
         User newUser = userManager.createNewUser(user);
         usersToBeViewed.add(newUser);
-        return newUser;
     }
     public void deleteUser(User user) throws Exception {
         userManager.deleteUser(user);

@@ -10,7 +10,7 @@ public class EventModel {
     private final EventManager eventManager;
 
     private static ObservableList<be.Event> eventsToBeViewed;
-    private static EventModel instance;
+    private static volatile EventModel instance;
 
     private EventModel() throws Exception {
         eventManager = new EventManager();
@@ -32,11 +32,10 @@ public class EventModel {
 
     public ObservableList<Event> getObsEvents() { return eventsToBeViewed; }
 
-    public Event createNewEvent(be.Event newEvent) throws Exception {
+    public void createNewEvent(Event newEvent) throws Exception {
         be.Event event;
         event = eventManager.createNewEvent(newEvent);
         eventsToBeViewed.add(event);
-        return event;
     }
 
     public void updateEvent(be.Event updatedEvent) throws Exception {

@@ -39,7 +39,7 @@ public class EMSController implements Initializable {
     @FXML
     private ImageView backgroundIMGLogin;
     @FXML
-    private AnchorPane ancherPane;
+    private AnchorPane anchorPane;
     @FXML
     private HBox signInBox;
     @FXML
@@ -61,7 +61,7 @@ public class EMSController implements Initializable {
         this.primaryStage = primaryStage;
     }
 
-    public EMSController() throws Exception {
+    public EMSController() {
         displayErrorModel = new DisplayErrorModel();
         try {
             userModel = UserModel.getInstance();
@@ -79,8 +79,8 @@ public class EMSController implements Initializable {
         backgroundIMGLogin.setImage(backgroundIMG);
 
         // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
-        backgroundIMGLogin.fitWidthProperty().bind(ancherPane.widthProperty());
-        backgroundIMGLogin.fitHeightProperty().bind(ancherPane.heightProperty());
+        backgroundIMGLogin.fitWidthProperty().bind(anchorPane.widthProperty());
+        backgroundIMGLogin.fitHeightProperty().bind(anchorPane.heightProperty());
 
         BoxBlur boxblur = new BoxBlur(signInBox.getWidth(), signInBox.getHeight(), 3);
         signInBox.setEffect(boxblur);
@@ -112,8 +112,8 @@ public class EMSController implements Initializable {
 
     public void startupProgram() {
         // Set AnchorPane's size to match the size of primaryStage
-        ancherPane.prefWidthProperty().bind(primaryStage.widthProperty());
-        ancherPane.prefHeightProperty().bind(primaryStage.heightProperty());
+        anchorPane.prefWidthProperty().bind(primaryStage.widthProperty());
+        anchorPane.prefHeightProperty().bind(primaryStage.heightProperty());
 
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -135,8 +135,6 @@ public class EMSController implements Initializable {
         primaryStage.setHeight(primaryStage.getHeight() - 1);
     }
 
-    private User currentUser;
-
     public void btnLogin(ActionEvent actionEvent) {
         PauseTransition pauseTransition = new PauseTransition(Duration.millis(180)); // Adjust the duration as needed
         pauseTransition.setOnFinished(event -> Platform.runLater(() -> {
@@ -152,6 +150,7 @@ public class EMSController implements Initializable {
     public void btnLoginSystem(ActionEvent actionEvent) throws InterruptedException {
         String username = txtInputUsername.getText();
         String password = txtInputPassword.getText();
+        User currentUser;
 
         if (username.isEmpty() || password.isEmpty()) {
             Thread.sleep(WAITING_TIME_ERROR); // FAKE Loading extra safe

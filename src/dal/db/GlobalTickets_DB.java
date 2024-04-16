@@ -12,11 +12,9 @@ import java.util.List;
 public class GlobalTickets_DB {
 
     private final myDBConnector myDBConnector;
-    private final Ticket_DB ticket_DB;
 
     public GlobalTickets_DB() throws Exception {
         myDBConnector = new myDBConnector();
-        ticket_DB = new Ticket_DB();
     }
 
     public List<Tickets> getAllGlobalTicket() throws Exception {
@@ -30,7 +28,6 @@ public class GlobalTickets_DB {
                 allGlobalTickets.add(ticket);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not get global tickets from database", ex);
         }
         return allGlobalTickets;
@@ -45,7 +42,6 @@ public class GlobalTickets_DB {
             stmt.setInt(1, tickets.getTicketID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not add ticket to global tickets", ex);
         }
     }
@@ -57,7 +53,6 @@ public class GlobalTickets_DB {
             stmt.setInt(1, tickets.getTicketID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not remove ticket from event", ex);
         }
     }

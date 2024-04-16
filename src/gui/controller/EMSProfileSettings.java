@@ -82,8 +82,8 @@ public class EMSProfileSettings implements Initializable {
     public void setEMSTicketMain(EMSTicketMain emsTicketMain) {
         this.emsTicketMain = emsTicketMain;
     }
-    public void setEMSTicketDesigner(EMSTicketDesigner emsTicketDesigne) {
-        this.emsTicketDesigner = emsTicketDesigne;
+    public void setEMSTicketDesigner(EMSTicketDesigner emsTicketDesigner) {
+        this.emsTicketDesigner = emsTicketDesigner;
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -234,17 +234,7 @@ public class EMSProfileSettings implements Initializable {
             return;
         }
 
-        double radius = pictureCapture.getRadius();
-        double centerX = pictureCapture.getCenterX();
-        double centerY = pictureCapture.getCenterY();
-
-        // Calculate the bounds for the snapshot
-        SnapshotParameters parameters = new SnapshotParameters();
-        parameters.setFill(Color.TRANSPARENT); // Ensure the background is transparent
-
-        // Define the viewport to capture the area within the circle
-        Rectangle2D viewport = new Rectangle2D(centerX - radius, centerY - radius, radius * 2, radius * 2);
-        parameters.setViewport(viewport);
+        SnapshotParameters parameters = getSnapshotParameters();
 
         // Take a snapshot of the ImageView within the defined viewport
         Image capturedImage = settingSectionProfileIMG.snapshot(parameters, null);
@@ -275,6 +265,20 @@ public class EMSProfileSettings implements Initializable {
         backButton();
     }
 
+    private SnapshotParameters getSnapshotParameters() {
+        double radius = pictureCapture.getRadius();
+        double centerX = pictureCapture.getCenterX();
+        double centerY = pictureCapture.getCenterY();
+
+        // Calculate the bounds for the snapshot
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Color.TRANSPARENT); // Ensure the background is transparent
+
+        // Define the viewport to capture the area within the circle
+        Rectangle2D viewport = new Rectangle2D(centerX - radius, centerY - radius, radius * 2, radius * 2);
+        parameters.setViewport(viewport);
+        return parameters;
+    }
 
 
     private void makeResizableAndDraggable(Circle circle, ImageView imageView) { // Source Stackoverflow
@@ -330,9 +334,7 @@ public class EMSProfileSettings implements Initializable {
             }
         });
 
-        circle.setOnMouseReleased(e -> {
-            isResizing[0] = false;
-        });
+        circle.setOnMouseReleased(e -> isResizing[0] = false);
     }
 
     public void btnConfirmNewUser() { // This method is used to change user password.

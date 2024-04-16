@@ -4,7 +4,7 @@ public class Tickets {
     private int ticketID;
     private int ticketQuantity;
     private final String ticketName;
-    private String ticketJSON;
+    private final String ticketJSON;
     private final int isILocal;
 
     public Tickets(int ticketID, int ticketQuantity, String ticketName, String ticketJSON, int isILocal) {

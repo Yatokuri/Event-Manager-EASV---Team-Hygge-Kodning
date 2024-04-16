@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -30,8 +29,6 @@ public class EMSAdmin {
     @FXML
     private ImageView profilePicture;
     @FXML
-    private Button btnCRUDCoordinators, btnCreateEvent;
-    @FXML
     private TilePane tilePane;
     @FXML
     private AnchorPane anchorPane;
@@ -42,17 +39,15 @@ public class EMSAdmin {
     private static EMSAdmin instance;
     private final DisplayErrorModel displayErrorModel;
     private EventModel eventModel;
-    private TicketModel ticketModel;
+    private NavbarModel navbarModel;
     private UserModel userModel;
     private EventTicketsModel eventTicketsModel;
     private static Event eventBeingUpdated;
-    private HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
+    private final HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
     private boolean menuButtonVisible = false;
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
-    private static final Image plusIcon = new Image ("/Icons/plus.png");
     private final Image mainIcon = new Image("Icons/mainIcon.png");
-    private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private ArchivedEventModel archivedEventModel;
     private ImageModel systemIMGModel;
     @FXML
@@ -70,7 +65,7 @@ public class EMSAdmin {
         displayErrorModel = new DisplayErrorModel();
         try {
             eventModel = EventModel.getInstance();
-            ticketModel = TicketModel.getInstance();
+            navbarModel = NavbarModel.getInstance();
             archivedEventModel = ArchivedEventModel.getInstance();
             eventTicketsModel = EventTicketsModel.getInstance();
             systemIMGModel = ImageModel.getInstance();
@@ -90,14 +85,12 @@ public class EMSAdmin {
         } else { // This block will execute if isItArchivedEvent is FALSE or NULL
             setupEvents(eventModel.getObsEvents());
         }
-        anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            setupUpEventSpace(newValue.doubleValue());
-        });
+        anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> setupUpEventSpace(newValue.doubleValue()));
         try { //We read user have image if something go wrong we show default
             userModel.readUserProfileIMG(userModel.getLoggedInUser());
             Image profileImage = userModel.getLoggedInUser().getProfileIMG();
             if (profileImage != null) {
-                setProfilePicture(profileImage);
+                navbarModel.setProfilePicture(profilePicture, profilePicturePane, profileImage);
             }
         } catch (Exception ignored) {
         }
@@ -136,30 +129,7 @@ public class EMSAdmin {
 
 
     public void setupProfilePicture()   {
-        Image profileImage = userModel.getLoggedInUser().getProfileIMG();
-        if (profileImage != null) {
-            setProfilePicture(profileImage);
-            return;
-        }
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(profilePicture);
-        profilePicture.setImage(defaultProfile);
-        profilePicture.setScaleX(1);
-        profilePicture.setScaleY(1);
-    }
-
-    public void setProfilePicture(Image img)    {
-        Circle clip = new Circle(profilePicture.getFitWidth() / 2, profilePicture.getFitHeight() / 2, profilePicture.getFitWidth() / 2);
-        profilePicture.setClip(clip);
-
-        // Create a circle for the border
-        Circle borderCircle = new Circle(clip.getCenterX(), clip.getCenterY(), clip.getRadius() - 19); // Adjust the radius for the border
-        borderCircle.getStyleClass().add("borderCircleIMG");
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(borderCircle, profilePicture);
-        profilePicture.setImage(img);
-        profilePicture.setScaleX(0.61);
-        profilePicture.setScaleY(0.61);
+        navbarModel.setupProfilePicture(profilePicture, profilePicturePane);
     }
 
     private void setupEvents(List<Event> events)  {
@@ -388,7 +358,8 @@ public class EMSAdmin {
     private void logoutUser() throws IOException {
         userModel.logOutUser();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
-        Stage currentStage = (Stage) menuButtonLoggedInUser.getScene().getWindow();        currentStage.setTitle("Event Manager System");
+        Stage currentStage = (Stage) menuButtonLoggedInUser.getScene().getWindow();
+        currentStage.setTitle("Event Manager System");
         Parent root = loader.load();
         EMSController controller = loader.getController();
         controller.setPrimaryStage(currentStage);

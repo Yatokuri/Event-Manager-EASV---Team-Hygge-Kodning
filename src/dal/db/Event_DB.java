@@ -39,17 +39,9 @@ public class Event_DB {
     public be.Event createEvent(be.Event event) throws Exception {
         String sql = "INSERT INTO dbo.Events (EventName, EventStart, EventEnd, Location, LocationGuidance, EventNotes, ImageID, ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
-        {
+        try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             // Bind parameters
-            stmt.setString(1, event.getEventName());
-            stmt.setString(2, event.getEventStartDateTime());
-            stmt.setString(3, event.getEventEndDateTime());
-            stmt.setString(4, event.getLocation());
-            stmt.setString(5, event.getLocationGuidance());
-            stmt.setString(6, event.getEventNotes());
-            stmt.setInt(7, event.getImageID());
+            SetupBasicEventInfo(event, stmt);
             // Run the specified SQL statement
             stmt.executeUpdate();
             // Get the generated ID from the DB
@@ -71,17 +63,21 @@ public class Event_DB {
 
     }
 
+    private void SetupBasicEventInfo(Event event, PreparedStatement stmt) throws SQLException {
+        stmt.setString(1, event.getEventName());
+        stmt.setString(2, event.getEventStartDateTime());
+        stmt.setString(3, event.getEventEndDateTime());
+        stmt.setString(4, event.getLocation());
+        stmt.setString(5, event.getLocationGuidance());
+        stmt.setString(6, event.getEventNotes());
+        stmt.setInt(7, event.getImageID());
+    }
+
     public void updateEvent(be.Event event) throws Exception {
         String sql = "UPDATE dbo.Events SET EventName = ?, EventStart = ?, EventEnd = ?, Location = ?, LocationGuidance = ?, EventNotes = ?, ImageID = ? WHERE EventID = ?";
 
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setString(1, event.getEventName());
-            stmt.setString(2, event.getEventStartDateTime());
-            stmt.setString(3, event.getEventEndDateTime());
-            stmt.setString(4, event.getLocation());
-            stmt.setString(5, event.getLocationGuidance());
-            stmt.setString(6, event.getEventNotes());
-            stmt.setInt(7, event.getImageID());
+            SetupBasicEventInfo(event, stmt);
             stmt.setInt(8, event.getEventID());
             stmt.executeUpdate();
         }

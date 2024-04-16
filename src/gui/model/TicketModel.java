@@ -12,7 +12,7 @@ public class TicketModel {
     private ObservableList<TicketSold> ticketSoldToBeViewed;
     private ObservableList<Tickets> ticketToBeViewed;
     private Tickets currentTicket;
-    private static TicketModel instance;
+    private static volatile TicketModel instance;
 
     // Private constructor to prevent more than one TicketModel
     private TicketModel() throws Exception {
@@ -40,11 +40,6 @@ public class TicketModel {
         ticketSoldToBeViewed.addAll(ticketManager.getAllSoldTickets(tickets));
     }
     public ObservableList<TicketSold> getObservableSoldTickets() {return ticketSoldToBeViewed;}
-    public TicketSold getSoldTicket(TicketSold ticketSoldToFetch) throws Exception {
-        TicketSold ticketSold;
-        ticketSold = ticketManager.getSoldTicket(ticketSoldToFetch);
-        return ticketSold;
-    }
 
     public TicketSold createNewSoldTicket(TicketSold newTicketSold) throws Exception {
         TicketSold ticketSold;
@@ -52,16 +47,8 @@ public class TicketModel {
         return ticketSold;
     }
 
-    public void updateSoldTicket(TicketSold updatedTicketSold) throws Exception {
-        ticketManager.updateSoldTicket(updatedTicketSold);
-    }
-
     public void deleteSoldTicket(TicketSold selectedTicketSold) throws Exception {
         ticketManager.deleteSoldTicket(selectedTicketSold);
-    }
-
-    public void deleteAllSoldOfOneTicket(int selectedTicketSold) throws Exception {
-        ticketManager.deleteAllSoldOfOneTicket(selectedTicketSold);
     }
 
     //This is for Ticket Code
@@ -71,39 +58,26 @@ public class TicketModel {
     public boolean checkLocalTicketAllCode(String code) throws Exception {
         return ticketManager.checkLocalTicketAllCode(code);
     }
-    public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {;
+    public void createNewSoldTicketCode(TicketSold newTicketSoldCode) throws Exception {
         ticketManager.createNewSoldTicketCode(newTicketSoldCode);
     }
     public String readNewSoldTicketCode(TicketSold selectedTicket) throws Exception {
         return ticketManager.readNewSoldTicketCode(selectedTicket);
     }
-    public void updateCodeOnTicket(TicketSold selectedTicket) throws Exception  {
-        ticketManager.updateCodeOnTicket(selectedTicket);
-    }
     public void deleteSoldTicketCode(TicketSold selectedTicket) throws Exception {
         ticketManager.deleteSoldTicketCode(selectedTicket);
     }
-    public void deleteAllCodeOnTicket(Tickets selectedTicketID) throws Exception {
-        ticketManager.deleteAllCodeOnTicket(selectedTicketID);
-    }
 
     //This is for Ticket
-    public Tickets createNewTicket(Tickets tickets) throws Exception {
+    public void createNewTicket(Tickets tickets) throws Exception {
         Tickets newUser = ticketManager.createNewTicket(tickets);
         ticketToBeViewed.add(newUser);
-        return newUser;
-    }
-    public void deleteTicket(Tickets tickets) throws Exception {
-        ticketManager.deleteTicket(tickets);
-        ticketToBeViewed.remove(tickets);
     }
     public Tickets readTicket(int tickets) throws Exception{ return ticketManager.getTicket(tickets);}
     public void updateTicket(Tickets tickets) throws Exception{ ticketManager.updateTicket(tickets);}
 
     public Tickets getCurrentTicket() { return currentTicket; }
     public void setCurrentTicket(Tickets tickets) {currentTicket = tickets;}
-    public ObservableList<Tickets> getObsTickets() { return ticketToBeViewed; }
-
     // This for global ticket code
     public boolean checkGlobalTicketCode(String code) throws Exception { return ticketManager.checkGlobalTicketCode(code); }
     public String generateNewGlobalTicketCode(TicketSold ticketSold) throws Exception { return ticketManager.generateNewGlobalTicketCode(ticketSold); }

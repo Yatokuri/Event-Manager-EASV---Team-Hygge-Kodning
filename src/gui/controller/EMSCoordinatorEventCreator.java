@@ -71,17 +71,17 @@ public class EMSCoordinatorEventCreator implements Initializable {
     @FXML
     private Button btnConfirmTimePicker, btnCancelTimePicker, imageButton, confirmButton, btnDeleteImage, cancelButton;
     @FXML
-    private Spinner sliderHour, sliderMinute;
+    private Spinner<Integer> sliderHour, sliderMinute;
     @FXML
     private ImageView eventImage;
     private String type;
     private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,50}");
     private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,80}");
-    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.0-9\s*\n*]{3,300}");
+    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.0-9\s*\n]{3,300}");
     private final Pattern dateTimePattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}");
     private Rectangle pictureCapture; // When we capture IMG
     private boolean imageMode = false;
-    private Image currentEventPicture, originalProfilePicture;
+    private Image currentEventPicture, originalEventPicture;
     private final Image defaultProfileIMG = new Image("Icons/EventDefault_Icon.png");
 
     public void setEventModel(EventModel eventModel) {
@@ -123,13 +123,13 @@ public class EMSCoordinatorEventCreator implements Initializable {
     //************************************************CUSTOM*TIMEPICKER************************************************
     private void setupSlider() {
         // Set up spinner value factories with wrapping behavior and add event handler
-        setupSpinnerFactory(sliderHour, 0, 23, 12);
-        setupSpinnerFactory(sliderMinute, 0, 59, 30);
+        setupSpinnerFactory(sliderHour, 23, 12);
+        setupSpinnerFactory(sliderMinute, 59, 30);
         addMouseScrollHandler(sliderHour);
         addMouseScrollHandler(sliderMinute);
     }
-    private void setupSpinnerFactory(Spinner<Integer> spinner, int min, int max, int initialValue) {
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initialValue, 1) {
+    private void setupSpinnerFactory(Spinner<Integer> spinner, int max, int initialValue) {
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, max, initialValue, 1) {
             @Override
             public void increment(int steps) {
                 this.setValue(this.getValue() + steps > getMax() ? getMin() : getValue() + steps);
@@ -153,20 +153,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         timePicker.setVisible(true);
 
         btnConfirmTimePicker.setOnAction(event -> {
-            int hour = (int) sliderHour.getValue();
-            int minute = (int) sliderMinute.getValue();
-            LocalDate currentDate = null;
-            // Get the current date from the eventStartDatePicker
-            if (Objects.equals(pos, "Start"))   {
-                currentDate = eventStartDatePicker.getValue();
-            }
-            else if (Objects.equals(pos, "End")) {
-                currentDate = eventEndDatePicker.getValue();
-            }
-
-            // Construct a LocalDateTime object with the selected time and current date
-            assert currentDate != null;
-            LocalDateTime selectedDateTime = LocalDateTime.of(currentDate, LocalTime.of(hour, minute));
+            LocalDateTime selectedDateTime = getLocalDateTime(pos);
 
             // Format the LocalDateTime object into the desired format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -194,6 +181,23 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 timePicker.setVisible(false);
             }
         });
+    }
+
+    private LocalDateTime getLocalDateTime(String pos) {
+        int hour = sliderHour.getValue();
+        int minute = sliderMinute.getValue();
+        LocalDate currentDate = null;
+        // Get the current date from the eventStartDatePicker
+        if (Objects.equals(pos, "Start"))   {
+            currentDate = eventStartDatePicker.getValue();
+        }
+        else if (Objects.equals(pos, "End")) {
+            currentDate = eventEndDatePicker.getValue();
+        }
+
+        // Construct a LocalDateTime object with the selected time and current date
+        assert currentDate != null;
+        return LocalDateTime.of(currentDate, LocalTime.of(hour, minute));
     }
 
     // Method to check if the target node is inside the time picker or its children
@@ -405,6 +409,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             textField.getStyleClass().add("textFieldInvalid");
         }
     }
+    
     public void validateTextAreas(TextArea txtArea, Pattern pattern) {
         if (!txtArea.getText().isEmpty() && pattern.matcher(txtArea.getText()).matches()) {
             txtArea.getStyleClass().removeAll("textFieldInvalid", "textFieldNormal");
@@ -488,7 +493,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         else {
             currentEventPicture = defaultProfileIMG;
         }
-        originalProfilePicture = currentEventPicture;
+        originalEventPicture = currentEventPicture;
         eventImage.setImage(currentEventPicture);
         setEventPicture(currentEventPicture);
         setupResizableAndDraggableSystem();
@@ -529,7 +534,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         // Set the resizedImage as the new profile image
         eventImage.setImage(resizedImage);
         currentEventPicture = resizedImage;
-        originalProfilePicture = resizedImage;
+        originalEventPicture = resizedImage;
         setEventPicture(resizedImage);
         pictureCapture.setVisible(false);
 
@@ -537,7 +542,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
         try {
             saveImageToDatabase(resizedImage);
         } catch (Exception e) {
-            e.printStackTrace();
+            displayErrorModel.displayErrorC("Failed to save new event Image");
         }
         cancelButton();
     }
@@ -701,9 +706,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             }
         });
 
-        rectangle.setOnMouseReleased(e -> {
-            isResizing[0] = false;
-        });
+        rectangle.setOnMouseReleased(e -> isResizing[0] = false);
     }
 
 }

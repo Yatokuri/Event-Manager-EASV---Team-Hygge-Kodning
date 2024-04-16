@@ -13,7 +13,6 @@ public class Ticket_DB {
 
     public Ticket_DB() throws Exception {
         myDBConnector = new myDBConnector();
-        allTickets = new ArrayList<>();
     }
 
 
@@ -137,7 +136,6 @@ public class Ticket_DB {
                 allTicketsForEvent.add(ticketSold);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new Exception("Could not get tickets sold", ex);
         }
         return allTicketsForEvent;
@@ -200,8 +198,6 @@ public class Ticket_DB {
             throw new Exception("Could not Delete Tickets", ex);
         }
     }
-
-    private static ArrayList<Tickets> allTickets;
 
     public List<Tickets> getAllTicket() throws Exception {
         List<Tickets> allTickets = new ArrayList<>();

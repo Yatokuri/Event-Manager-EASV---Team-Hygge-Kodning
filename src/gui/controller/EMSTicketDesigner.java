@@ -9,7 +9,6 @@ import gui.util.TicketSerializerRecreate;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +25,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -85,10 +83,10 @@ public class EMSTicketDesigner implements Initializable {
     private Label lblEventName, lblEventStartDateTime, lblEventEndDateTime, lblEventNotes, lblEventLocationGuide, lblEventLocation;     // Automatic generated labels
     private EMSCoordinator emsCoordinator;
     private EMSTicketMain emsTicketMain;
-    private EventModel eventModel;
     private final UserModel userModel;
     private final TicketModel ticketModel;
     private final ImageModel systemIMGModel;
+    private final NavbarModel navbarModel;
     private final EventTicketsModel eventTicketsModel;
     private final GlobalTicketsModel globalTicketsModel;
     private final DisplayErrorModel displayErrorModel;
@@ -102,10 +100,8 @@ public class EMSTicketDesigner implements Initializable {
     private final List<Integer> imgListDeleteIfUpdate = new ArrayList<>();
     private Tickets currentTicket;
     private String type; // Do we update or delete
-    private final Image defaultProfile = new Image("Icons/User_Icon.png");
     private final Image mainIcon = new Image ("/Icons/mainIcon.png");
     private final Image picturePlaceholder = new Image ("/Icons/LoginBackground.png");
-    private ArchivedEventModel archivedEventModel;
     private Node selectedNode;  // Global variable to store the selected Node
     Tickets newTicket;
     private static final int EVENT_TICKET_WIDTH = 900;
@@ -125,9 +121,9 @@ public class EMSTicketDesigner implements Initializable {
 
     public EMSTicketDesigner() throws Exception {
         displayErrorModel = new DisplayErrorModel();
+        navbarModel = NavbarModel.getInstance();
         userModel = UserModel.getInstance();
         ticketModel = TicketModel.getInstance();
-        eventModel = EventModel.getInstance();
         systemIMGModel = ImageModel.getInstance();
         eventTicketsModel = EventTicketsModel.getInstance();
         globalTicketsModel = GlobalTicketsModel.getInstance();
@@ -159,7 +155,7 @@ public class EMSTicketDesigner implements Initializable {
         lblEventTitle.setText(selectedEvent.getEventName());
         menuButtonLoggedInUser.setText(currentUser.getUserName());
         if (currentUser.getProfileIMG() != null)   { //If user have a picture set it
-            setProfilePicture(currentUser.getProfileIMG());
+            navbarModel.setProfilePicture(profilePicture, profilePicturePane, currentUser.getProfileIMG());
         }
         if (!Objects.equals(type, "update"))   { // If user update no reason to validate Intern Name
             txtInputTicketName.textProperty().addListener((observable, oldValue, newValue) -> validateTextField(txtInputTicketName,internNamePattern));
@@ -778,7 +774,7 @@ public class EMSTicketDesigner implements Initializable {
         }).start();
     }
 
-    private ProgressIndicator showLoadingAnimation() { // This show an indicator with lbl under while image got compressed etc.
+    private void showLoadingAnimation() { // This show an indicator with lbl under while image got compressed etc.
         ProgressIndicator progressIndicator = new ProgressIndicator();
         loadingBox = new VBox();
         Label lbl = new Label("Please wait while the system creates the ticket.");
@@ -797,7 +793,6 @@ public class EMSTicketDesigner implements Initializable {
         anchorPane.widthProperty().addListener((obs, oldWidth, newWidth) -> setLoadingBoxPosition(loadingBox));
         anchorPane.heightProperty().addListener((obs, oldHeight, newHeight) -> setLoadingBoxPosition(loadingBox));
         eventHBoxSection.setVisible(false);
-        return progressIndicator;
     }
 
     private void setLoadingBoxPosition(VBox loadingBox) {
@@ -832,13 +827,12 @@ public class EMSTicketDesigner implements Initializable {
                 }
             if (isItLocalTicket == 0)   { // Mean it's a global ticket
                     globalTicketsModel.addGlobalTickets(newTicket);
-                    backButton.setText("Back");
-                    backButton();
-                }
+            }
             else {
                 eventTicketsModel.addTicketsToEvent(newTicket, selectedEvent);
+            }
                 backButton.setText("Back");
-                backButton(); }
+                backButton();
             } catch (Exception e) {
                 displayErrorModel.displayErrorC("Could not save image and set ID");
             } finally {
@@ -928,7 +922,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML
-    private void backButton() throws Exception {
+    private void backButton() {
         // Bring the emsCoordinatorStage to front
         if (Objects.equals(backButton.getText(), "Cancel")) {
             cancelledNewTicket = true; // So other method in class know it cancel time
@@ -967,46 +961,13 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     public void setupProfilePicture()   {
-        Image profileImage = userModel.getLoggedInUser().getProfileIMG();
-        if (profileImage != null) {
-            setProfilePicture(profileImage);
-            return;
-        }
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(profilePicture);
-        profilePicture.setImage(defaultProfile);
-        profilePicture.setScaleX(1);
-        profilePicture.setScaleY(1);
+        navbarModel.setupProfilePicture(profilePicture, profilePicturePane);
     }
-
-    public void setProfilePicture(Image img)    {
-        Circle clip = new Circle(profilePicture.getFitWidth() / 2, profilePicture.getFitHeight() / 2, profilePicture.getFitWidth() / 2);
-        profilePicture.setClip(clip);
-
-        // Create a circle for the border
-        Circle borderCircle = new Circle(clip.getCenterX(), clip.getCenterY(), clip.getRadius() - 19); // Adjust the radius for the border
-        borderCircle.getStyleClass().add("borderCircleIMG");
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(borderCircle, profilePicture);
-        profilePicture.setImage(img);
-        profilePicture.setScaleX(0.61);
-        profilePicture.setScaleY(0.61);
-    }
-
-
-
     @FXML
     private void openArchivedEvents() throws Exception {
         if (currentUser.getUserAccessLevel() == 1) { //Not admin
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
             Stage currentStage = (Stage) profilePicture.getScene().getWindow();
-            Parent root = loader.load();
-            currentStage.setTitle("Event Manager System Coordinator");
-            EMSCoordinator controller = loader.getController();
-            controller.openArchivedEvents();
-            controller.setUserModel(userModel);
-            controller.startupProgram();
-            currentStage.setScene(new Scene(root));
+            navbarModel.openArchivedEvents(currentUser, currentStage);
         }
     }
 
@@ -1035,14 +996,8 @@ public class EMSTicketDesigner implements Initializable {
 
     @FXML
     private void logoutUser() throws IOException {
-        userModel.logOutUser();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
-        Stage currentStage = (Stage) profilePicture.getScene().getWindow();        currentStage.setTitle("Event Manager System");
-        Parent root = loader.load();
-        EMSController controller = loader.getController();
-        controller.setPrimaryStage(currentStage);
-        controller.startupProgram();
-        currentStage.setScene(new Scene(root));
+        Stage currentStage = (Stage) profilePicture.getScene().getWindow();
+        navbarModel.logoutUser(currentStage);
     }
 
     @FXML
@@ -1100,7 +1055,7 @@ public class EMSTicketDesigner implements Initializable {
     }
 
     @FXML
-    private void btnJSON(ActionEvent actionEvent) {
+    private void btnJSON() {
         System.out.println(TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea));
     }
 }

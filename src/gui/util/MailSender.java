@@ -1,23 +1,28 @@
     package gui.util;
 
     import gui.model.DisplayErrorModel;
+
+    import javax.mail.*;
+    import javax.mail.internet.InternetAddress;
+    import javax.mail.internet.MimeBodyPart;
+    import javax.mail.internet.MimeMessage;
+    import javax.mail.internet.MimeMultipart;
     import java.io.File;
     import java.io.FileInputStream;
     import java.io.IOException;
     import java.util.Properties;
     import java.util.concurrent.*;
-    import javax.mail.*;
-    import javax.mail.internet.*;
 
     public class MailSender {
         private static final String configFile = "config/config.settings";
 
+        static Properties mailProperties = new Properties();
+
         public static void sendEmailWithAttachments(String toAddress, String subject, String message, File attachFiles) throws IOException {
-            Properties mailProperties = new Properties();
-            mailProperties.load(new FileInputStream((configFile)));
 
             final String username = mailProperties.getProperty("EmailName").trim();
             final String password = mailProperties.getProperty("EmailPassword").trim();
+            setupProperties();
 
             // sets SMTP server properties
             Properties properties = getProperties();
@@ -42,19 +47,8 @@
                 msg.setSubject(subject);
                 msg.setSentDate(new java.util.Date());
 
-                // creates message part
-                MimeBodyPart messageBodyPart = new MimeBodyPart();
-                messageBodyPart.setContent(message, "text/plain; charset=UTF-8");
-                messageBodyPart.setHeader("Content-Type", "text/plain; charset=UTF-8");
-                // creates multi-part
-                Multipart multipart = new MimeMultipart();
-                multipart.addBodyPart(messageBodyPart);
-                MimeBodyPart attachPart = new MimeBodyPart();
-                attachPart.attachFile(attachFiles);
-                multipart.addBodyPart(attachPart);
-
-                // sets the multi-part as e-mail's content
-                msg.setContent(multipart);
+                // sets the multipart as e-mail's content
+                msg.setContent(setupMultiPart(message, attachFiles));
 
                 // sends the e-mail
                 Transport.send(msg);
@@ -62,14 +56,26 @@
                 new DisplayErrorModel().displayErrorC("Could not send the email");
             }
         }
+        public static Multipart setupMultiPart(String message, File attachFiles) throws MessagingException, IOException {
+            /// creates multi-part
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(message, "text/plain; charset=UTF-8");
+            messageBodyPart.setHeader("Content-Type", "text/plain; charset=UTF-8");
+            // creates multi-part
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            MimeBodyPart attachPart = new MimeBodyPart();
+            attachPart.attachFile(attachFiles);
+            multipart.addBodyPart(attachPart);
+            return multipart;
+        }
 
         public static boolean testConnection() {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<Boolean> future = executor.submit(() -> {
                 try {
 
-                    Properties mailProperties = new Properties();
-                    mailProperties.load(new FileInputStream((configFile)));
+                    setupProperties();
 
                     final String username = mailProperties.getProperty("EmailName").trim();
                     final String password = mailProperties.getProperty("EmailPassword").trim();
@@ -113,5 +119,8 @@
             properties.put("mail.smtp.starttls.enable", "true");
             properties.put("mail.smtp.ssl.trust", "smtp.gmail.com");
             return properties;
+        }
+        public static void setupProperties() throws IOException {
+            mailProperties.load(new FileInputStream((configFile)));
         }
     }

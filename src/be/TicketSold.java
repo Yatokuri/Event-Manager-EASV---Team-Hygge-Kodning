@@ -2,7 +2,7 @@ package be;
 
 public class TicketSold {
     private final String firstName, lastName, email;
-    private int ticketID, transactionID;
+    private final int ticketID, transactionID;
 
     public TicketSold(String firstName, String lastName, String email, int ticketID, int transactionID){
         this.firstName = firstName;
@@ -28,16 +28,8 @@ public class TicketSold {
         return ticketID;
     }
 
-    private void setTicketID(int ticketID) {
-        this.ticketID = ticketID;
-    }
-
     public int getTransactionID() {
         return transactionID;
-    }
-
-    public void setTransactionID(int buyerID) {
-        this.transactionID = buyerID;
     }
 
     //Custom message to the tbl view over sold ticket

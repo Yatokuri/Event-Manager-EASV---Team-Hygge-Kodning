@@ -27,9 +27,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -40,8 +40,6 @@ public class EMSTicketMain implements Initializable {
     private MenuButton menuButtonLoggedInUser;
     @FXML
     private ImageView profilePicture;
-    @FXML
-    private Button createTicketButton;
     @FXML
     public AnchorPane anchorPane;
     @FXML
@@ -67,13 +65,13 @@ public class EMSTicketMain implements Initializable {
     @FXML
     private ImageView backgroundIMGBlur;
     private EMSCoordinator emsCoordinator;
-    public Scene ticketMainStage;
-    private EventModel eventModel;
-    private UserModel userModel;
-    private EventTicketsModel eventTicketsModel;
-    private GlobalTicketsModel globalTicketsModel;
-    private TicketModel ticketModel;
+    private final EventModel eventModel;
+    private final UserModel userModel;
+    private final EventTicketsModel eventTicketsModel;
+    private final GlobalTicketsModel globalTicketsModel;
+    private final TicketModel ticketModel;
     private final DisplayErrorModel displayErrorModel;
+    private final NavbarModel navbarModel;
 
     private be.Event selectedEvent;
     private User currentUser;
@@ -81,8 +79,6 @@ public class EMSTicketMain implements Initializable {
     private Tickets selectedTicket;
     private boolean menuButtonVisible = false;
     private final Image mainIcon = new Image("Icons/mainIcon.png");
-    private final Image defaultProfile = new Image("Icons/User_Icon.png");
-    private ArchivedEventModel archivedEventModel;
     private ObservableList<Tickets> combinedListTicketTBL;
     private ObservableList<be.Event> eventsListComboBox;
 
@@ -100,6 +96,7 @@ public class EMSTicketMain implements Initializable {
         userModel = UserModel.getInstance();
         ticketModel = TicketModel.getInstance();
         eventModel = EventModel.getInstance();
+        navbarModel = NavbarModel.getInstance();
         globalTicketsModel = GlobalTicketsModel.getInstance();
         eventTicketsModel = EventTicketsModel.getInstance();
     }
@@ -113,7 +110,7 @@ public class EMSTicketMain implements Initializable {
         lblEventTitle.setText(selectedEvent.getEventName());
         menuButtonLoggedInUser.setText(currentUser.getUserName());
         if (currentUser.getProfileIMG() != null)   { //If user have a picture set it
-            setProfilePicture(currentUser.getProfileIMG());
+            navbarModel.setProfilePicture(profilePicture, profilePicturePane, currentUser.getProfileIMG());
         }
         // Bind the fitWidth and fitHeight properties of the background image to the width and height of the AnchorPane
         backgroundIMGBlur.fitWidthProperty().bind(anchorPane.widthProperty());
@@ -190,9 +187,9 @@ public class EMSTicketMain implements Initializable {
     }
 
     public void setupTableview() {
-        colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));;
+        colTicketName.setCellValueFactory(new PropertyValueFactory<>("ticketName"));
         colTicketQuantity.setCellValueFactory(new PropertyValueFactory<>("ticketQuantity"));
-        colUser.setCellValueFactory(new PropertyValueFactory<>("CustomUserInfo"));;
+        colUser.setCellValueFactory(new PropertyValueFactory<>("CustomUserInfo"));
         colRemove.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colEdit.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
         colPrintSale.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel,this));
@@ -202,36 +199,34 @@ public class EMSTicketMain implements Initializable {
         colCheckTicket.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         colUsersTicketEmail.setCellFactory(EMSTicketMain.ButtonCell.forTableColumn(ticketModel, this));
         // Custom cell factory for the colUsername column so we can do "● Name"
-        colTicketName.setCellFactory(column -> {
-            return new TableCell<Tickets, String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
+        colTicketName.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
 
-                    if (item == null || empty) {
-                        setText(null);
-                        setGraphic(null);
-                    } else {
-                        Label bullet = new Label("● ");
-                        Label usernameLabel = new Label(item);
-                        setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
-                        getTableView().setOnMouseClicked(event -> {
-                            if (getTableView().getSelectionModel().getSelectedItem() == null) {
-                                setupTblEventTicketsUsers(null);
-                            }
-                        });
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Label bullet = new Label("● ");
+                    Label usernameLabel = new Label(item);
+                    setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
+                    getTableView().setOnMouseClicked(event -> {
+                        if (getTableView().getSelectionModel().getSelectedItem() == null) {
+                            setupTblEventTicketsUsers(null);
+                        }
+                    });
 
-                        setOnMouseClicked(event -> { // So we can click on ticket to see them
-                            if (!isEmpty()) {
-                                Tickets ticket = getTableView().getItems().get(getIndex());
-                                ticketModel.setCurrentTicket(ticket);
-                                selectedTicket = ticket;
+                    setOnMouseClicked(event -> { // So we can click on ticket to see them
+                        if (!isEmpty()) {
+                            Tickets ticket = getTableView().getItems().get(getIndex());
+                            ticketModel.setCurrentTicket(ticket);
+                            selectedTicket = ticket;
 
-                            }
-                        });
-                    }
+                        }
+                    });
                 }
-            };
+            }
         });
     }
     public void setupTblEventTicketsUsers(Tickets ticket) {
@@ -305,30 +300,7 @@ public class EMSTicketMain implements Initializable {
     }
 
     public void setupProfilePicture()   {
-        Image profileImage = userModel.getLoggedInUser().getProfileIMG();
-        if (profileImage != null) {
-            setProfilePicture(profileImage);
-            return;
-        }
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(profilePicture);
-        profilePicture.setImage(defaultProfile);
-        profilePicture.setScaleX(1);
-        profilePicture.setScaleY(1);
-    }
-
-    public void setProfilePicture(Image img)    {
-        Circle clip = new Circle(profilePicture.getFitWidth() / 2, profilePicture.getFitHeight() / 2, profilePicture.getFitWidth() / 2);
-        profilePicture.setClip(clip);
-
-        // Create a circle for the border
-        Circle borderCircle = new Circle(clip.getCenterX(), clip.getCenterY(), clip.getRadius() - 19); // Adjust the radius for the border
-        borderCircle.getStyleClass().add("borderCircleIMG");
-        profilePicturePane.getChildren().clear();
-        profilePicturePane.getChildren().addAll(borderCircle, profilePicture);
-        profilePicture.setImage(img);
-        profilePicture.setScaleX(0.61);
-        profilePicture.setScaleY(0.61);
+        navbarModel.setupProfilePicture(profilePicture, profilePicturePane);
     }
 
     @FXML
@@ -371,14 +343,8 @@ public class EMSTicketMain implements Initializable {
 
     @FXML
     private void logoutUser() throws IOException {
-        userModel.logOutUser();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMS.fxml"));
-        Stage currentStage = (Stage) profilePicture.getScene().getWindow();        currentStage.setTitle("Event Manager System");
-        Parent root = loader.load();
-        EMSController controller = loader.getController();
-        controller.setPrimaryStage(currentStage);
-        controller.startupProgram();
-        currentStage.setScene(new Scene(root));
+        Stage currentStage = (Stage) profilePicture.getScene().getWindow();
+        navbarModel.logoutUser(currentStage);
     }
 
     public void refreshUserTbl() throws Exception { // This method try to update the tbl Users
@@ -458,10 +424,10 @@ public class EMSTicketMain implements Initializable {
         alert.showAndWait();
     }
 
-    public TableView getTblEventTicketsUsers() {
+    public TableView<TicketSold> getTblEventTicketsUsers() {
         return tblEventTicketsUsers;
     }
-    public TableView getTblEventTickets() {
+    public TableView<Tickets> getTblEventTickets() {
         return tblEventTickets;
     }
     public be.Event getCurrentEvent() {
@@ -480,16 +446,9 @@ public class EMSTicketMain implements Initializable {
         private final Button deleteButton, editButton, printButton, saleButton, removeUserButton, printButtonUser, tickettoPDFUserButton, checkTicketButton, emailButtonUser;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
-        private final Image deleteIcon = new Image("/Icons/Trash_Icon.png");
-        private final Image editIcon = new Image("Icons/Pencil_Icon.png");
-        private final Image printIcon = new Image("Icons/Print_Icon.png");
-        private final Image saleIcon = new Image("Icons/Basket_Icon.png");
-        private final Image PDFIcon = new Image("Icons/SavePDF_Icon.png");
-        private final Image MailIcon = new Image("Icons/MailSend_Icon.png");
-        private final Image checkTicketIcon = new Image("Icons/CheckTicket_Icon.png");
         private Tickets currentTicket;
         private TicketSold currentTicketSold;
-        private EMSTicketMain emsTicketMain;
+        private final EMSTicketMain emsTicketMain;
         public ButtonCell(TicketModel ticketModel, EMSTicketMain emsTicketMain) {
             this.displayErrorModel = new DisplayErrorModel();
             this.emsTicketMain = emsTicketMain;
@@ -497,6 +456,7 @@ public class EMSTicketMain implements Initializable {
             ImageView deleteImage = new ImageView();
             deleteImage.setFitWidth(20);
             deleteImage.setFitHeight(20);
+            Image deleteIcon = new Image("/Icons/Trash_Icon.png");
             deleteImage.setImage(deleteIcon);
             deleteButton.setGraphic(deleteImage);
             deleteButton.setPrefWidth(20); // Set preferred width
@@ -541,6 +501,7 @@ public class EMSTicketMain implements Initializable {
             ImageView editImage = new ImageView();
             editImage.setFitWidth(20);
             editImage.setFitHeight(20);
+            Image editIcon = new Image("Icons/Pencil_Icon.png");
             editImage.setImage(editIcon);
             editButton.setGraphic(editImage);
             editButton.setPrefWidth(20); // Set preferred width
@@ -556,6 +517,7 @@ public class EMSTicketMain implements Initializable {
             ImageView saleImage = new ImageView();
             saleImage.setFitWidth(20);
             saleImage.setFitHeight(20);
+            Image saleIcon = new Image("Icons/Basket_Icon.png");
             saleImage.setImage(saleIcon);
             saleButton.setGraphic(saleImage);
             saleButton.setPrefWidth(20);
@@ -572,6 +534,7 @@ public class EMSTicketMain implements Initializable {
             ImageView checkTicketImage = new ImageView();
             checkTicketImage.setFitWidth(20);
             checkTicketImage.setFitHeight(20);
+            Image checkTicketIcon = new Image("Icons/CheckTicket_Icon.png");
             checkTicketImage.setImage(checkTicketIcon);
             checkTicketButton.setGraphic(checkTicketImage);
             checkTicketButton.setPrefWidth(20);
@@ -588,6 +551,7 @@ public class EMSTicketMain implements Initializable {
             ImageView printImage = new ImageView();
             printImage.setFitWidth(20);
             printImage.setFitHeight(20);
+            Image printIcon = new Image("Icons/Print_Icon.png");
             printImage.setImage(printIcon);
             printButton.setGraphic(printImage);
             printButton.setPrefWidth(20);
@@ -650,6 +614,7 @@ public class EMSTicketMain implements Initializable {
             ImageView emailUserImage = new ImageView();
             emailUserImage.setFitWidth(20);
             emailUserImage.setFitHeight(20);
+            Image MailIcon = new Image("Icons/MailSend_Icon.png");
             emailUserImage.setImage(MailIcon); // You need to define the removeUserIcon image
             emailButtonUser.setGraphic(emailUserImage);
             emailButtonUser.setPrefWidth(20);
@@ -677,7 +642,7 @@ public class EMSTicketMain implements Initializable {
 
                     try {
                         TicketToPDF ticketToPDF = new TicketToPDF();
-                        ticketModel.setCurrentTicket((Tickets) emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
+                        ticketModel.setCurrentTicket(emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
                         ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), true);
                     } catch (Exception e) {
                         displayErrorModel.displayErrorC("Could not send the email try again");
@@ -689,7 +654,8 @@ public class EMSTicketMain implements Initializable {
             ImageView pdfUserImage = new ImageView();
             pdfUserImage.setFitWidth(20);
             pdfUserImage.setFitHeight(20);
-            pdfUserImage.setImage(PDFIcon); // You need to define the removeUserIcon image
+            Image PDFIcon = new Image("Icons/SavePDF_Icon.png");
+            pdfUserImage.setImage(PDFIcon); // You need to define the PDFIcon image
             tickettoPDFUserButton.setGraphic(pdfUserImage);
             tickettoPDFUserButton.setPrefWidth(20);
             tickettoPDFUserButton.setPrefHeight(20);
@@ -699,7 +665,7 @@ public class EMSTicketMain implements Initializable {
                     currentTicketSold = ticketSold;
                     try {
                         TicketToPDF ticketToPDF = new TicketToPDF();
-                        ticketModel.setCurrentTicket((Tickets) emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
+                        ticketModel.setCurrentTicket(emsTicketMain.getTblEventTickets().getSelectionModel().getSelectedItem());
                         ticketToPDF.makeTicketToPDF(ticketSold, emsTicketMain.getTicketArea(), emsTicketMain.getSelectedEvent(), false);
                     } catch (Exception e) {
                         displayErrorModel.displayErrorC("Try to save as PDF again");

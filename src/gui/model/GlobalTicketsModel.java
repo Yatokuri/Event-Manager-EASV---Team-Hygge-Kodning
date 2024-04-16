@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 
 public class GlobalTicketsModel {
 
-    private static GlobalTicketsModel instance;
+    private static volatile GlobalTicketsModel instance;
     private final GlobalTicketManager globalTicketManager;
     private final TicketManager ticketManager;
     private final ObservableList<Tickets> globalTicketsToBeViewed;

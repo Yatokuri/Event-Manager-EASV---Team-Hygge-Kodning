@@ -9,29 +9,24 @@ import gui.util.TicketToPDF;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 
-public class EMSTicketPrinter implements Initializable {
+public class EMSTicketPrinter {
 
     @FXML
     private Pane ticketArea;
     @FXML
     private Label lblTicketTitle;
-    @FXML
-    private VBox loadingBox;
     @FXML
     private TableColumn<TicketSold, String> colUserList, colUserPrint;
     @FXML
@@ -53,16 +48,10 @@ public class EMSTicketPrinter implements Initializable {
         ticketModel = TicketModel.getInstance();
     }
 
-    public void setCurrentTicket(Tickets currentTicket) {
-        this.currentTicket = currentTicket;
-    }
-    public void setEMSTicketMain(EMSTicketMain emsTicketMain) {
-        this.emsTicketMain = emsTicketMain;
-    }
+    public void setCurrentTicket(Tickets currentTicket) { this.currentTicket = currentTicket; }
+    public void setEMSTicketMain(EMSTicketMain emsTicketMain) { this.emsTicketMain = emsTicketMain; }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-    }
+
 
     public void startupProgram() throws Exception {
         tblTicketPrint.setPlaceholder(new Label("No ticket selected"));
@@ -114,12 +103,8 @@ public class EMSTicketPrinter implements Initializable {
         printTickets.setDisable(disable);
     }
 
-    public TableView getTBLTicketPrint() {
-        return tblTicketPrint;
-    }
-    public TableView getTBLTicketSold() {
-        return tblTicketSold;
-    }
+    public TableView<TicketSold> getTBLTicketPrint() { return tblTicketPrint; }
+    public TableView<TicketSold> getTBLTicketSold() { return tblTicketSold; }
 
     @FXML
     private void cancelButton() {
@@ -131,8 +116,6 @@ public class EMSTicketPrinter implements Initializable {
         private final Button UsersAddToPrintButton;
         private Button UsersRemoveFromPrintButton = null;
         private final Button RemoveFromPrintButton;
-        private final Image AddIcon = new Image("/Icons/Plus_Icon.png");
-        private final Image RemoveIcon = new Image("Icons/Subtract_Icon.png");
 
         private TicketSold currentTicketSold;
         private final EMSTicketPrinter emsTicketPrinter;
@@ -140,6 +123,7 @@ public class EMSTicketPrinter implements Initializable {
         public ButtonCell(TicketModel ticketModel, EMSTicketPrinter emsTicketPrinter) {
             this.emsTicketPrinter = emsTicketPrinter;
 
+            Image AddIcon = new Image("/Icons/Plus_Icon.png");
             UsersAddToPrintButton = new Button();
             ImageView editImage = new ImageView();
             editImage.setFitWidth(20);
@@ -160,6 +144,7 @@ public class EMSTicketPrinter implements Initializable {
                 }
             });
 
+            Image RemoveIcon = new Image("Icons/Subtract_Icon.png");
             UsersRemoveFromPrintButton = new Button();
             ImageView removeImage = new ImageView();
             removeImage.setFitWidth(20);

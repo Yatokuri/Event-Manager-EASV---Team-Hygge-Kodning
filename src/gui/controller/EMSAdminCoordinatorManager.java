@@ -29,17 +29,12 @@ import java.util.ResourceBundle;
 public class EMSAdminCoordinatorManager implements Initializable {
     @FXML
     private AnchorPane anchorPane;
-
     @FXML
     private Button btnAddUser;
-
-
     @FXML
     private TableView<User> tblUser;
-
     @FXML
     private TableColumn<User, String> colUsername;
-
     @FXML
     private TableColumn<User, Void> colRemove, colResetPassword;
     private User currentUser;
@@ -51,8 +46,6 @@ public class EMSAdminCoordinatorManager implements Initializable {
     private MFXTextField txtInputUsername, txtInputPassword, txtInputNewPassword, txtInputNewPasswordConfirm;
     @FXML
     private Label lblNewPasswordUsername;
-
-    private final Image defaultProfile = new Image("Icons/User_Icon.png");
 
     public EMSAdminCoordinatorManager() {
     }
@@ -71,22 +64,20 @@ public class EMSAdminCoordinatorManager implements Initializable {
         colRemove.setCellFactory(ButtonCell.forButton(userModel, this));
         colResetPassword.setCellFactory(ButtonCell.forButton(userModel, this));
         // Custom cell factory for the colUsername column so we can do "● Name"
-        colUsername.setCellFactory(column -> {
-            return new TableCell<User, String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
+        colUsername.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
 
-                    if (item == null || empty) {
-                        setText(null);
-                        setGraphic(null);
-                    } else {
-                        Label bullet = new Label("● ");
-                        Label usernameLabel = new Label(item);
-                        setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
-                    }
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Label bullet = new Label("● ");
+                    Label usernameLabel = new Label(item);
+                    setGraphic(new HBox(bullet, usernameLabel)); // Add bullet and username to HBox
                 }
-            };
+            }
         });
 
         // Add data to the table we don't want Admin
@@ -308,10 +299,9 @@ public class EMSAdminCoordinatorManager implements Initializable {
         private final javafx.scene.control.Button resetButton;
         private final DisplayErrorModel displayErrorModel;
         private final Image mainIcon = new Image("Icons/mainIcon.png");
-        private final EMSAdminCoordinatorManager emsAdminCoordinatorManager;
+
         public ButtonCell(UserModel userModel,  EMSAdminCoordinatorManager emsAdminCoordinatorManager) {
-            this.displayErrorModel = new DisplayErrorModel();
-            this.emsAdminCoordinatorManager = new EMSAdminCoordinatorManager();
+            displayErrorModel = new DisplayErrorModel();
             deleteButton = new javafx.scene.control.Button("- ");
             deleteButton.setPrefWidth(20); // Set preferred width
             deleteButton.setPrefHeight(20); // Set preferred height

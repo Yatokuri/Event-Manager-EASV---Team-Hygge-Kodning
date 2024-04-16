@@ -9,7 +9,7 @@ public class ArchivedEventModel {
     private final ArchivedEventManager archivedEventManager;
 
     private static ObservableList<Event> archivedEventsToBeViewed;
-    private static ArchivedEventModel instance;
+    private static volatile ArchivedEventModel instance;
 
     private ArchivedEventModel() throws Exception {
         archivedEventManager = new ArchivedEventManager();
@@ -35,11 +35,10 @@ public class ArchivedEventModel {
     }
     public ObservableList<Event> getObsArchivedEvents() { return archivedEventsToBeViewed; }
 
-    public Event archiveEvent(be.Event newEvent) throws Exception {
+    public void archiveEvent(Event newEvent) throws Exception {
         be.Event archivedEvent;
         archivedEvent = archivedEventManager.archiveEvent(newEvent);
         archivedEventsToBeViewed.add(archivedEvent);
-        return archivedEvent;
     }
 
     public void deleteEvent(be.Event selectedEvent) throws Exception {

@@ -11,12 +11,10 @@ import java.util.Collection;
 import java.util.List;
 public class TicketManager {
     private final Ticket_DB ticket_DB;
-    private ImageManager imageManager;
     private static final String ALPHANUMERIC_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Character there can be used in the code
     private static final SecureRandom secureRandom = new SecureRandom();
     public TicketManager() throws Exception {
         ticket_DB = new Ticket_DB();
-        imageManager = new ImageManager();
     }
 
     public void createNewSoldTicketCode(TicketSold newTicketSold) throws Exception {

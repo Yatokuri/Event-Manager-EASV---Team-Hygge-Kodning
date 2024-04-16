@@ -8,9 +8,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class EventTicketsModel {
-    private final EventModel eventModel;
 
-    private static EventTicketsModel instance;
+    private static volatile EventTicketsModel instance;
     private final EventTicketsManager eventTicketsManager;
     private final TicketManager ticketManager;
     private final ObservableList<Tickets> eventTicketsToBeViewed;
@@ -19,7 +18,7 @@ public class EventTicketsModel {
         eventTicketsManager = new EventTicketsManager();
         ticketManager = new TicketManager();
         eventTicketsToBeViewed = FXCollections.observableArrayList();
-        eventModel = EventModel.getInstance();
+        EventModel eventModel = EventModel.getInstance();
         for (Event p: eventModel.getObsEvents()) {
             eventTicketsToBeViewed.addAll(eventTicketsManager.getAllTicketsEvent(p));
         }
@@ -38,19 +37,14 @@ public class EventTicketsModel {
         eventTicketsToBeViewed.clear();
         eventTicketsToBeViewed.addAll(eventTicketsManager.getAllTicketsEvent(event));
     }
-    public boolean addTicketsToEvent(Tickets newtickets, be.Event event) throws Exception { // Sends a request to the database to add a tickets to an event
+    public void addTicketsToEvent(Tickets newtickets, Event event) throws Exception { // Sends a request to the database to add a tickets to an event
         for (Tickets s : eventTicketsToBeViewed) {
             if (newtickets.getTicketID() == s.getTicketID()) {
-                return false; // Exit the method fast
+                return; // Exit the method fast
             }
         }
         eventTicketsManager.addTicketsToEvent(newtickets, event);
         eventTicketsToBeViewed.add(newtickets); // update list // Adds the new tickets to the event observable list
-        return true;
-    }
-
-    public void updateTicketsInEvent (Tickets tickets, Tickets oldtickets, be.Event event) throws Exception { // Sends a request to the database to update a tickets in an event
-        eventTicketsManager.updateTicketsInEvent(tickets, oldtickets, event);
     }
 
     public void deleteTicketsFromEvent (Tickets tickets, be.Event event) throws Exception { // Sends a request to the database to delete a tickets from an event

@@ -25,15 +25,11 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class TicketToPDF {
 
@@ -65,7 +61,7 @@ public class TicketToPDF {
     }
 
     public static void printTickets(GridPane pageGrid, int pageNumber) throws Exception {
-        File outputFile = null;
+        File outputFile;
         // Create a PDF document
         try (PDDocument doc = new PDDocument()) {
             // Create a new page
@@ -106,10 +102,14 @@ public class TicketToPDF {
             else {
                 message += "\n";
             }
-            message += "\nPlease find attached your ticket(s) for the event. Make sure to keep them safe and handy for entry.\n\n"
-                    + "We look forward to seeing you at the event and hope you have a fantastic time!\n\n"
-                    + "Best regards,\n"
-                    + "EASV";
+            message += """
+
+                    Please find attached your ticket(s) for the event. Make sure to keep them safe and handy for entry.
+
+                    We look forward to seeing you at the event and hope you have a fantastic time!
+
+                    Best regards,
+                    EASV""";
 
             MailSender.sendEmailWithAttachments(currentSoldTicket.getEmail(), subject, message, getOutputFile(1));
 

@@ -15,7 +15,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ancherPane" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdminCoordinatorManager">
+<AnchorPane fx:id="anchorPane" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.EMSAdminCoordinatorManager">
    <children>
       <HBox fx:id="navBar" layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
