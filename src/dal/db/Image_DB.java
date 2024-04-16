@@ -20,26 +20,9 @@ public class Image_DB {
 
     public Image_DB() throws IOException {
         myDBConnector = new myDBConnector(); // Initialize your connector here
-
     }
 
-    public ImageView readSystemIMG(int IMGId) throws Exception {
-        String sql = "SELECT IMG FROM SystemIMG WHERE IMGID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pStmt = conn.prepareStatement(sql)) {
-            pStmt.setInt(1, IMGId);
-            ResultSet rs = pStmt.executeQuery();
-            if (rs.next()) {
-                byte[] imgBytes = rs.getBytes("IMG");
-                Image img = new Image(new ByteArrayInputStream(imgBytes));
-                return new ImageView(img);
-            }
-        } catch (SQLException ex) {
-            throw new Exception("Could not fetch Image", ex);
-        }
-        return null;
-    }
-
+//********************************CRUD*IMAGE*******************************
     public int createSystemIMG(Image image) throws Exception {
         // Adjust SQL to remove IMGId from INSERT statement
         String sql = "INSERT INTO SystemIMG (IMG) VALUES (?)";
@@ -62,6 +45,22 @@ public class Image_DB {
             throw new Exception("Failed to upload Image", ex);
         }
         return generatedId;
+    }
+    public ImageView readSystemIMG(int IMGId) throws Exception {
+        String sql = "SELECT IMG FROM SystemIMG WHERE IMGID = ?";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            pStmt.setInt(1, IMGId);
+            ResultSet rs = pStmt.executeQuery();
+            if (rs.next()) {
+                byte[] imgBytes = rs.getBytes("IMG");
+                Image img = new Image(new ByteArrayInputStream(imgBytes));
+                return new ImageView(img);
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Could not fetch Image", ex);
+        }
+        return null;
     }
 
     public void uploadSystemIMG(int IMGId, Image newImage) throws Exception {
@@ -89,6 +88,14 @@ public class Image_DB {
         }
     }
 
+//***************************HELPER*METHOD************************************
+    private byte[] getImageData(Image image) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+        ImageIO.write(bufferedImage, "png", outputStream);
+        return outputStream.toByteArray();
+    }
+
     public int getNextIDSystemIMG() throws Exception {
         String sql = "SELECT IDENT_CURRENT('SystemIMG') + 1";
         int nextId = 0;
@@ -99,16 +106,9 @@ public class Image_DB {
                 nextId = rs.getInt(1);
             }
         } catch (SQLException ex) {
-            throw new Exception("Failed in getting next image", ex);
+            throw new Exception("Failed in getting next image id", ex);
         }
         return nextId;
     }
 
-    //Helper method to get image data
-    private byte[] getImageData(Image image) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-        ImageIO.write(bufferedImage, "png", outputStream);
-        return outputStream.toByteArray();
-    }
 }

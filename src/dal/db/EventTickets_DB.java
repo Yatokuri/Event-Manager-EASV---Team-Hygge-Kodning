@@ -18,6 +18,19 @@ public class EventTickets_DB {
         myDBConnector = new myDBConnector();
     }
 
+//*****************************CRUD*TICKET*EVENT*******************************
+    public void addTicketToEvent(Tickets ticket, Event event) throws Exception {
+        String sql = "INSERT INTO dbo.EventTickets (EventID, TicketID) VALUES (?, ?)";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, event.getEventID());
+            stmt.setInt(2, ticket.getTicketID());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Could not add ticket to event", ex);
+        }
+    }
+
     public List<Tickets> getAllTicketsForEvent(Event event) throws Exception {
         ArrayList<Tickets> allTicketsForEvent = new ArrayList<>();
         String sql = "SELECT Tickets.* FROM Tickets JOIN dbo.EventTickets ON Tickets.TicketID = EventTickets.TicketID WHERE EventTickets.EventID = ?";
@@ -35,16 +48,16 @@ public class EventTickets_DB {
         return allTicketsForEvent;
     }
 
-
-    public void addTicketToEvent(Tickets ticket, Event event) throws Exception {
-        String sql = "INSERT INTO dbo.EventTickets (EventID, TicketID) VALUES (?, ?)";
+    public void updateTicketInEvent(Tickets ticket, Tickets oldTicket, Event event) throws Exception {
+        String sql = "UPDATE dbo.EventTickets SET TicketID = ? WHERE TicketID = ? AND EventID = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, event.getEventID());
-            stmt.setInt(2, ticket.getTicketID());
+            stmt.setInt(1, ticket.getTicketID());
+            stmt.setInt(2, oldTicket.getTicketID());
+            stmt.setInt(3, event.getEventID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            throw new Exception("Could not add ticket to event", ex);
+            throw new Exception("Could not update ticket", ex);
         }
     }
 
@@ -60,21 +73,6 @@ public class EventTickets_DB {
         }
     }
 
-
-
-    public void updateTicketInEvent(Tickets ticket, Tickets oldTicket, Event event) throws Exception {
-        String sql = "UPDATE dbo.EventTickets SET TicketID = ? WHERE TicketID = ? AND EventID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, ticket.getTicketID());
-            stmt.setInt(2, oldTicket.getTicketID());
-            stmt.setInt(3, event.getEventID());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            throw new Exception("Could not update ticket", ex);
-        }
-    }
-
     public void deleteAllTicketFromEvent(Event event) throws Exception {
         String sql = "DELETE FROM dbo.EventTickets WHERE EventID = ?";
         try (Connection conn = myDBConnector.getConnection();
@@ -82,11 +80,11 @@ public class EventTickets_DB {
             stmt.setInt(1, event.getEventID());
             stmt.executeUpdate();
         } catch (SQLException ex) {
-            throw new Exception("Could not delete all ticket from event", ex);
+            throw new Exception("Could not delete all tickets from event", ex);
         }
     }
 
-    // Helper method to generate a Ticket object from the ResultSet
+//***************************HELPER*METHOD************************************
     private Tickets generateTicket(ResultSet rs) throws SQLException {
         int ticketID = rs.getInt("TicketID");
         int ticketQuantity = rs.getInt("TicketQuantity");

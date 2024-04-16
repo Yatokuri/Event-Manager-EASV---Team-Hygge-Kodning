@@ -475,6 +475,11 @@ public class EMSCoordinatorEventCreator implements Initializable {
     }
 
     public void imageButton() throws Exception { //Here we open Image changing window, so we close a lot and something new
+        if (eventBeingUpdated == null)  {
+            displayErrorModel.displayErrorC("You can first add image after event, \nis created due to internal policies.");
+            return;
+        }
+
         if (imageMode)  {
             uploadImage();
             return;
@@ -607,8 +612,8 @@ public class EMSCoordinatorEventCreator implements Initializable {
             eventImage.setClip(null);
             currentEventPicture = new Image(selectedFile.toURI().toString());
 
-            double fitWidth = 400; // Your specified fit width
-            double fitHeight = 300; // Your specified fit height
+            double fitWidth = 550; // Your specified fit width
+            double fitHeight = 400; // Your specified fit height
 
             // Calculate the scaled width and height while preserving the aspect ratio
             double scaledWidth = currentEventPicture.getWidth();
@@ -629,6 +634,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             eventImage.setFitHeight(scaledHeight);
 
             // Set the image and reset rectangle
+            eventImage.setImage(null);
             eventImage.setImage(currentEventPicture);
             setupResizableAndDraggableSystem();
         }

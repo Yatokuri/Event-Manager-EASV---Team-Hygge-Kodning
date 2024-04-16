@@ -25,7 +25,7 @@ public class User_DB {
         allUser = new ArrayList<>();
     }
 
-    //Login Part
+//***********************************LOGIN*************************************
     public User checkUserBCrypt(String username, String password) throws Exception {
         String query = "SELECT * FROM dbo.Users WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
@@ -38,39 +38,17 @@ public class User_DB {
                 String hashedPassword = rs.getString("Password");
                 // Use BCrypt to verify the password
                 if (BCrypt.checkpw(password, hashedPassword)) {
-
-
-                    // Passwords match, return the user object
-                    //   return generateUser(rs);
-
-                    return generateUser(rs);
+                    return generateUser(rs);  // Passwords match, return the user object
                 }
             }
             return null;
         } catch (SQLException ex) {
-            throw new Exception("Could not get user from database", ex);
+            throw new Exception("Wrong username or password", ex);
         }
     }
 
 
-    //User Part
-    public List<User> getAllUsers() throws Exception {
-
-        try (Connection conn = myDBConnector.getConnection();
-            Statement stmt = conn.createStatement()) {
-            String sql = "SELECT * FROM dbo.Users;";
-            ResultSet rs = stmt.executeQuery(sql);
-            // Loop through rows from the database result set
-            while (rs.next()) {
-                allUser.add(generateUser(rs));
-            }
-            return allUser;
-        } catch (SQLException ex) {
-            throw new Exception("Could not get users from database", ex);
-        }
-    }
-
-
+//********************************CRUD*USER***********************************
     public User createUser(User newUser) throws Exception {
         String sql = "INSERT INTO dbo.Users (Username, Password, userAccessLevel) VALUES (?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
@@ -86,6 +64,22 @@ public class User_DB {
             return user;
         } catch (SQLException ex) {
             throw new Exception("Could not create user in database", ex);
+        }
+    }
+
+    public List<User> getAllUsers() throws Exception {
+
+        try (Connection conn = myDBConnector.getConnection();
+             Statement stmt = conn.createStatement()) {
+            String sql = "SELECT * FROM dbo.Users;";
+            ResultSet rs = stmt.executeQuery(sql);
+            // Loop through rows from the database result set
+            while (rs.next()) {
+                allUser.add(generateUser(rs));
+            }
+            return allUser;
+        } catch (SQLException ex) {
+            throw new Exception("Could not get users from database", ex);
         }
     }
 
@@ -115,12 +109,7 @@ public class User_DB {
         }
     }
 
-    // Helper method to generate a User object from the ResultSet
-    private User generateUser(ResultSet rs) throws SQLException {
-        // Implement this method based on your User class structure
-        return new User(rs.getString("Username"), rs.getString("Password"), rs.getInt("userAccessLevel"));
-    }
-
+//***************************CRUD*PROFILE*IMAGE*******************************
     public void createUserProfileIMG(User selectedUser) throws Exception {
         String sqlInsert = "INSERT INTO dbo.UsersProfileIMG (Username, IMG) VALUES (?, ?)";
         try (Connection conn = myDBConnector.getConnection();
@@ -133,7 +122,6 @@ public class User_DB {
             throw new Exception("Error creating user profile image", ex);
         }
     }
-
 
     public void readUserProfileIMG(User selectedUser) throws Exception {
         String sql = "SELECT IMG FROM dbo.UsersProfileIMG WHERE Username = ?";
@@ -155,7 +143,7 @@ public class User_DB {
         }
     }
 
-    public void uploadUserProfileIMG(User selectedUser) throws Exception {
+    public void updateUserProfileIMG(User selectedUser) throws Exception {
         String sqlUpdate = "UPDATE dbo.UsersProfileIMG SET IMG = ? WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
              PreparedStatement updateStmt = conn.prepareStatement(sqlUpdate)) {
@@ -171,7 +159,6 @@ public class User_DB {
         }
     }
 
-
     public void deleteUserProfileIMG(User selectedUser) throws Exception {
         String sql = "DELETE FROM dbo.UsersProfileIMG WHERE Username = ?";
         try (Connection conn = myDBConnector.getConnection();
@@ -184,13 +171,18 @@ public class User_DB {
         }
     }
 
-    //Helper method to get image data
-    private byte[] getImageData(Image image) throws IOException {
+//***************************CRUD*PROFILE*IMAGE*******************************
+    private byte[] getImageData(Image image) throws IOException { //Helper method to get image data
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
         ImageIO.write(bufferedImage, "png", outputStream);
         return outputStream.toByteArray();
     }
+
+    private User generateUser(ResultSet rs) throws SQLException {  // Helper method to generate a User object from the ResultSet
+        return new User(rs.getString("Username"), rs.getString("Password"), rs.getInt("userAccessLevel"));
+    }
+
 }
 
 

@@ -391,6 +391,11 @@
     -fx-border-color: transparent;
 }
 
+.dynamicEvent .eventBox+  {
+    -fx-background-color: transparent;
+    -fx-border-radius: 5px;
+    -fx-border-color: transparent;
+}
 
 .dynamicEvent .label {
     -fx-font-size: 14px;

@@ -297,7 +297,7 @@ public class EMSCoordinator {
 
         eventBox.getChildren().add(button);
         // Set the style for specific CSS
-        eventBox.getStyleClass().add("eventBox");
+        eventBox.getStyleClass().add("eventBox+");
         button.getStyleClass().add("buttonNewEvent");
         return eventBox;
     }

@@ -17,6 +17,17 @@ public class GlobalTickets_DB {
         myDBConnector = new myDBConnector();
     }
 
+    //***************************CRUD*GLOBAL*TICKET*******************************
+    public void addTicketToGlobal(Tickets tickets) throws Exception {
+        String sql = "INSERT INTO dbo.GlobalTickets (TicketID) VALUES (?)";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, tickets.getTicketID());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Could not add ticket to global tickets", ex);
+        }
+    }
     public List<Tickets> getAllGlobalTicket() throws Exception {
         ArrayList<Tickets> allGlobalTickets = new ArrayList<>();
         String sql = "SELECT Tickets.* FROM Tickets JOIN GlobalTickets ON Tickets.TicketID = GlobalTickets.TicketID";
@@ -32,20 +43,6 @@ public class GlobalTickets_DB {
         }
         return allGlobalTickets;
     }
-
-
-
-    public void addTicketToGlobal(Tickets tickets) throws Exception {
-        String sql = "INSERT INTO dbo.GlobalTickets (TicketID) VALUES (?)";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, tickets.getTicketID());
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            throw new Exception("Could not add ticket to global tickets", ex);
-        }
-    }
-
     public void removeTicketFromGlobal(Tickets tickets) throws Exception {
         String sql = "DELETE FROM dbo.GlobalTickets WHERE TicketID = ?";
         try (Connection conn = myDBConnector.getConnection();
@@ -57,8 +54,7 @@ public class GlobalTickets_DB {
         }
     }
 
-
-    // Helper method to generate a Ticket object from the ResultSet
+//***************************HELPER*METHOD************************************
     private Tickets generateTicket(ResultSet rs) throws SQLException {
         int ticketID = rs.getInt("TicketID");
         int ticketQuantity = rs.getInt("TicketQuantity");

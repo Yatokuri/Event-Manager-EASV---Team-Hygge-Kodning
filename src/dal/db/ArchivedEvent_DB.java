@@ -16,24 +16,7 @@ public class ArchivedEvent_DB {
         getAllArchivedEvents();
     }
 
-    public List<Event> getAllArchivedEvents() throws Exception {
-        allArchivedEvents.clear();
-        try (Connection conn = myDBConnector.getConnection();
-             Statement stmt = conn.createStatement())
-        {
-            String sql = "SELECT * FROM dbo.ArchivedEvents;";
-            ResultSet rs = stmt.executeQuery(sql);
-            // Loop through rows from the database result set
-            while (rs.next()) {
-                allArchivedEvents.add(generateArchivedEvent(rs));
-            }
-            return allArchivedEvents;
-        }
-        catch (SQLException ex)
-        {
-            throw new Exception("Could not get Archived Events from database", ex);
-        }
-    }
+//*****************************CRUD*EVENT*ARCHIVED*******************************
 
     public be.Event ArchiveEvent(be.Event event) throws Exception {
         String sql = "INSERT INTO dbo.ArchivedEvents (ArchivedEventName, ArchivedEventStart, ArchivedEventEnd, ArchivedLocation, ArchivedLocationGuidance, ArchivedEventNotes) VALUES (?, ?, ?, ?, ?, ?)";
@@ -57,7 +40,7 @@ public class ArchivedEvent_DB {
                 id = rs.getInt(1);
             }
 
-            // Create Movie object and send up the layers
+            // Create Event object and send up the layers
             Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id , 0);
             allArchivedEvents.add(newEvent);
             return newEvent;
@@ -69,6 +52,25 @@ public class ArchivedEvent_DB {
 
     }
 
+    public List<Event> getAllArchivedEvents() throws Exception {
+        allArchivedEvents.clear();
+        try (Connection conn = myDBConnector.getConnection();
+             Statement stmt = conn.createStatement())
+        {
+            String sql = "SELECT * FROM dbo.ArchivedEvents;";
+            ResultSet rs = stmt.executeQuery(sql);
+            // Loop through rows from the database result set
+            while (rs.next()) {
+                allArchivedEvents.add(generateArchivedEvent(rs));
+            }
+            return allArchivedEvents;
+        }
+        catch (SQLException ex)
+        {
+            throw new Exception("Could not get Archived Events from database", ex);
+        }
+    }
+
     public void deleteArchivedEvent(be.Event eventToDelete) throws Exception {
         String sql = "DELETE FROM dbo.ArchivedEvents WHERE ArchivedEventID = ?";
         try (Connection conn = myDBConnector.getConnection();
@@ -78,10 +80,11 @@ public class ArchivedEvent_DB {
             allArchivedEvents.remove(eventToDelete);
         }
         catch (SQLException ex){
-            throw new Exception("Could not Delete Archived Event", ex);
+            throw new Exception("Could not delete Archived Event", ex);
         }
     }
 
+//***************************HELPER*METHOD************************************
     private be.Event generateArchivedEvent(ResultSet rs) throws SQLException {
         String archivedEventName = rs.getString("ArchivedEventName");
         String archivedEventStart = rs.getString("ArchivedEventStart");

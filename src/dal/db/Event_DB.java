@@ -17,6 +17,7 @@ public class Event_DB {
         getAllEvents();
     }
 
+ //********************************CRUD*EVENT***********************************
     public List<be.Event> getAllEvents() throws Exception {
         allEvents.clear();
         try (Connection conn = myDBConnector.getConnection();
@@ -51,7 +52,7 @@ public class Event_DB {
                 id = rs.getInt(1);
             }
 
-            // Create Movie object and send up the layers
+            // Create Event object and send up the layers
             Event newEvent = new Event(event.getEventName(), event.getEventStartDateTime(), event.getEventEndDateTime(), event.getLocation(), event.getLocationGuidance(), event.getEventNotes(), id, event.getImageID());
             allEvents.add(newEvent);
             return newEvent;
@@ -61,16 +62,6 @@ public class Event_DB {
             throw new Exception("Could not create Event", ex);
         }
 
-    }
-
-    private void SetupBasicEventInfo(Event event, PreparedStatement stmt) throws SQLException {
-        stmt.setString(1, event.getEventName());
-        stmt.setString(2, event.getEventStartDateTime());
-        stmt.setString(3, event.getEventEndDateTime());
-        stmt.setString(4, event.getLocation());
-        stmt.setString(5, event.getLocationGuidance());
-        stmt.setString(6, event.getEventNotes());
-        stmt.setInt(7, event.getImageID());
     }
 
     public void updateEvent(be.Event event) throws Exception {
@@ -96,10 +87,11 @@ public class Event_DB {
             allEvents.remove(eventToDelete);
         }
         catch (SQLException ex){
-            throw new Exception("Could not Delete Event", ex);
+            throw new Exception("Could not delete Event", ex);
         }
     }
 
+//***************************HELPER*METHOD************************************
     private be.Event generateEvent(ResultSet rs) throws SQLException {
         String eventName = rs.getString("EventName");
         String eventStart = rs.getString("EventStart");
@@ -111,4 +103,15 @@ public class Event_DB {
         int eventID = rs.getInt("EventID");
         return new Event(eventName, eventStart, eventEnd, location, locationGuidance, eventNotes, eventID, imageID);
     }
+
+    private void SetupBasicEventInfo(Event event, PreparedStatement stmt) throws SQLException {
+        stmt.setString(1, event.getEventName());
+        stmt.setString(2, event.getEventStartDateTime());
+        stmt.setString(3, event.getEventEndDateTime());
+        stmt.setString(4, event.getLocation());
+        stmt.setString(5, event.getLocationGuidance());
+        stmt.setString(6, event.getEventNotes());
+        stmt.setInt(7, event.getImageID());
+    }
+
 }

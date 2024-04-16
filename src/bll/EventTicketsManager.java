@@ -17,26 +17,14 @@ public class EventTicketsManager {
         imageManager = new ImageManager();
     }
 
-    public void addTicketsToEvent(Tickets newtickets, Event event) throws Exception {
-        eventTickets_DB.addTicketToEvent(newtickets, event);
-    }
+//*****************************CRUD*TICKET*EVENT*******************************
+    public void addTicketsToEvent(Tickets newtickets, Event event) throws Exception {eventTickets_DB.addTicketToEvent(newtickets, event);}
+    public List<Tickets> getAllTicketsEvent(Event event) throws Exception {return eventTickets_DB.getAllTicketsForEvent(event);}
+    public void updateTicketsInEvent(Tickets tickets, Tickets oldtickets, Event event) throws Exception {eventTickets_DB.updateTicketInEvent(tickets, oldtickets, event);}
+    public void deleteTicketsFromEvent(Tickets tickets, Event event) throws Exception {eventTickets_DB.removeTicketFromEvent(tickets, event);}
+    public void deleteAllTicketsFromEvent(Event event) throws Exception {eventTickets_DB.deleteAllTicketFromEvent(event);}
 
-    public void updateTicketsInEvent(Tickets tickets, Tickets oldtickets, Event event) throws Exception {
-        eventTickets_DB.updateTicketInEvent(tickets, oldtickets, event);
-    }
-
-    public void deleteTicketsFromEvent(Tickets tickets, Event event) throws Exception {
-        eventTickets_DB.removeTicketFromEvent(tickets, event);
-    }
-
-    public void deleteAllTicketsFromEvent(Event event) throws Exception {
-        eventTickets_DB.deleteAllTicketFromEvent(event);
-    }
-
-    public List<Tickets> getAllTicketsEvent(Event event) throws Exception {
-        return eventTickets_DB.getAllTicketsForEvent(event);
-    }
-
+//***************************HELPER*METHOD************************************
     public void removeImageFromTickets(Tickets ticket) throws Exception {
         String ticketJSON = ticket.getTicketJSON();
         JSONArray jsonArray = new JSONArray(ticketJSON);

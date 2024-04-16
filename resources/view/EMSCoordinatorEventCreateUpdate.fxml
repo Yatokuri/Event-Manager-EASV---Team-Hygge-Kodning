@@ -34,53 +34,44 @@
          <children>
             <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                <children>
-                  <HBox fx:id="mainSection" styleClass="settingSection">
+                  <VBox>
                      <children>
-                        <VBox fx:id="settingSectionNewIMGLeft" maxWidth="148.0" prefWidth="155.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                        <HBox>
                            <children>
-                              <Label prefHeight="17.0" prefWidth="118.0" styleClass="createUpdateEventIMGGuide" text="Guide" VBox.vgrow="ALWAYS">
+                              <Label prefHeight="17.0" prefWidth="118.0" styleClass="createUpdateEventIMGGuide" text="Guide">
                                  <font>
                                     <Font size="22.0" />
                                  </font>
                               </Label>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
                               <Label prefHeight="38.0" prefWidth="145.0" styleClass="createUpdateEventIMGGuide" text="Left click for moving around with the rectangle" wrapText="true" />
                               <Label prefHeight="38.0" prefWidth="145.0" styleClass="createUpdateEventIMGGuide" text="Right click on the rectangle for resize the rectangle" wrapText="true" />
                            </children>
-                           <HBox.margin>
-                              <Insets right="5.0" />
-                           </HBox.margin>
-                        </VBox>
-                        <HBox HBox.hgrow="ALWAYS">
-                           <children>
-                              <VBox HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Pane fx:id="imagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                       <children>
-                                          <ImageView fx:id="eventImage" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
-                                             <viewport>
-                                                <Rectangle2D />
-                                             </viewport>
-                                             <image>
-                                                <Image url="@../icons/User_Icon.png" />
-                                             </image>
-                                          </ImageView>
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </VBox>
-                           </children>
-                           <HBox.margin>
-                              <Insets top="5.0" />
-                           </HBox.margin>
-                           <padding>
-                              <Insets bottom="5.0" top="5.0" />
-                           </padding>
                         </HBox>
                      </children>
-                  </HBox>
+                  </VBox>
+                  <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Pane fx:id="imagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                           <children>
+                              <ImageView fx:id="eventImage" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                                 <viewport>
+                                    <Rectangle2D />
+                                 </viewport>
+                                 <image>
+                                    <Image url="@../icons/User_Icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </Pane>
+                     </children>
+                  </VBox>
                </children>
             </VBox>
          </children>

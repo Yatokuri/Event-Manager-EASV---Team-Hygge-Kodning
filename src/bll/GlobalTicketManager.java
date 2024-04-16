@@ -17,19 +17,12 @@ public class GlobalTicketManager {
         globalTicketsDB = new GlobalTickets_DB();
         imageManager = new ImageManager();
     }
+//***************************CRUD*GLOBAL*TICKET********************************
+    public List<Tickets> getAllGlobalTickets() throws Exception {return globalTicketsDB.getAllGlobalTicket();}
+    public void addTicketToGlobal(Tickets ticketID) throws Exception {globalTicketsDB.addTicketToGlobal(ticketID);}
+    public void removeTicketFromGlobal(Tickets ticketID) throws Exception {globalTicketsDB.removeTicketFromGlobal(ticketID);}
 
-    public List<Tickets> getAllGlobalTickets() throws Exception {
-        return globalTicketsDB.getAllGlobalTicket();
-    }
-
-    public void addTicketToGlobal(Tickets ticketID) throws Exception {
-        globalTicketsDB.addTicketToGlobal(ticketID);
-    }
-
-    public void removeTicketFromGlobal(Tickets ticketID) throws Exception {
-        globalTicketsDB.removeTicketFromGlobal(ticketID);
-    }
-
+//***************************HELPER*METHOD************************************
     public void removeImageFromTickets(Tickets ticket) throws Exception {
         String ticketJSON = ticket.getTicketJSON();
         JSONArray jsonArray = new JSONArray(ticketJSON);

@@ -15,8 +15,7 @@ public class Ticket_DB {
         myDBConnector = new myDBConnector();
     }
 
-
-
+//*****************************CRUD*TICKET*CODE*******************************
     public void createNewSoldTicketCode(String code, TicketSold newTicketSold) throws Exception {
         String sql = "INSERT INTO dbo.Codes (Code, TicketID, TransactionID) VALUES (?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
@@ -35,6 +34,19 @@ public class Ticket_DB {
         }
     }
 
+    public void generateNewGlobalTicketCode(String code) throws Exception {
+        String sql = "INSERT INTO dbo.GlobalCodes (GlobalCodes) VALUES (?)";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, code);
+            stmt.executeUpdate(); // Insert the new record into the table
+        } catch (SQLException ex) {
+            throw new Exception("Error while generating new code", ex);
+        }
+    }
+
     public String readNewSoldTicketCode(TicketSold ticketSoldToFetch) throws Exception {
         String sql = "SELECT * FROM dbo.Codes WHERE TransactionID = ?";
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
@@ -47,6 +59,60 @@ public class Ticket_DB {
             }
         } catch (SQLException ex) {
             throw new Exception("Could not read Code", ex);
+        }
+    }
+    public boolean checkGlobalTicketCode(String code) throws Exception {
+        String sqlCheck = "SELECT * FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
+        String sqlDelete = "DELETE FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck);
+             PreparedStatement stmtDelete = conn.prepareStatement(sqlDelete)) {
+
+            stmtCheck.setString(1, code);
+            ResultSet rs = stmtCheck.executeQuery();
+
+            if (rs.next()) {
+                // Record exists, return true
+                stmtDelete.setString(1, code);
+                stmtDelete.executeUpdate(); // Remove the record from the table
+                return true;
+            } else {
+                // No record found, return false
+                return false;
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking and deleting record", ex);
+        }
+    }
+    public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {
+        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ? AND TicketID = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+
+            stmtCheck.setString(1, code);
+            stmtCheck.setInt(2, ticketID);
+            ResultSet rs = stmtCheck.executeQuery();
+
+            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking code", ex);
+        }
+    }
+
+    public boolean checkLocalTicketAllCode(String code) throws Exception {
+        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ?";
+
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+
+            stmtCheck.setString(1, code);
+            ResultSet rs = stmtCheck.executeQuery();
+
+            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
+        } catch (SQLException ex) {
+            throw new Exception("Error while checking code", ex);
         }
     }
     public void updateNewSoldTicketCode(TicketSold ticketSoldToUpdate) throws Exception {
@@ -90,7 +156,7 @@ public class Ticket_DB {
         }
     }
 
-
+//*****************************CRUD*SOLD*TICKET******************************
     public TicketSold createNewSoldTicket(TicketSold newTicketSold) throws Exception {
         String sql = "INSERT INTO dbo.TicketSold (BuyerFirstName, BuyerLastName, BuyerEmail, TicketID) VALUES (?, ?, ?, ?)";
         try (Connection conn = myDBConnector.getConnection();
@@ -110,7 +176,7 @@ public class Ticket_DB {
                 id = rs.getInt(1);
             }
 
-            // Create Movie object and send up the layers
+            // Create Ticket object and send up the layers
             return new TicketSold(newTicketSold.getFirstName(),
                     newTicketSold.getLastName(),
                     newTicketSold.getEmail(),
@@ -121,24 +187,6 @@ public class Ticket_DB {
         {
             throw new Exception("Could not create Ticket", ex);
         }
-    }
-
-    public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {
-        ArrayList<TicketSold> allTicketsForEvent = new ArrayList<>();
-        String sql = "SELECT * FROM dbo.TicketSold WHERE TicketID = ?";
-        //String sql = "SELECT Tickets.* FROM Tickets JOIN dbo.EventTickets ON Tickets.TicketID = EventTickets.TicketID WHERE EventTickets.EventID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, tickets.getTicketID());
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                TicketSold ticketSold = generateTicketSold(rs);
-                allTicketsForEvent.add(ticketSold);
-            }
-        } catch (SQLException ex) {
-            throw new Exception("Could not get tickets sold", ex);
-        }
-        return allTicketsForEvent;
     }
 
     public TicketSold fetchSoldTicket(TicketSold ticketSoldToFetch) throws Exception {
@@ -156,6 +204,23 @@ public class Ticket_DB {
         catch (SQLException ex){
             throw new Exception("Could not fetch Ticket", ex);
         }
+    }
+
+    public List<TicketSold> getAllSoldTickets(Tickets tickets) throws Exception {
+        ArrayList<TicketSold> allTicketsForEvent = new ArrayList<>();
+        String sql = "SELECT * FROM dbo.TicketSold WHERE TicketID = ?";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, tickets.getTicketID());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                TicketSold ticketSold = generateTicketSold(rs);
+                allTicketsForEvent.add(ticketSold);
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Could not get tickets sold", ex);
+        }
+        return allTicketsForEvent;
     }
 
     public void updateSoldTicket(TicketSold ticketSold) throws Exception {
@@ -182,7 +247,7 @@ public class Ticket_DB {
             stmt.executeUpdate();
         }
         catch (SQLException ex){
-            throw new Exception("Could not Delete Ticket", ex);
+            throw new Exception("Could not delete Ticket", ex);
         }
     }
 
@@ -199,20 +264,7 @@ public class Ticket_DB {
         }
     }
 
-    public List<Tickets> getAllTicket() throws Exception {
-        List<Tickets> allTickets = new ArrayList<>();
-        String sql = "SELECT * FROM dbo.Tickets;";
-        try (Connection conn = myDBConnector.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                allTickets.add(generateTicket(rs));
-            }
-            return allTickets;
-        } catch (SQLException ex) {
-            throw new Exception("Could not fetch tickets from database", ex);
-        }
-    }
+//*****************************CRUD*TICKET***********************************
 
     public Tickets createNewTicket(Tickets newTicket) throws Exception {
         String sql = "INSERT INTO dbo.Tickets (TicketQuantity, TicketName, TicketJSON, TicketLocal) VALUES (?, ?, ?, ?)";
@@ -235,6 +287,39 @@ public class Ticket_DB {
         } catch (SQLException ex) {
             throw new Exception("Could not create ticket in database", ex);
         }
+    }
+    public List<Tickets> getAllTicket() throws Exception {
+        List<Tickets> allTickets = new ArrayList<>();
+        String sql = "SELECT * FROM dbo.Tickets;";
+        try (Connection conn = myDBConnector.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                allTickets.add(generateTicket(rs));
+            }
+            return allTickets;
+        } catch (SQLException ex) {
+            throw new Exception("Could not fetch tickets from database", ex);
+        }
+    }
+
+    public Tickets getTicket(int ticketToFetch) throws Exception {
+        Tickets ticket;
+        String sql = "SELECT * FROM dbo.Tickets WHERE TicketID = ?";
+        try (Connection conn = myDBConnector.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            pStmt.setInt(1, ticketToFetch);
+            try (ResultSet rs = pStmt.executeQuery()) {
+                if (rs.next()) {
+                    ticket = generateTicket(rs);
+                } else {
+                    throw new SQLException("Ticket not found in database");
+                }
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Could not fetch ticket from database", ex);
+        }
+        return ticket;
     }
 
     public void updateTicket(Tickets updatedTicket) throws Exception {
@@ -263,6 +348,7 @@ public class Ticket_DB {
         }
     }
 
+//***************************HELPER*METHOD************************************
     // Helper method to generate a Ticket object from the ResultSet
     private Tickets generateTicket(ResultSet rs) throws SQLException {
         int ticketID = rs.getInt("TicketID");
@@ -281,94 +367,6 @@ public class Ticket_DB {
         int ticketID = rs.getInt("TicketID");
         int transactionID = rs.getInt("TransactionID");
         return new TicketSold(firstName, lastName, email, ticketID, transactionID);
-    }
-
-    public Tickets getTicket(int ticketToFetch) throws Exception {
-        Tickets ticket;
-        String sql = "SELECT * FROM dbo.Tickets WHERE TicketID = ?";
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement pStmt = conn.prepareStatement(sql)) {
-            pStmt.setInt(1, ticketToFetch);
-            try (ResultSet rs = pStmt.executeQuery()) {
-                if (rs.next()) {
-                    ticket = generateTicket(rs);
-                } else {
-                    throw new SQLException("Ticket not found in database");
-                }
-            }
-        } catch (SQLException ex) {
-            throw new Exception("Could not fetch ticket from database", ex);
-        }
-        return ticket;
-    }
-
-    public boolean checkGlobalTicketCode(String code) throws Exception {
-        String sqlCheck = "SELECT * FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
-        String sqlDelete = "DELETE FROM dbo.GlobalCodes WHERE GlobalCodes = ?";
-
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck);
-             PreparedStatement stmtDelete = conn.prepareStatement(sqlDelete)) {
-
-            stmtCheck.setString(1, code);
-            ResultSet rs = stmtCheck.executeQuery();
-
-            if (rs.next()) {
-                // Record exists, return true
-                stmtDelete.setString(1, code);
-                stmtDelete.executeUpdate(); // Remove the record from the table
-                return true;
-            } else {
-                // No record found, return false
-                return false;
-            }
-        } catch (SQLException ex) {
-            throw new Exception("Error while checking and deleting record", ex);
-        }
-    }
-
-    public void generateNewGlobalTicketCode(String code) throws Exception {
-        String sql = "INSERT INTO dbo.GlobalCodes (GlobalCodes) VALUES (?)";
-
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, code);
-            stmt.executeUpdate(); // Insert the new record into the table
-        } catch (SQLException ex) {
-            throw new Exception("Error while generating new code", ex);
-        }
-    }
-
-    public boolean checkLocalTicketCode(String code, int ticketID) throws Exception {
-        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ? AND TicketID = ?";
-
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
-
-            stmtCheck.setString(1, code);
-            stmtCheck.setInt(2, ticketID);
-            ResultSet rs = stmtCheck.executeQuery();
-
-            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
-        } catch (SQLException ex) {
-            throw new Exception("Error while checking code", ex);
-        }
-    }
-
-    public boolean checkLocalTicketAllCode(String code) throws Exception {
-        String sqlCheck = "SELECT Code FROM dbo.Codes WHERE Code = ?";
-
-        try (Connection conn = myDBConnector.getConnection();
-             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
-
-            stmtCheck.setString(1, code);
-            ResultSet rs = stmtCheck.executeQuery();
-
-            return rs.next(); // Return true if the ResultSet has at least one row, indicating the record exists
-        } catch (SQLException ex) {
-            throw new Exception("Error while checking code", ex);
-        }
     }
 
 }
