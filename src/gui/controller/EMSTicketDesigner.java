@@ -432,7 +432,7 @@ public class EMSTicketDesigner implements Initializable {
         if (!selectedEvent.getEventStartDateTime().isEmpty() && (!checkForProperty(ticketArea, "isEventStartDateTime")))    {
             setupEventStartDateTime();
         }
-        if (!Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime()) && (!checkForProperty(ticketArea, "isEventEndDateTime")))    {
+        if (selectedEvent.getEventEndDateTime() != null && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime()) && (!checkForProperty(ticketArea, "isEventEndDateTime")))    {
             setupEventEndDateTime();
         }
         if (!selectedEvent.getEventNotes().isEmpty() && (!checkForProperty(ticketArea, "isEventNotes")))    {
@@ -725,7 +725,7 @@ public class EMSTicketDesigner implements Initializable {
                 displayErrorModel.displayErrorC("Missing Start Date & Time on Ticket");
                 return;
             }
-            if (!checkForProperty(ticketArea, "isEventEndDateTime") && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime())){
+            if (!checkForProperty(ticketArea, "isEventEndDateTime") && selectedEvent.getEventEndDateTime() != null && !Objects.equals(selectedEvent.getEventEndDateTime(), selectedEvent.getEventStartDateTime())){
                 displayErrorModel.displayErrorC("Missing End Date & Time on Ticket");
                 return;
             }

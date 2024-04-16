@@ -38,7 +38,7 @@ public class Event_DB {
     }
 
     public be.Event createEvent(be.Event event) throws Exception {
-        String sql = "INSERT INTO dbo.Events (EventName, EventStart, EventEnd, Location, LocationGuidance, EventNotes, ImageID, ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dbo.Events (EventName, EventStart, EventEnd, Location, LocationGuidance, EventNotes, ImageID) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = myDBConnector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             // Bind parameters

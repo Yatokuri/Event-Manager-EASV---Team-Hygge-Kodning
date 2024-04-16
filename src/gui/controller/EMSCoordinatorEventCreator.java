@@ -347,7 +347,11 @@ public class EMSCoordinatorEventCreator implements Initializable {
         String eventStartDate = validateDateTimeField(eventStartDatePicker, dateTimePattern, "Event Start Date & Time", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
         String eventEndDate = validateDateTimeField(eventEndDatePicker, dateTimePattern, "Event End Date & Time", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
         String location = validateTextField(locationTextField, eventLocationPattern, "Location");
-        String locationGuidance = locationGuidanceTextField.getText().trim();
+        String locationGuidance = "";
+        if (locationGuidanceTextField != null && locationGuidanceTextField.getText() != null && !locationGuidanceTextField.getText().isEmpty()) {
+            locationGuidance = locationGuidanceTextField.getText().trim();
+        }
+
         String eventNotes = validateTextArea(eventNotesTextArea, eventNotesPattern);
 
         if (!missingFields.isEmpty()) {
@@ -378,7 +382,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
         try {  // Create event object
             if (isNewEvent) {
                 be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1, eventImageID);
-                imageModel.createSystemIMG(currentEventPicture);
+                if (currentEventPicture != null  || eventImageID !=  0) {
+                    imageModel.createSystemIMG(currentEventPicture);
+                }
                 eventModel.createNewEvent(event);
             } else { // Perform update action
                 eventBeingUpdated.setEventName(eventName);
@@ -464,14 +470,16 @@ public class EMSCoordinatorEventCreator implements Initializable {
             Rectangle clip = new Rectangle(width, height); // Create a rectangular clip
             eventImage.setClip(clip); // Set the rectangular clip
 
-            Rectangle borderRectangle = new Rectangle(width, height); // Create a rectangle for the border
-            // Add the border rectangle behind the clip
-            StackPane stackPane = new StackPane();
-            stackPane.getChildren().addAll(borderRectangle, eventImage);
-            imagePane.getChildren().clear();
-            imagePane.getChildren().add(stackPane);
-        }
+            // Create a border rectangle with slightly larger dimensions than the image
+            double borderWidth = width + 2;
+            double borderHeight = height + 2;
+            Rectangle borderRect = new Rectangle(0, 0, borderWidth, borderHeight);
+            borderRect.getStyleClass().add("borderRectIMG"); // Apply CSS styling for the border
 
+            // Set the position of the border rectangle behind the image
+            imagePane.getChildren().clear();
+            imagePane.getChildren().addAll(borderRect, eventImage);
+        }
     }
 
     public void imageButton() throws Exception { //Here we open Image changing window, so we close a lot and something new
@@ -634,7 +642,6 @@ public class EMSCoordinatorEventCreator implements Initializable {
             eventImage.setFitHeight(scaledHeight);
 
             // Set the image and reset rectangle
-            eventImage.setImage(null);
             eventImage.setImage(currentEventPicture);
             setupResizableAndDraggableSystem();
         }
@@ -667,44 +674,43 @@ public class EMSCoordinatorEventCreator implements Initializable {
             if (isResizing[0]) {
                 double deltaX = e.getSceneX() - initialMousePos[0];
                 double deltaY = e.getSceneY() - initialMousePos[1];
+                double minSize = 20; // Define the minimum size
 
-                double newWidth = initialRectangleWidth[0] + deltaX;
-                double newHeight = initialRectangleHeight[0] + deltaY;
+                // Calculate potential new sizes based on drag distance
+                double potentialNewWidth = initialRectangleWidth[0] + deltaX;
+                double potentialNewHeight = initialRectangleHeight[0] + deltaY;
 
-                // Maintain the aspect ratio
-                double aspectRatio = initialRectangleWidth[0] / initialRectangleHeight[0];
+                // Keep it square by choosing the smaller dimension increase to maintain the aspect ratio
+                double sizeChange = Math.min(potentialNewWidth, potentialNewHeight);
 
-                // Adjust width or height based on the change in the other dimension
-                if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                    newHeight = newWidth / aspectRatio;
-                } else {
-                    newWidth = newHeight * aspectRatio;
-                }
+                // Apply minimum size constraint
+                sizeChange = Math.max(sizeChange, minSize);
 
                 // Constrain the size within the bounds of the imageView
                 double maxWidth = imageView.getBoundsInParent().getWidth() - initialRectanglePos[0];
                 double maxHeight = imageView.getBoundsInParent().getHeight() - initialRectanglePos[1];
 
-                double width = Math.min(newWidth, maxWidth);
-                double height = Math.min(newHeight, maxHeight);
+                // Apply the maximum allowable size constraint
+                sizeChange = Math.min(sizeChange, maxWidth);
+                sizeChange = Math.min(sizeChange, maxHeight);
 
-                rectangle.setWidth(width);
-                rectangle.setHeight(height);
+                // Set the new size, ensuring it stays quadratic
+                rectangle.setWidth(sizeChange);
+                rectangle.setHeight(sizeChange);
+
             } else {
                 double newX = e.getSceneX() - initialMousePos[0] + initialRectanglePos[0];
                 double newY = e.getSceneY() - initialMousePos[1] + initialRectanglePos[1];
 
-                // Calculate the scaling factors dynamically
-                double referenceWidth = 300.0; // Define your reference width here
-                double referenceHeight = 300.0; // Define your reference height here
+                // Calculate minX, minY, maxX, maxY
+                double minX = -(imageView.getFitWidth() / 2) + 25;
+                double minY = -(imageView.getFitHeight() / 2) + 25;
+                double maxX = imageView.getLayoutBounds().getWidth()-minX-imageView.getFitWidth();
+                double maxY = imageView.getLayoutBounds().getHeight()-minY-imageView.getFitHeight();
 
-                double widthRatio = imageView.getFitWidth() / referenceWidth;
-                double heightRatio = imageView.getFitHeight() / referenceHeight;
-
-                // Adjust the position of the rectangle to stay within the bounds of the imageView
-                newX = Math.max(-(imageView.getFitWidth()/2)+25, Math.min(newX, (imageView.getFitWidth()/(1.5*widthRatio) - rectangle.getWidth())));
-                newY = Math.max(-(imageView.getFitHeight()/2)+25, Math.min(newY, (imageView.getFitHeight()/(1.5*heightRatio) - rectangle.getHeight())));
-
+                // Adjust newX and newY to ensure the rectangle stays within the bounds
+                newX = Math.max(minX, Math.min(newX, maxX));
+                newY = Math.max(minY, Math.min(newY, maxY));
 
                 // Update rectangle position
                 rectangle.setX(newX);

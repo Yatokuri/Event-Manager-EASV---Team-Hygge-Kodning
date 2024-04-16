@@ -312,6 +312,7 @@ public class EMSCoordinator {
 
     public void btnCreateEvent()   { // Handle when coordinators make new event
         try {
+            setEventBeingUpdated(null); // To prevent you can change last updated IMG from creating window
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinatorEventCreateUpdate.fxml"));
             Parent root = loader.load();
             Stage EMSCoordinatorEventCUStage = new Stage();
