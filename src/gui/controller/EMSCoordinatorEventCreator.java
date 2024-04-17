@@ -384,8 +384,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 be.Event event = new be.Event(eventName, eventStartDate, eventEndDate, location, locationGuidance, eventNotes, -1, eventImageID);
                 if (currentEventPicture != null  || eventImageID !=  0) {
                     imageModel.createSystemIMG(currentEventPicture);
-                }
+                }       //We take the last from the list to make sure we used the right instance off object
                 eventModel.createNewEvent(event);
+                eventBeingUpdated = eventModel.getObsEvents().getLast();
             } else { // Perform update action
                 eventBeingUpdated.setEventName(eventName);
                 eventBeingUpdated.setEventStartDateTime(eventStartDate);
@@ -396,7 +397,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
                 eventModel.updateEvent(eventBeingUpdated);
             }
             emsCoordinator.setIsItArchivedEvent(false);
-            emsCoordinator.startupProgram(); // Refresh UI
+            emsCoordinator.addOrUpdateEventInList(eventBeingUpdated);
             cancelButton();
         } catch (Exception e) {
             displayErrorModel.displayErrorC(isNewEvent ? "Failed to create event" : "Event could not be updated");
@@ -577,6 +578,7 @@ public class EMSCoordinatorEventCreator implements Initializable {
             eventBeingUpdated.setImageID(imageModel.createSystemIMG(image));
             eventModel.updateEvent(eventBeingUpdated);
         }
+        emsCoordinator.addOrUpdateEventInList(eventBeingUpdated);
     }
 
     public void btnDeleteImage() {

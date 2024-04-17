@@ -163,8 +163,14 @@ public class EMSEventInformation implements Initializable {
                         archivedEventModel.archiveEvent(eventBeingUpdated);
                         eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
                         eventModel.deleteEvent(eventBeingUpdated);
+                        if (emsCoordinator != null) {
+                            emsCoordinator.deleteEventInList(eventBeingUpdated); //Remove from UI
+                        }
+                        else {
+                            emsAdmin.deleteEventInList(eventBeingUpdated); //Remove from UI
+                        }
+
                     }
-                    emsCoordinator.startupProgram(); // Refresh UI
                 } catch (Exception e) {
                     displayErrorModel.displayErrorC("Unable to delete event");
                 }

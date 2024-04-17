@@ -3,6 +3,7 @@ package gui.controller;
 import be.Event;
 import gui.model.*;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -19,10 +20,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class EMSCoordinator {
@@ -49,8 +47,9 @@ public class EMSCoordinator {
     private boolean isItArchivedEvent = false;
     private static Event eventBeingUpdated;
     private final HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
-
+    private List<Event> currentEventList = null;
     private Pane lastEventBox;
+    private Task<Void> currentLoadEventsTask; // currently running task
 
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
@@ -89,10 +88,24 @@ public class EMSCoordinator {
     }
     public void startupProgram() { // This setup op the program
         menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
-        if (Boolean.TRUE.equals(isItArchivedEvent)) {
-            setupEvents(archivedEventModel.getObsArchivedEvents());
-        } else { // This block will execute if isItArchivedEvent is FALSE or NULL
-            setupEvents(eventModel.getObsEvents());
+        if (Boolean.TRUE.equals(isItArchivedEvent))  {
+            if (currentEventList  == null)  {
+                setupEvents(archivedEventModel.getObsArchivedEvents());
+                currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
+            } else if (!currentEventList.equals(archivedEventModel.getObsArchivedEvents())) {
+                setupEvents(archivedEventModel.getObsArchivedEvents());
+                currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
+            }
+        }
+        else {
+            if (currentEventList  == null)  {
+                currentEventList = new ArrayList<>(eventModel.getObsEvents());
+                setupEvents(eventModel.getObsEvents());
+            }
+            else if (!currentEventList.equals(eventModel.getObsEvents())) {
+                setupEvents(eventModel.getObsEvents());
+                currentEventList = new ArrayList<>(eventModel.getObsEvents());
+            }
         }
         anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> setupUpEventSpace(newValue.doubleValue()));
         try { //We read user have image if something go wrong we show default
@@ -117,6 +130,9 @@ public class EMSCoordinator {
     }
 
     public void setupUpEventSpace(double newValue) {
+        if (tilePane.getChildren().isEmpty() || tilePane == null) {
+            return;
+        }
         int columnWidth = 300+40; // Width of each EventBox and margin
         tilePane.setPrefColumns((int) (newValue / columnWidth)); // Set the new preferred number
         int remainderSpace = (int) Math.ceil(((newValue - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
@@ -126,7 +142,9 @@ public class EMSCoordinator {
 
         } //And then the last special box
         Insets insets = new Insets(20, remainderSpace, 20, remainderSpace);
-        TilePane.setMargin(lastEventBox, insets);
+        if (lastEventBox != null) {
+            TilePane.setMargin(lastEventBox, insets);
+        }
     }
 
     public void profilePicture() { // Profile IMG also control dropdown
@@ -147,19 +165,74 @@ public class EMSCoordinator {
         tilePane.getChildren().clear();
 
         events.sort(Comparator.comparing(Event::getEventStartDateTime)); // Sort events by start date
+        // Check if there's already a task running
+        if (currentLoadEventsTask != null && currentLoadEventsTask.isRunning()) {
+            currentLoadEventsTask.cancel();
+        }
 
-        //We create all the event dynamic
-        for (Event e : events) {
-            Pane eventBox = createEventBox(e);
-            allEventBoxes.put(e.getEventID(), eventBox);
-            Insets insets = new Insets(20); // Set the insets for margin or padding
-            TilePane.setMargin(eventBox, insets); // Apply the insets to the eventBox
-            tilePane.getChildren().add(eventBox);
-        } //The last is a + to add new one for coordinator
-            lastEventBox = createLastEventBox();
-            Insets insets = new Insets(20); // Set the insets for margin or padding
-            TilePane.setMargin(lastEventBox, insets); // Apply the insets to the lastEventBox
-            tilePane.getChildren().add(lastEventBox);
+        // Create a new task to load events
+        currentLoadEventsTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                for (Event e : events) {
+                    if (isCancelled()) { // Check if the task is cancelled
+                        break;
+                    }
+                    Platform.runLater(() -> { // Create the event box on the JavaFX Application Thread
+                        Pane eventBox = createEventBox(e);
+                        allEventBoxes.put(e.getEventID(), eventBox);
+                        Insets insets = new Insets(20); // Set the insets for margin or padding
+                        TilePane.setMargin(eventBox, insets); // Apply the insets to the eventBox
+                        tilePane.getChildren().add(eventBox);
+                       setupUpEventSpace(anchorPane.getWidth());
+                    });
+
+                    // Simulate loading time (if needed)
+                    Thread.sleep(50); // Adjust as needed
+                }
+                // After all events have been loaded, add the last event box
+                Platform.runLater(() -> {
+                    if (!isItArchivedEvent) {
+                        lastEventBox = createLastEventBox();
+                        Insets insets = new Insets(20); // Set the insets for margin or padding
+                        TilePane.setMargin(lastEventBox, insets); // Apply the insets to the lastEventBox
+                        tilePane.getChildren().add(lastEventBox);
+                        setupUpEventSpace(anchorPane.getWidth());
+                    }
+                });
+                return null;
+            }
+        };
+        // Start the task in a new thread
+        Thread loadEventsThread = new Thread(currentLoadEventsTask);
+        loadEventsThread.start();
+    }
+
+    public void addOrUpdateEventInList(Event event) { // This method change or add the Event direct instead of just add all
+        // Remove the old event box from the tile pane if it exists
+        Pane oldEventBox = allEventBoxes.get(event.getEventID());
+        if (oldEventBox != null) {
+            tilePane.getChildren().remove(oldEventBox);
+            allEventBoxes.remove(event.getEventID());
+        }
+
+        // Sort the list of events based on the start date and time and get index
+        eventModel.getObsEvents().sort(Comparator.comparing(Event::getEventStartDateTime));
+        int newIndex = eventModel.getObsEvents().indexOf(event);
+
+        // Create the event box for the new or updated event
+        Pane eventBox = createEventBox(event);
+        allEventBoxes.put(event.getEventID(), eventBox);
+        Insets insets = new Insets(20);
+        TilePane.setMargin(eventBox, insets);
+        // Insert at the new calculated position
+        tilePane.getChildren().add(newIndex, eventBox);
+        currentEventList = new ArrayList<>(eventModel.getObsEvents());
+    }
+
+    public void deleteEventInList(Event event)  {
+        tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
+        currentEventList = new ArrayList<>(eventModel.getObsEvents());
     }
 
     // Method to create an event box
@@ -209,13 +282,12 @@ public class EMSCoordinator {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     if (isItArchivedEvent)  {
-                        archivedEventModel.deleteEvent(eventBeingUpdated);
+                        archivedEventModel.deleteEvent(event);
                     }
                     else {
                         archivedEventModel.archiveEvent(event);
-                        eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
+                        eventTicketsModel.deleteAllTicketsFromEvent(event);
                         eventModel.deleteEvent(event);
-                        setupEvents(eventModel.getObsEvents());
                     }
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
                     setupUpEventSpace(anchorPane.getWidth());
@@ -365,11 +437,13 @@ public class EMSCoordinator {
         if (isItArchivedEvent)  {
             isItArchivedEvent = false;
             setupEvents(eventModel.getObsEvents());
+            currentEventList = new ArrayList<>(eventModel.getObsEvents());
             menuArchivedEvents.setText("Archived Events");
         }
         else {
             isItArchivedEvent = true;
             setupEvents(archivedEventModel.getArchivedEventsToBeViewed());
+            currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
             menuArchivedEvents.setText("Active Events");
         }
         setupUpEventSpace(anchorPane.getWidth());

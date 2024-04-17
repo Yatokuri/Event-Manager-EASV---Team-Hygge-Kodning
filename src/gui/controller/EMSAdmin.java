@@ -3,6 +3,7 @@ package gui.controller;
 import be.Event;
 import gui.model.*;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -19,10 +20,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class EMSAdmin {
 
@@ -44,6 +42,8 @@ public class EMSAdmin {
     private EventTicketsModel eventTicketsModel;
     private static Event eventBeingUpdated;
     private final HashMap<Integer, Pane> allEventBoxes = new HashMap<>(); // To store event box
+    private List<Event> currentEventList = null;
+    private Task<Void> currentLoadEventsTask; // currently running task
     private boolean menuButtonVisible = false;
     //TODO As hashmap to store picture so you dont have to load them each time
     private static final Image subtractIcon = new Image ("/Icons/subtract.png");
@@ -80,11 +80,22 @@ public class EMSAdmin {
     }
     public void startupProgram() { // This setup op the program
         menuButtonLoggedInUser.setText(userModel.getLoggedInUser().getUserName());
-        if (Boolean.TRUE.equals(isItArchivedEvent)) {
+        if (Boolean.TRUE.equals(isItArchivedEvent) && currentEventList == null) {
             setupEvents(archivedEventModel.getObsArchivedEvents());
-        } else { // This block will execute if isItArchivedEvent is FALSE or NULL
+            currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
+        } // This block will execute if isItArchivedEvent is FALSE or NULL
+        else if (Boolean.TRUE.equals(isItArchivedEvent) &&!currentEventList.equals(archivedEventModel.getObsArchivedEvents())) {
+            setupEvents(archivedEventModel.getObsArchivedEvents());
+            currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
+        } else if (!Boolean.TRUE.equals(isItArchivedEvent) && currentEventList == null) {
+            currentEventList = new ArrayList<>(eventModel.getObsEvents());
             setupEvents(eventModel.getObsEvents());
         }
+        else if (!currentEventList.equals(eventModel.getObsEvents())) {
+            setupEvents(eventModel.getObsEvents());
+            currentEventList = new ArrayList<>(eventModel.getObsEvents());
+        }
+
         anchorPane.widthProperty().addListener((observable, oldValue, newValue) -> setupUpEventSpace(newValue.doubleValue()));
         try { //We read user have image if something go wrong we show default
             userModel.readUserProfileIMG(userModel.getLoggedInUser());
@@ -108,6 +119,9 @@ public class EMSAdmin {
     }
 
     public void setupUpEventSpace(double newValue) {
+        if (tilePane.getChildren().isEmpty() || tilePane == null) {
+            return;
+        }
         int columnWidth = 300+40; // Width of each EventBox and margin
         tilePane.setPrefColumns((int) (newValue / columnWidth)); // Set the new preferred number
         int remainderSpace = (int) Math.ceil(((newValue - (tilePane.getPrefColumns()*300))/tilePane.getPrefColumns())/2);
@@ -134,17 +148,45 @@ public class EMSAdmin {
 
     private void setupEvents(List<Event> events)  {
         tilePane.getChildren().clear();
-        events.sort(Comparator.comparing(Event::getEventStartDateTime)); // Sort events by start date
 
-        //We create all the event dynamic
-        for (Event e : events) {
-            Pane eventBox = createEventBox(e);
-            allEventBoxes.put(e.getEventID(), eventBox);
-            Insets insets = new Insets(20); // Set the insets for margin or padding
-            TilePane.setMargin(eventBox, insets); // Apply the insets to the eventBox
-            tilePane.getChildren().add(eventBox);
+        events.sort(Comparator.comparing(Event::getEventStartDateTime)); // Sort events by start date
+        // Check if there's already a task running
+        if (currentLoadEventsTask != null && currentLoadEventsTask.isRunning()) {
+            currentLoadEventsTask.cancel();
         }
+
+        // Create a new task to load events
+        currentLoadEventsTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                for (Event e : events) {
+                    if (isCancelled()) { // Check if the task is cancelled
+                        break;
+                    }
+                    Platform.runLater(() -> { // Create the event box on the JavaFX Application Thread
+                        Pane eventBox = createEventBox(e);
+                        allEventBoxes.put(e.getEventID(), eventBox);
+                        Insets insets = new Insets(20); // Set the insets for margin or padding
+                        TilePane.setMargin(eventBox, insets); // Apply the insets to the eventBox
+                        tilePane.getChildren().add(eventBox);
+                        setupUpEventSpace(anchorPane.getWidth());
+                    });
+                    // Simulate loading time (if needed)
+                    Thread.sleep(50); // Adjust as needed
+                }
+                return null;
+            }
+        };
+        // Start the task in a new thread
+        Thread loadEventsThread = new Thread(currentLoadEventsTask);
+        loadEventsThread.start();
     }
+
+    public void deleteEventInList(Event event)  {
+        tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
+        currentEventList = new ArrayList<>(eventModel.getObsEvents());
+    }
+
     // Method to create an event box
     private StackPane createEventBox(Event event) {
         StackPane eventBox = new StackPane();
@@ -199,7 +241,6 @@ public class EMSAdmin {
                         archivedEventModel.archiveEvent(event);
                         eventTicketsModel.deleteAllTicketsFromEvent(eventBeingUpdated);
                         eventModel.deleteEvent(event);
-                        setupEvents(eventModel.getObsEvents());
                     }
                     tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
                     setupUpEventSpace(anchorPane.getWidth());
@@ -321,11 +362,13 @@ public class EMSAdmin {
         if (isItArchivedEvent)  {
             isItArchivedEvent = false;
             setupEvents(eventModel.getObsEvents());
+            currentEventList = new ArrayList<>(eventModel.getObsEvents());
             menuArchivedEvents.setText("Archived Events");
         }
         else {
             isItArchivedEvent = true;
             setupEvents(archivedEventModel.getArchivedEventsToBeViewed());
+            currentEventList = new ArrayList<>(archivedEventModel.getObsArchivedEvents());
             menuArchivedEvents.setText("Active Events");
         }
         setupUpEventSpace(anchorPane.getWidth());
