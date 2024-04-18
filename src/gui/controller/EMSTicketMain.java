@@ -251,6 +251,14 @@ public class EMSTicketMain implements Initializable {
         ticketModel.setCurrentTicket(tickets);
         openCUTicket("update");
     }
+    public void recreateUpdatedTicket(Tickets updatedTicket) { // ReAdd the Ticket so, it has the new JSON
+        int currentIndex = tblEventTickets.getItems().indexOf(ticketModel.getCurrentTicket());
+        if (currentIndex != -1) {
+            tblEventTickets.getItems().remove(currentIndex);
+            tblEventTickets.getItems().add(currentIndex, updatedTicket);
+        }
+    }
+
     public be.Event getSelectedEvent() {return selectedEvent; }
 
     @FXML

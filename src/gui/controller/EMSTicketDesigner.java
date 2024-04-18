@@ -811,8 +811,8 @@ public class EMSTicketDesigner implements Initializable {
                 String jsonUpdated = TicketSerializerRecreate.serializeTicketAreaToJson(ticketArea);
 
                 if (Objects.equals(type, "update"))   {
-                    Tickets updatedTicket = new Tickets(currentTicket.getTicketID(), currentTicket.getTicketQuantity(), currentTicket.getTicketName(), jsonUpdated, currentTicket.getIsILocal());
-                    ticketModel.updateTicket(updatedTicket);
+                    currentTicket = new Tickets(currentTicket.getTicketID(), currentTicket.getTicketQuantity(), currentTicket.getTicketName(), jsonUpdated, currentTicket.getIsILocal());
+                    ticketModel.updateTicket(currentTicket);
                     for (Integer i : imgListDeleteIfUpdate)   {
                         systemIMGModel.deleteSystemIMG(i);
                     }
@@ -945,6 +945,9 @@ public class EMSTicketDesigner implements Initializable {
         Stage parent = (Stage) lblEventTitle.getScene().getWindow();
         if (newTicket != null)  { // If there is a new ticket add it
             emsTicketMain.addNewTicket(newTicket);
+        }
+        if (newTicket == null)  {
+            emsTicketMain.recreateUpdatedTicket(currentTicket);
         }
         parent.setScene(emsTicketMainStage);
     }

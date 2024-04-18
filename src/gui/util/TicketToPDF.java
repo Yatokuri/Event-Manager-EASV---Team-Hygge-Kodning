@@ -142,7 +142,6 @@ public class TicketToPDF {
         return outputFile;
     }
     public void makeGlobalTicketToPDF(Tickets currentTicket, int result, Pane ticketArea, Boolean shouldWeSendEmail) throws Exception {
-        System.out.println(shouldWeSendEmail);
         ticketModel.setCurrentTicket(currentTicket);
         TicketSold NewTicketSold = new TicketSold("Global", "Global" , "Global", currentTicket.getTicketID(), -10);
         List<TicketSold> ticketCopies = new ArrayList<>(Collections.nCopies(result, NewTicketSold));
@@ -206,26 +205,12 @@ public class TicketToPDF {
                 pageGrid.add(ticketPane, col, row); // Add to the GridPane
             }
 
+            ticketArea.getChildren().add(pageGrid); // Add GridPane to the scene
+            printTickets(pageGrid, pageNumber);
+
             pageGrids.add(pageGrid);
             pageNumber++;
         }
-
-        /*When all grid pane is created with tickets we set the grid pane in the scene
-        where user not can see it and then save and take a snapshot of each we make to PDF page*/
-        pageNumber = 1;
-        for (GridPane pageGrid : pageGrids) {
-            ticketArea.getChildren().add(pageGrid); // Add GridPane to the scene
-            final int finalPageNumber = pageNumber;
-            Platform.runLater(() -> {
-                try {
-                    printTickets(pageGrid, finalPageNumber);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            pageNumber++;
-        }
-
     }
     private final Map<Integer, String> ticketJSONCache = new HashMap<>(); // Cache to store ticket JSON, so we don't want to get the JSOn if its same ticket type
     private Pane generateTicket(Tickets ticket, TicketSold ticketSold) throws Exception {
