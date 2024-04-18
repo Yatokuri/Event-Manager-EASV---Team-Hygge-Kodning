@@ -55,6 +55,8 @@ public class EMSAdmin {
     private boolean isItArchivedEvent = false;
     @FXML
     private ImageView backgroundIMGBlur;
+    private final ArrayList<Event> retiredEvent = new ArrayList<>();
+    StringBuilder missingFields = new StringBuilder();
 
 
     public void setUserModel(UserModel userModel) {
@@ -141,6 +143,55 @@ public class EMSAdmin {
         }
     }
 
+    public void showRetiredEvent() {
+        LocalDateTime now = LocalDateTime.now().minusDays(1); // We remove 1 days to Event there just is done still can be there
+        List<Event> events = eventModel.getObsEvents();
+        String time;
+        retiredEvent.clear();
+        for (Event event : events) {
+            if (event.getEventEndDateTime() == null || event.getEventEndDateTime().isEmpty())   {
+                time = event.getEventStartDateTime();
+            } else { // We use end date time
+                time = event.getEventEndDateTime();
+            }
+            LocalDateTime endDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+            if (endDateTime.isBefore(now)) { // Take all event there is done
+                retiredEvent.add(event);
+                missingFields.append("\n- ").append(event.getEventName());
+            }
+        }
+
+        if (!retiredEvent.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Retired Event");
+            alert.setHeaderText("");
+            if (retiredEvent.size() == 1) {
+                alert.setContentText("This event is retired will you delete it: " + missingFields);
+            } else {
+                alert.setContentText("These event is retired will you delete them: " + missingFields);
+            }
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(mainIcon);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                archiveAllRetiredEvent();
+            }
+        }
+    }
+
+    private void archiveAllRetiredEvent()   {
+        for (Event event : retiredEvent) {
+            try {
+                archivedEventModel.archiveEvent(event);
+                eventTicketsModel.deleteAllTicketsFromEvent(event);
+                eventModel.deleteEvent(event);
+                tilePane.getChildren().remove(allEventBoxes.get(event.getEventID()));
+                currentEventList = new ArrayList<>(eventModel.getObsEvents());
+            } catch (Exception e) {
+                displayErrorModel.displayErrorC("Unable to delete retired event");
+            }
+        }
+    }
 
     public void setupProfilePicture()   {
         navbarModel.setupProfilePicture(profilePicture, profilePicturePane);

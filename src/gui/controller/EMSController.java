@@ -183,6 +183,7 @@ public class EMSController implements Initializable {
                 EMSCoordinator controller = loader.getController();
                 controller.setUserModel(userModel);
                 controller.startupProgram();
+                Platform.runLater(controller::showRetiredEvent);
                 currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
             } catch (IOException e) {
                 displayErrorModel.displayErrorC("Try to restart the program");
@@ -199,6 +200,7 @@ public class EMSController implements Initializable {
                 EMSAdmin controller = loader.getController();
                 controller.setUserModel(userModel);
                 controller.startupProgram();
+                Platform.runLater(controller::showRetiredEvent);
                 currentStage.setScene(new Scene(root)); // Set the scene in the existing stage
             } catch (IOException e) {
                 displayErrorModel.displayErrorC("Try to restart the program");

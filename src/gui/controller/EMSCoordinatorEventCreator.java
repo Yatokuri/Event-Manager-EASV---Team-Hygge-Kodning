@@ -75,9 +75,9 @@ public class EMSCoordinatorEventCreator implements Initializable {
     @FXML
     private ImageView eventImage;
     private String type;
-    private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,50}");
-    private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,0-9\s*]{3,80}");
-    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.0-9\s*\n]{3,300}");
+    private final Pattern eventNamePattern = Pattern.compile("[a-zæøåA-ZÆØÅ$&+,:;=?@#|'<>.^*()%!0-9\s*]{3,50}");
+    private final Pattern eventLocationPattern = Pattern.compile("[a-zæøåA-ZÆØÅ,.°'\"0-9\s*]{3,80}");
+    private final Pattern eventNotesPattern = Pattern.compile("[a-zæøåA-ZÆØÅ$&+,:;=?@#|'<>.^*()%!0-9\s*\n]{3,300}");
     private final Pattern dateTimePattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}");
     private Rectangle pictureCapture; // When we capture IMG
     private boolean imageMode = false;
