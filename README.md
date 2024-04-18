@@ -6,21 +6,21 @@ Event Tickets EASV Bar
 
 SCO + ITO project in spring 2024
 
-Login for Admin in program
-Username: Admin
+**Login for Admin in program** <br />
+Username: Admin <br />
 Password: password
 
-Login for a User in program(A personal user account can be made through the admin account as well)
-Username: 1
+**Login for a User in program**(A personal user account can be made through the admin account as well) <br />
+Username: 1 <br />
 Password: 1
 
 ## Authors
 
 Contributors names and contact info
 
-Daniel
-Naylin
-Thomas
+Daniel <br />
+Naylin <br />
+Thomas 
 
 
 ## Version History
