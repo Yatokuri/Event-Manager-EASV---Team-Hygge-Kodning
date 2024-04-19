@@ -150,6 +150,10 @@ public class EMSController implements Initializable {
     public void btnLoginSystem(ActionEvent actionEvent) throws InterruptedException {
         String username = txtInputUsername.getText();
         String password = txtInputPassword.getText();
+        btnLoginSystemLogin(username, password);
+    }
+
+    public void btnLoginSystemLogin(String username, String password) throws InterruptedException {
         User currentUser;
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -173,11 +177,10 @@ public class EMSController implements Initializable {
         }
 
         userModel.setLoggedInUser(currentUser);
-
         if (currentUser.getUserAccessLevel() == 1) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSCoordinator.fxml"));
-                Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                Stage currentStage = primaryStage;
                 currentStage.setTitle("Event Manager System Coordinator");
                 Parent root = loader.load();
                 EMSCoordinator controller = loader.getController();
@@ -194,7 +197,7 @@ public class EMSController implements Initializable {
         else if (currentUser.getUserAccessLevel() == 2) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EMSAdmin.fxml"));
-                Stage currentStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                Stage currentStage = primaryStage;
                 currentStage.setTitle("Event Manager System Admin");
                 Parent root = loader.load();
                 EMSAdmin controller = loader.getController();
